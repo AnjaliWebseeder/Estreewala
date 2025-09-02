@@ -1,4 +1,4 @@
-export default fonts = {
+const fonts = {
  PoppinsRegular: 'Poppins-Regular',
  PoppinsMedium: 'Poppins-Medium',
  PoppinsBold: 'Poppins-Bold',
@@ -7,3 +7,5 @@ export default fonts = {
  PoppinsExtraBold: 'Poppins-ExtraBold',
  PoppinsSemiBold: 'Poppins-Bold',
 };
+
+export default fonts;
