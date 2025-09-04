@@ -1,11 +1,12 @@
 import { StyleSheet } from 'react-native';
 import appColors from '../../theme/appColors'
+import fonts from '../../theme/appFonts';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(101,86,255,255)', 
+    backgroundColor: appColors.blue, 
     overflow: 'hidden',
   },
   iconWrapper: {
@@ -21,7 +22,7 @@ export const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.8)',
     letterSpacing: 3,
     marginBottom: 5,
-    fontWeight: '300',
+  fontFamily:fonts.PoppinsSemiBold
   },
   appName: {
     fontSize: 32,
@@ -31,6 +32,7 @@ export const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 5,
+    fontFamily:fonts.PoppinsBold
   },
   bubble: {
     position: 'absolute',

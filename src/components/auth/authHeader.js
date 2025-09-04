@@ -30,10 +30,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontSize: fontSizes.FONT29,
-    fontFamily: fonts.PoppinsBold,
+    fontSize: fontSizes.FONT26,
+    fontFamily: fonts.PoppinsSemiBold,
     color: appColors.font,
-    marginBottom: 8,
+    marginBottom: 4,
     textAlign: 'center',
   },
   subtitle: {
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.PoppinsRegular,
     color: appColors.subTitle,
     textAlign: 'center',
-    lineHeight: 24,
+   
   },
 });
 

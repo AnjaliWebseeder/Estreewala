@@ -66,7 +66,7 @@ export default function Splash({navigation}) {
 
   useEffect(() => {
       setTimeout(() => {
-  navigation.navigate('onBoarding');
+  navigation.navigate('OnBoarding');
     }, 2000);
   },[navigation])
 

@@ -18,6 +18,7 @@ import {
   onBoardImg3,
 } from "../../utils/images/images";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = Dimensions.get("window");
 
@@ -63,16 +64,20 @@ const OnboardingScreen = ({ navigation }) => {
   const scrollX = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef(null);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentIndex < slides.length - 1) {
       flatListRef.current.scrollToIndex({ index: currentIndex + 1 });
     } else {
-      navigation.replace("SignIn");
+     await AsyncStorage.setItem("hasSeenOnboarding", "true");
+navigation.replace("PhoneLogin");
+   
     }
   };
 
-  const handleSkip = () => {
-    navigation.replace("SignIn");
+  const handleSkip = async () => {
+   await  AsyncStorage.setItem("hasSeenOnboarding", "true");
+navigation.replace("PhoneLogin");
+   
   };
 
   const renderItem = ({ item }) => (
