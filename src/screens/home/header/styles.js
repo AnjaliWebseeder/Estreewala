@@ -10,6 +10,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+ paddingHorizontal: 16,
   },
   iconStyle:{
    marginHorizontal:8
@@ -20,7 +21,8 @@ export const styles = StyleSheet.create({
     marginTop:windowHeight(10),
     lineHeight:windowHeight(22),
     fontFamily:fonts.PoppinsMedium,
-    color:appColors.font   
+    color:appColors.font ,
+     paddingHorizontal: 16,  
   
   },
   actions: {

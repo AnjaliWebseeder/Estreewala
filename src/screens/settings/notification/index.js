@@ -64,7 +64,7 @@ const Notification = ({navigation}) => {
         title="Notification"
         onBackPress={() => navigation.goBack()}
         onRightPress={() => console.log("Settings pressed")}
-        showNotificationIcon
+       
       />
 
       <FlatList

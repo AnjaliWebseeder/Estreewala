@@ -6,16 +6,18 @@ const { width } = Dimensions.get('window');
 export const styles = StyleSheet.create({
   wrapper: {
     marginTop: 20,
-    paddingHorizontal: 16,
+   
   },
   contentContainerStyle:{
-    paddingBottom:1
+    paddingBottom:1,
+      paddingLeft: 16,
   },
   title: {
     fontSize: fontSizes.FONT22,
     fontFamily:fonts.PoppinsMedium,
     marginBottom: 8,
-   color:appColors.font
+   color:appColors.font,
+    paddingHorizontal: 16,
   },
   card: {
     width: width * 0.75,
@@ -33,6 +35,7 @@ export const styles = StyleSheet.create({
     elevation: 2,
     borderWidth: 1,
     borderColor:appColors.border,
+   
   },
   activeCard: {
     borderColor: appColors.blue,

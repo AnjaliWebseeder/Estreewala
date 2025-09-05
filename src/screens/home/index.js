@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
   mainView:{
      backgroundColor:appColors.lightBlue,
-      paddingHorizontal: 16,
+      // paddingHorizontal: 16,
   },
   contentContainerStyle:{
     paddingBottom:100

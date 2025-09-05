@@ -1,3 +1,4 @@
+// src/navigation/customDrawer/drawerContext.js
 import React, { createContext, useContext, useState } from 'react';
 
 const DrawerContext = createContext();
@@ -18,7 +19,12 @@ export const DrawerProvider = ({ children }) => {
   const toggleDrawer = () => setIsOpen(!isOpen);
 
   return (
-    <DrawerContext.Provider value={{ isOpen, openDrawer, closeDrawer, toggleDrawer }}>
+    <DrawerContext.Provider value={{ 
+      isOpen, 
+      openDrawer, 
+      closeDrawer, 
+      toggleDrawer 
+    }}>
       {children}
     </DrawerContext.Provider>
   );

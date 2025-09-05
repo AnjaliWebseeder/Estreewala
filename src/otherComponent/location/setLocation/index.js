@@ -3,10 +3,9 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { locationlocationIllustration } from '../../../utils/images/images';
-import {styles} from './styles'
 import appColors from '../../../theme/appColors';
 import LottieView from "lottie-react-native";
+import {styles} from './styles'
 
 const SetLocationScreen = () => {
   const navigation = useNavigation();

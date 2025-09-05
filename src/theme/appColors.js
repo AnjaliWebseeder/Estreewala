@@ -10,7 +10,8 @@ const appColors = {
   background:"rgba(255, 255, 255, 1)",
   lightBorder:'#f0f0f0',
   lightBlue:"#f6fbff",
-  card:"#f0f6ff"
+  card:"#f0f6ff",
+  error:"#EF4444"
 }
 
 export default appColors;

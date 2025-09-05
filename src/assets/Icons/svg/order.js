@@ -1,10 +1,11 @@
 import React from "react";
 import Svg, { Path, G } from "react-native-svg";
+import appColors from "../../../theme/appColors";
 
-const OrdersIcon = ({ color = "#000" }) => (
+const OrdersIcon = ({ color = appColors.blue, size= size? size : 23 }) => (
   <Svg
-    width={23}
-      height={23}
+    width={size}
+      height={size}
     viewBox="0 0 512 512"
     fill="none"
   >

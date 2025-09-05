@@ -32,7 +32,8 @@ const ServiceList = () => {
 
 const styles = StyleSheet.create({
   container:{
-    marginTop:windowHeight(4)
+    marginTop:windowHeight(4),
+     paddingLeft: 16,
   },
   scroll: { marginVertical: 10 },
   contentContainerStyle:{

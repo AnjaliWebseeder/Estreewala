@@ -1,58 +1,121 @@
-
 import { StyleSheet } from 'react-native';
+import appColors from '../../theme/appColors';
+import fonts from '../../theme/appFonts';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff", // light theme background
+    backgroundColor:appColors.white,
     paddingHorizontal: 20,
-    paddingVertical: 40,
+    paddingVertical: 20,
   },
-  profileSection: {
-    alignItems: "flex-start",
-    marginBottom: 30,
+  
+  // Welcome Section
+  welcomeSection: {
+    alignItems: "center",
+    marginBottom: 5,
+    paddingTop: 10,
   },
-  profileImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginBottom: 12,
+  welcomeText: {
+    fontSize: 20,
+    fontFamily:fonts.PoppinsMedium,
+    color: appColors.font,
+    marginTop: 10,
   },
-  userName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#111",
+  phoneText: {
+    fontSize: 14,
+    color: "#7F8C8D",
+     fontFamily:fonts.PoppinsRegular,
   },
-  userLocation: {
-    fontSize: 13,
-    color: "#555",
-    marginTop: 2,
-  },
+
+  // Quick Actions
+
+  // Menu Section
   menuSection: {
-    flex: 1,
+    // marginBottom: 20,
   },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor:appColors.lightGray,
   },
   menuText: {
-    fontSize: 15,
-    fontWeight: "500",
-    color: "#333",
+    fontSize: 14,
+    fontFamily:fonts.PoppinsRegular,
+    color: appColors.font,
     marginLeft: 15,
+    flex: 1,
   },
+  notificationBadge: {
+    backgroundColor: '#E74C3C',
+    width: 16,
+    height: 16,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    color: appColors.white,
+    fontSize: 9,
+    fontFamily:fonts.PoppinsRegular,
+    paddingTop:1
+  },
+
+  // Support Section
+  supportSection: {
+    marginBottom: 20,
+    
+  },
+
+  // Service Status
+  serviceStatus: {
+    backgroundColor: appColors.lightBlue,
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  statusIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  statusDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 15,
+    marginRight: 8,
+    marginBottom:2,
+    marginHorizontal:6
+  },
+  statusOnline: {
+    backgroundColor: appColors.blue,
+  },
+  statusText: {
+    fontSize: 14,
+    fontWeight: '600',
+   fontFamily:fonts.PoppinsRegular,
+  },
+  statusSubText: {
+    fontSize: 12,
+    color: appColors.subTitle,
+    textAlign: 'center',
+       fontFamily:fonts.PoppinsRegular,
+  },
+  // Sign Out
   signOut: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 14,
+    paddingVertical: 16,
+   
   },
   signOutText: {
-    fontSize: 15,
-    fontWeight: "500",
-    color: "#E53935",
-    marginLeft: 15,
+    fontSize: 16,
+     fontFamily:fonts.PoppinsRegular,
+    color: "#E74C3C",
+    marginLeft: 10,
+    marginTop:3
   },
 });

@@ -1,71 +1,80 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
-import { View, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-
-import Splash from '../screens/splash';
-import OnBoarding from '../screens/onBoarding';
-import PhoneLogin from '../screens/auth/phoneLogin';
-import SetLocation from '../screens/location/setLocation';
-import ConfirmLocation from '../screens/location/confirmLocation';
-import SearchLocationScreen from '../screens/location/searchLocation';
+import Splash from '../screens/splash'
+import OnBoarding from '../screens/onBoarding'
+import PhoneLogin from '../screens/auth/phoneLogin'
+import OtpInput from '../screens/auth/phoneLogin/otpInput';
+import SetLocation from '../otherComponent/location/setLocation'
+import ConfirmLocation from '../otherComponent/location/confirmLocation'
+import SearchLocation from '../otherComponent/location/searchLocation'
 import BottomTab from '../navigation/bottomTab';
 import Notification from '../screens/settings/notification';
 import CustomDrawerContent from '../navigation/customDrawer';
 import SimpleDrawer from '../navigation/customDrawer/simpleDrawer';
+import AboutUs from '../screens/settings/aboutUs'
+import ContactSupport from '../screens/settings/contactSupport'
+import PrivacyPolicy from '../screens/settings/privacyPolicy'
+import Faqs from '../screens/settings/faq'
+import ManageAddress from '../screens/settings/manageAddress'
+import Settings from '../screens/settings/settings'
+import { useDrawer } from './customDrawer/drawerContext';
+import Search from '../otherComponent/search'
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigation() {
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const navigationRef = useRef();
+  const { isOpen, closeDrawer } = useDrawer(); // Use the context
 
   // Function to handle navigation from drawer
   const navigateFromDrawer = (screenName) => {
-    setDrawerOpen(false);
+    closeDrawer();
     navigationRef.current?.navigate(screenName);
   };
 
   return (
-   
-    
-  <>
-    <Stack.Navigator
+    <>
+      <Stack.Navigator
+       initialRouteName='Main'
         screenOptions={{
-          headerShown: false, // Hide all headers by default
+          headerShown: false,
         }}
       >
-        {/* Main screen with custom header */}
+        
+          <Stack.Screen name="Splash" component={Splash} />
+            <Stack.Screen name="OnBoarding" component={OnBoarding} />
+              <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
+                <Stack.Screen name="OtpInput" component={OtpInput} />
+                  <Stack.Screen name="SetLocation" component={SetLocation} />
+                    <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
+                      <Stack.Screen name="SearchLocation" component={SearchLocation} />
         <Stack.Screen 
           name="Main" 
           component={BottomTab}
-          options={{
-            headerShown: false,
-          
-          }}
+          options={{ headerShown: false }}
         />
         
-        {/* Notification screen without header */}
-        <Stack.Screen 
-          name="Notification" 
-          component={Notification}
-        />
-        
-        {/* Add other screens as needed */}
+        <Stack.Screen name="Notification" component={Notification} />
+        <Stack.Screen name="AboutUs" component={AboutUs} />
+        <Stack.Screen name="ContactSupport" component={ContactSupport} />
+        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+        <Stack.Screen name="Faqs" component={Faqs} />
+        <Stack.Screen name="ManageAddress" component={ManageAddress} />
+        <Stack.Screen name="Settings" component={Settings} />
+           <Stack.Screen name="Search" component={Search} />
       </Stack.Navigator>
 
       <SimpleDrawer 
-        isOpen={drawerOpen} 
-        onClose={() => setDrawerOpen(false)}
+        isOpen={isOpen} // Use context state
+        onClose={closeDrawer} // Use context function
       >
         <CustomDrawerContent 
           navigation={{ 
             navigate: navigateFromDrawer,
-            closeDrawer: () => setDrawerOpen(false)
+            closeDrawer: closeDrawer
           }} 
         />
       </SimpleDrawer>
-  </>
+    </>
   );
 }
