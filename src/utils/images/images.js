@@ -13,5 +13,7 @@ module.exports = {
   offer:require('../../assets/images/offer.png'),
   offer1:require('../../assets/images/offer1.png'),
   offer2:require('../../assets/images/offer2.png'),
-
+  deliveryman: require('../../assets/images/deliveryman.png'),
+  delivery: require('../../assets/images/delivery.png'),
+  socksClean: require('../../assets/images/socksClean.png')
 }

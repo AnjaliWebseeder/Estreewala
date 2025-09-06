@@ -1,60 +1,57 @@
 import { StyleSheet, Platform } from "react-native";
 import appColors from "../../theme/appColors";
 import fonts from "../../theme/appFonts";
-import { windowHeight } from "../../theme/appConstant";
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-     backgroundColor: "#F8F9FD",
+    backgroundColor: "#F8F9FD", // ultra-light bg
   },
 
   scrollContent: {
-    padding: 16,
-    paddingTop: 24,
-   
+    paddingHorizontal: 16,
+    paddingBottom: 30,
   },
+
+  // ===== MENU CARD =====
   menuCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
-    marginBottom: 17,
-    paddingHorizontal: 8,
-      paddingVertical:10,
+    marginBottom: 14,
+    overflow: "hidden",
+    borderColor:appColors.border,
+    borderWidth:0.2,
+    paddingVertical:5,
     ...Platform.select({
       ios: {
-        shadowColor: '#64748B',
+        shadowColor: "#64748B",
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
+        shadowOpacity: 0.08,
+        shadowRadius: 6,
       },
-      android: {
-        elevation: 1,
-      },
-    
+      android: { elevation: 1 },
     }),
   },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal:3,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    marginBottom: 4,
-    paddingVertical:5,
-   
+    paddingVertical: 12.3,
+    paddingHorizontal: 16,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#E5E7EB",
   },
   iconBox: {
-    width: 30,
-    height: 30,
-    borderRadius: 12,
+    width: 28,
+    height: 28,
+    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 16,
   },
   menuText: {
-    fontSize: 16,
+    fontSize: 14.5,
     color: appColors.font,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily: fonts.PoppinsRegular,
     flex: 1,
   },
   chevron: {
@@ -63,25 +60,11 @@ export const styles = StyleSheet.create({
     borderTopWidth: 2,
     borderRightWidth: 2,
     borderColor: appColors.subTitle,
-    transform: [{ rotate: '45deg' }],
-    marginHorizontal:10,
-    fontFamily:fonts.PoppinsRegular
+    transform: [{ rotate: "45deg" }],
+    marginRight:10
   },
-  signOutBtn: {
-    marginTop: '10%',
-    padding: 14,
-    borderRadius: 12,
-    borderColor: appColors.blue,
-    borderWidth:1,
-    alignItems: "center",
-    flexDirection:"row",
-    justifyContent:"center",
-    marginHorizontal:14
-  },
-  signOutText: {
-    fontSize: 16,
-    color: appColors.blue,
-    fontFamily:fonts.PoppinsMedium,
-    marginHorizontal:10
-  },
+
+  // ===== SIGN OUT =====
+
+
 });

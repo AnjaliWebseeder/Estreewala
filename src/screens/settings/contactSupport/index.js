@@ -49,7 +49,7 @@ export default function ContactSupport({ navigation }) {
 
         <TouchableOpacity style={styles.cardBox} onPress={openEmail}>
           <View style={styles.row}>
-            <Ionicons name="mail" size={20} color={appColors.blue} />
+            <Ionicons name="mail" size={20} color={appColors.black} />
             <Text style={styles.cardTitle}> Email Us</Text>
           </View>
           <Text style={styles.cardValue}>support@supercanteen.in</Text>
@@ -57,7 +57,7 @@ export default function ContactSupport({ navigation }) {
 
         <TouchableOpacity style={styles.cardBox} onPress={openDialer}>
           <View style={styles.row}>
-            <Ionicons name="call" size={20} color={appColors.blue} />
+            <Ionicons name="call" size={20} color={appColors.black} />
             <Text style={styles.cardTitle}> Call Us</Text>
           </View>
           <Text style={styles.cardValue}>+91 9557919140</Text>

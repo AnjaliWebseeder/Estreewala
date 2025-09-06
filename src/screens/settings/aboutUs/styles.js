@@ -17,7 +17,6 @@ export const styles = StyleSheet.create({
   },
   content: {
     paddingBottom: 40,
-    marginTop:16
   },
   // Section Styles
   section: {

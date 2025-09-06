@@ -1,20 +1,17 @@
 import { StyleSheet } from 'react-native';
 import appColors from '../../theme/appColors';
 import fonts from '../../theme/appFonts';
+import { windowHeight } from '../../theme/appConstant';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor:appColors.white,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    elevation:5
   },
-  
-  // Welcome Section
-  welcomeSection: {
-    alignItems: "center",
-    marginBottom: 5,
-    paddingTop: 10,
+  main:{
+   padding:10,
+   paddingHorizontal:20
   },
   welcomeText: {
     fontSize: 20,
@@ -22,17 +19,60 @@ export const styles = StyleSheet.create({
     color: appColors.font,
     marginTop: 10,
   },
-  phoneText: {
-    fontSize: 14,
-    color: "#7F8C8D",
-     fontFamily:fonts.PoppinsRegular,
-  },
+
 
   // Quick Actions
 
   // Menu Section
   menuSection: {
     // marginBottom: 20,
+  },
+   avatar: {
+    height:windowHeight(50),
+    width:windowHeight(50),
+    borderRadius:30,
+    backgroundColor:appColors.font,
+    alignItems:"center",
+    justifyContent:"center",
+  },
+    welcomeSection: {
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    paddingVertical:10,
+    paddingBottom:10,
+    // backgroundColor:appColors.lightBlue,
+    paddingTop:'10%',
+    alignItems:"center"
+  },
+  headerTop: {
+   
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  headerTextContainer: {
+    marginLeft: 3,
+  },
+  userNameText: {
+    fontSize: 16,
+    color: appColors.font,
+    fontFamily:fonts.PoppinsRegular,
+    marginTop: 12,
+  },
+  userDetails: {
+    marginTop: 0,
+  },
+  detailText: {
+    fontSize: 12,
+    color: appColors.subTitle, // light text for gradient background
+    marginTop: 0,
+    fontFamily:fonts.PoppinsRegular,
+    marginBottom:3
+  },
+  phoneText: {
+    fontSize: 14,
+    color: '#E0F8FC',
+    fontFamily:fonts.PoppinsRegular,
+    marginTop: 2,
   },
   menuItem: {
     flexDirection: "row",
@@ -71,7 +111,7 @@ export const styles = StyleSheet.create({
 
   // Service Status
   serviceStatus: {
-    backgroundColor: appColors.lightBlue,
+    backgroundColor: '#f7f7fbff',
     padding: 15,
     borderRadius: 12,
     marginBottom: 20,
@@ -108,7 +148,8 @@ export const styles = StyleSheet.create({
   signOut: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 16,
+    paddingBottom: '30%',
+   marginTop:-10
    
   },
   signOutText: {

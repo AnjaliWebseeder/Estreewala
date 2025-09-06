@@ -69,14 +69,14 @@ const OnboardingScreen = ({ navigation }) => {
       flatListRef.current.scrollToIndex({ index: currentIndex + 1 });
     } else {
      await AsyncStorage.setItem("hasSeenOnboarding", "true");
-navigation.replace("PhoneLogin");
+navigation.replace("SignIn");
    
     }
   };
 
   const handleSkip = async () => {
    await  AsyncStorage.setItem("hasSeenOnboarding", "true");
-navigation.replace("PhoneLogin");
+navigation.replace("SignIn");
    
   };
 

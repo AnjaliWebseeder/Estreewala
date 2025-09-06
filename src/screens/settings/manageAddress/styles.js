@@ -11,11 +11,11 @@ export const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 12,
    borderColor:appColors.border,
-   borderWidth:1,
+   borderWidth:0.7,
    borderRadius:10
   },
   selectedCard: {
-    borderColor: appColors.blue,
+    borderColor: appColors.font,
     backgroundColor: appColors.blueLight + '20',
   },
   row: { 
@@ -60,19 +60,19 @@ export const styles = StyleSheet.create({
     height: 15,
     width: 15,
     borderRadius: 10,
-    borderWidth: 2,
+    borderWidth: 1.2,
     borderColor: appColors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioOuterSelected: {
-    borderColor: appColors.blue,
+    borderColor: appColors.font,
   },
   radioInner: {
     height: 6,
     width: 6,
     borderRadius: 5,
-    backgroundColor: appColors.blue,
+    backgroundColor: appColors.font,
   },
 
   // Default Badge
@@ -141,10 +141,12 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    paddingHorizontal: 16,
     backgroundColor: appColors.blueLight,
     borderBottomWidth: 1,
     borderBottomColor: appColors.border,
+    paddingBottom:16,
+    paddingTop:2
   },
   currentLocationBtnDisabled: {
     opacity: 0.7,

@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-import { fontSizes } from '../../../theme/appConstant';
 import { windowHeight } from '../../../theme/appConstant';
 import fonts from '../../../theme/appFonts';
 import appColors from '../../../theme/appColors';
@@ -7,12 +6,12 @@ import appColors from '../../../theme/appColors';
 export const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor:  "#F8F9FD" },
   content: {
-    padding: 16,
+    paddingHorizontal: 20,
   },
   helpTitle: {
     fontSize: 17,
-    fontFamily:fonts.PoppinsMedium,
-    color: appColors.blue,
+    fontFamily:fonts.PoppinsSemiBold,
+    color: appColors.font,
     marginBottom: 5,
    
   },

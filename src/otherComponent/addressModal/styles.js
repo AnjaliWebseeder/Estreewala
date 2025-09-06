@@ -58,13 +58,13 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   radioOuterSelected: {
-    borderColor: appColors.blue,
+    borderColor: appColors.font,
   },
   radioInner: {
     width: 6.4,
     height: 6.4,
     borderRadius: 5,
-    backgroundColor: appColors.blue,
+    backgroundColor: appColors.font,
   },
   addressTypeIcon: {
     marginRight: 6,
@@ -75,7 +75,6 @@ export const styles = StyleSheet.create({
     fontFamily: fonts.PoppinsRegular
   },
   addressTypeLabelSelected: {
-    color: appColors.blue,
     fontFamily: fonts.PoppinsMedium
   },
 

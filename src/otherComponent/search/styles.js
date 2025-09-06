@@ -8,9 +8,10 @@ export const styles = StyleSheet.create({
     backgroundColor:appColors.white,
   },
   searchContainer: {
-    padding: 16,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
+    paddingBottom:18
   },
   searchInputContainer: {
     flexDirection: 'row',

@@ -2,7 +2,7 @@ import React from "react";
 import Svg, { Path } from "react-native-svg";
 import appColors from "../../../theme/appColors";
 
-const RateIcon = ({ color =appColors.blue, size = 16 }) => (
+const RateIcon = ({ color =appColors.black, size = 16 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     <Path
       d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 

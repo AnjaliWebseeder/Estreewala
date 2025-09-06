@@ -186,7 +186,7 @@ export default function ManageAddress({ navigation, route }) {
             onPress={() => openModal(item)}
             style={styles.iconBtn}
           >
-            <Icon name="create-outline" size={20} color="#666" />
+            <Icon name="create-outline" size={20} color="#1c1a1aff" />
           </TouchableOpacity>
         )}
         

@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
   },
   section: {
     marginBottom:0,
-    marginTop:windowHeight(18),
+    marginTop:windowHeight(2),
     paddingHorizontal:24
   },
   sectionTitle: {

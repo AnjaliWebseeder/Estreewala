@@ -3,7 +3,7 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from "rea
 import {dryWash} from '../../../utils/images/images'
 import { wash } from "../../../utils/images/images";
 import { ironing } from "../../../utils/images/images";
-import { tShirtWashIron } from "../../../utils/images/images";
+import { tShirtWashIron , socksClean} from "../../../utils/images/images";
 import { fontSizes, windowHeight, windowWidth } from "../../../theme/appConstant";
 import appColors from "../../../theme/appColors";
 import fonts from "../../../theme/appFonts";
@@ -13,6 +13,7 @@ const services = [
   { id: 2, name: "Wash", icon: wash },
   { id: 3, name: "Ironing", icon:ironing },
 { id: 4, name: "WashIron", icon: tShirtWashIron },
+// { id: 5, name: "SocksClean", icon: socksClean },
 ];
 
 const ServiceList = () => {
@@ -22,7 +23,7 @@ const ServiceList = () => {
       {services.map((service) => (
         <TouchableOpacity key={service.id} style={styles.card}>
           <Image source={service.icon} style={styles.icon} />
-          <Text style={styles.name}>{service.name}</Text>
+          <Text numberOfLines={1} style={styles.name}>{service.name}</Text>
         </TouchableOpacity>
       ))}
     </ScrollView>

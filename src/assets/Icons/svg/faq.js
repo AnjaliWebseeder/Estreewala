@@ -2,7 +2,7 @@ import React from "react";
 import Svg, { Path, Circle } from "react-native-svg";
 import appColors from "../../../theme/appColors";
 
-const FAQIcon = ({ color = appColors.blue, size = 20 }) => (
+const FAQIcon = ({ color = appColors.black, size = 20 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     <Circle cx="12" cy="12" r="10" stroke={color} strokeWidth={1.5} />
     <Path

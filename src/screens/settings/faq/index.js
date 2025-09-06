@@ -69,7 +69,7 @@ const FAQS = ({ navigation }) => {
                   <Icon
                     name={activeIndex === index ? "keyboard-arrow-up" : "keyboard-arrow-down"}
                     size={22}
-                    color={appColors.blue}
+                    color={appColors.font}
                   />
                 </TouchableOpacity>
 

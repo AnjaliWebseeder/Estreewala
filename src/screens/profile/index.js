@@ -7,22 +7,19 @@ import {
   Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {styles} from './styles'
-import Header from "../../components/header"
+import { styles } from "./styles";
 import { BellIcon } from "../../assets/Icons/svg/bell";
 import OrdersIcon from "../../assets/Icons/svg/order";
-import {LocationIcon} from '../../assets/Icons/svg/locationIcon'
-import PrivacyIcon from '../../assets/Icons/svg/privacyIcon'
-import HelpSupportIcon from '../../assets/Icons/svg/helpSupport'
-import Faq from '../../assets/Icons/svg/faq'
-import Rate from '../../assets/Icons/svg/rate'
-import { ProfileIcon } from "../../assets/Icons/svg/profile";
+import HelpSupportIcon from "../../assets/Icons/svg/helpSupport";
+import Faq from "../../assets/Icons/svg/faq";
+import Icon from "react-native-vector-icons/Ionicons";
 import appColors from "../../theme/appColors";
-import {LogOutIcon} from '../../assets/Icons/svg/logOut'
+import Header from "../../components/header";
+
 // ==== MENU ITEM COMPONENT ====
-const MenuItem = ({ icon, label, onPress, isLast , screen }) => (
-  <TouchableOpacity 
-    style={[styles.menuItem, isLast && { marginBottom: 0 ,borderWidth:0}]} 
+const MenuItem = ({ icon, label, onPress, isLast }) => (
+  <TouchableOpacity
+    style={[styles.menuItem, isLast && { borderBottomWidth: 0 }]}
     onPress={onPress}
     activeOpacity={0.7}
   >
@@ -32,67 +29,107 @@ const MenuItem = ({ icon, label, onPress, isLast , screen }) => (
   </TouchableOpacity>
 );
 
-
 // ==== MAIN SCREEN ====
 export default function Profile({ navigation }) {
-
-    const handleLogout = () => {
-     navigation.reset({
-              index: 0,
-              routes: [{ name: 'PhoneLogin' }],
-            });
-          }
-
-            const handleRateApp = () => {
-              Linking.openURL('market://details?id=your.package.name');
-            };
-          
-
+  const handleRateApp = () => {
+    Linking.openURL("market://details?id=your.package.name");
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View
-      >
-        <Header
-          title="Profile"
-          onBackPress={() => navigation.goBack()}
-          onRightPress={() => navigation.navigate("Settings")}
-          showNotificationIcon
-          lightTheme
-        />
-        
-       
-      </View>
+      <Header
+         title="Profile"
+        onBackPress={() => navigation.goBack()}
+        onRightPress={() => console.log("Settings pressed")}
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Menu Items */}
+
+        {/* First Group */}
         <View style={styles.menuCard}>
-          <MenuItem icon={<BellIcon size={18} color={appColors.blue} />} label="Notification" onPress={()=> navigation.navigate('Notification')} />
-          <MenuItem icon={<OrdersIcon size={20}/>} label="Order History" onPress={() => navigation.navigate("")} />
-          <MenuItem icon={<LocationIcon />} label="Manage Address" onPress={() => navigation.navigate("ManageAddress")} />
+             <MenuItem
+            icon={<Icon name="lock-closed-outline" size={20} color={appColors.font} />}
+            label="Login & Security"
+            onPress={() => navigation.navigate("LoginSecurity")}
+          />
+          <MenuItem
+            icon={<BellIcon size={18} color={appColors.font} />}
+            label="Notification"
+            onPress={() => navigation.navigate("Notification")}
+          />
+          <MenuItem
+            icon={<OrdersIcon size={20} />}
+            label="Order History"
+            onPress={() => navigation.navigate("")}
+          />
+          <MenuItem
+            icon={
+              <Icon
+                name="location-outline"
+                size={20}
+                color={appColors.font}
+              />
+            }
+            label="Manage Address"
+            onPress={() => navigation.navigate("ManageAddress")}
+            isLast
+          />
         </View>
-        
+
+        {/* Second Group */}
         <View style={styles.menuCard}>
-          <MenuItem icon={<HelpSupportIcon />} label="Contact Support"  onPress={() => navigation.navigate("ContactSupport")}/>
-          <MenuItem icon={<ProfileIcon size={17}/>} label="About Us" onPress={()=> navigation.navigate("AboutUs")} /> 
-          <MenuItem icon={<PrivacyIcon />} label="Privacy Policy" onPress={() => navigation.navigate("PrivacyPolicy")}/>
-          <MenuItem icon={<Faq />} label="Faq" onPress={() => navigation.navigate("Faqs")}/>
-          <MenuItem icon={<Rate />} label="Rate Us" isLast onPress={() => handleRateApp()} />
+          <MenuItem
+            icon={<HelpSupportIcon />}
+            label="Contact Support"
+            onPress={() => navigation.navigate("ContactSupport")}
+          />
+          <MenuItem
+            icon={
+              <Icon
+                name="information-circle-outline"
+                size={20}
+                color={appColors.font}
+              />
+            }
+            label="About Us"
+            onPress={() => navigation.navigate("AboutUs")}
+          />
+          <MenuItem
+            icon={
+              <Icon
+                name="shield-checkmark-outline"
+                size={20}
+                color={appColors.font}
+              />
+            }
+            label="Privacy Policy"
+            onPress={() => navigation.navigate("PrivacyPolicy")}
+          />
+          <MenuItem
+            icon={<Faq />}
+            label="Faq"
+            onPress={() => navigation.navigate("Faqs")}
+          />
+            <MenuItem
+            icon={
+              <Icon name="key-outline" size={18} color={appColors.font} />
+            }
+            label="Change Password"
+            onPress={() => navigation.navigate("ChangePassword")}
+          />
+          <MenuItem
+            icon={
+              <Icon name="star-outline" size={16} color={appColors.font} />
+            }
+            label="Rate Us"
+            onPress={() => handleRateApp()}
+            isLast
+          />
         </View>
-  
-     <TouchableOpacity onPress={()=> handleLogout()} style={styles.signOutBtn} activeOpacity={0.8}>
-           
-          <Text style={styles.signOutText}>Sign Out</Text>
-           <LogOutIcon/>
-          <View/>
-        </TouchableOpacity>
-        {/* Sign Out Button */}
-      
       </ScrollView>
-   
     </SafeAreaView>
   );
 }

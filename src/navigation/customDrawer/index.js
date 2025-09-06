@@ -4,34 +4,38 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { styles } from './styles';
 import appColors from "../../theme/appColors";
 import { useNavigation } from '@react-navigation/native';
+import {BellIcon} from '../../assets/Icons/svg/bell'
+import HelpSupportIcon from '../../assets/Icons/svg/helpSupport'
 
 const CustomDrawerContent = (props) => {
-  const userPhoneNumber = "+1234567890"; // Replace with actual user phone number
   const handleRateApp = () => {
     Linking.openURL('market://details?id=your.package.name');
   };
-
     const navigation = useNavigation(); // Use the actual navigation object
-
     const handleLogout = () => {
    props.navigation.closeDrawer();
      navigation.reset({
               index: 0,
-              routes: [{ name: 'PhoneLogin' }],
+              routes: [{ name: 'SignIn' }],
             });
           }
 
 
   return (
     <View style={styles.container}>
-      {/* Simple Welcome Section */}
-      <View style={styles.welcomeSection}>
-        <Icon name="shirt-outline" size={40} color={appColors.blue} />
-        <Text style={styles.welcomeText}>Estreewala</Text>
-        <Text style={styles.phoneText}>{userPhoneNumber}</Text>
-      </View>
+<View style={styles.welcomeSection}>
+ <View style={styles.avatar}>
+            <Icon name="shirt-outline" size={28} color={appColors.white} />
+        </View>
+          <View style={styles.headerTextContainer}>
      
-      {/* Main Navigation */}
+     <Text style={styles.userNameText}>Welcome Kristi</Text>
+        <Text style={styles.detailText}>Customer ID: 735625674</Text>
+    </View>
+</View>
+
+<View style={styles.main}>
+  {/* Main Navigation */}
       <View style={styles.menuSection}>
         <TouchableOpacity 
           style={styles.menuItem}
@@ -40,7 +44,7 @@ const CustomDrawerContent = (props) => {
            navigation.navigate("Main");
           }}
         >
-          <Icon name="home-outline" size={20} color={appColors.blue} />
+          <Icon name="home-outline" size={20} color={appColors.font} />
           <Text style={styles.menuText}>Home</Text>
         </TouchableOpacity>
 
@@ -51,7 +55,7 @@ const CustomDrawerContent = (props) => {
            navigation.navigate("OrderHistory");
           }}
         >
-          <Icon name="document-text-outline" size={20} color={appColors.blue} />
+          <Icon name="document-text-outline" size={20} color={appColors.font} />
           <Text style={styles.menuText}>My Orders</Text>
         </TouchableOpacity>
 
@@ -63,7 +67,7 @@ const CustomDrawerContent = (props) => {
          console.log(  navigation)
           }}
         >
-          <Icon name="location-outline" size={20} color={appColors.blue} />
+          <Icon name="location-outline" size={20} color={appColors.font} />
           <Text style={styles.menuText}>My Addresses</Text>
         </TouchableOpacity>
 
@@ -74,7 +78,8 @@ const CustomDrawerContent = (props) => {
            navigation.navigate("Notification");
           }}
         >
-          <Icon name="notifications-outline" size={20} color={appColors.blue} />
+          <BellIcon color={appColors.font}/>
+          {/* <Icon name="notifications-outline" size={20} color={appColors.font} /> */}
           <Text style={styles.menuText}>Notifications</Text>
           <View style={styles.notificationBadge}>
             <Text style={styles.badgeText}>3</Text>
@@ -91,8 +96,8 @@ const CustomDrawerContent = (props) => {
            navigation.navigate("ContactSupport");
           }}
         >
-          <Icon name="help-circle-outline" size={20} color={appColors.blue}/>
-          <Text style={styles.menuText}>Help Center</Text>
+         <HelpSupportIcon  color={appColors.font}/>
+          <Text style={styles.menuText}>Contact Support</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
@@ -102,7 +107,7 @@ const CustomDrawerContent = (props) => {
            navigation.navigate("PrivacyPolicy");
           }}
         >
-          <Icon name="shield-checkmark-outline" size={20} color={appColors.blue}/>
+          <Icon name="shield-checkmark-outline" size={20} color={appColors.font}/>
           <Text style={styles.menuText}>Privacy Policy</Text>
         </TouchableOpacity>
 
@@ -113,7 +118,7 @@ const CustomDrawerContent = (props) => {
            navigation.navigate("AboutUs");
           }}
         >
-          <Icon name="information-circle-outline" size={20} color={appColors.blue}/>
+          <Icon name="information-circle-outline" size={20} color={appColors.font}/>
           <Text style={styles.menuText}>About Us</Text>
         </TouchableOpacity>
 
@@ -121,26 +126,26 @@ const CustomDrawerContent = (props) => {
           style={styles.menuItem}
           onPress={handleRateApp}
         >
-          <Icon name="star-outline" size={16} color={appColors.blue} />
+          <Icon name="star-outline" size={16} color={appColors.font} />
           <Text style={styles.menuText}>Rate Our App</Text>
         </TouchableOpacity>
       </View>
 
+       <TouchableOpacity onPress={()=> handleLogout()} style={styles.signOut}>
+        <Icon name="log-out-outline" size={20} color="#E74C3C" />
+        <Text style={styles.signOutText}>Sign Out</Text>
+      </TouchableOpacity>
 
-     <View style={styles.serviceStatus}>
+      <View style={styles.serviceStatus}>
         <View style={styles.statusIndicator}>
           <View style={[styles.statusDot, styles.statusOnline]} />
           <Text style={styles.statusText}>Service Available</Text>
         </View>
         <Text style={styles.statusSubText}>Open 24/7 for pickups</Text>
-      </View> 
-
-      {/* Sign Out */}
-      <View style={{flex:1}}/>
-      <TouchableOpacity onPress={()=> handleLogout()} style={styles.signOut}>
-        <Icon name="log-out-outline" size={20} color="#E74C3C" />
-        <Text style={styles.signOutText}>Sign Out</Text>
-      </TouchableOpacity>
+      </View>  
+</View>
+     
+    
     </View>
   );
 };

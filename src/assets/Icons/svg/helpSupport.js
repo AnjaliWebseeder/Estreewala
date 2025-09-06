@@ -2,7 +2,7 @@ import React from "react";
 import Svg, { Path } from "react-native-svg";
 import appColors from "../../../theme/appColors";
 
-const HelpSupportIcon = ({ color = appColors.blue, size = 17 }) => (
+const HelpSupportIcon = ({ color = appColors.black, size = 17 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     <Path
       d="M22 16.92v3a2 2 0 0 1-2.18 2 

@@ -16,7 +16,6 @@ export const styles = StyleSheet.create({
   },
   faqContainer: {
     marginBottom: windowHeight(10),
-    marginTop:windowHeight(16)
   },
   faqItem: {
     marginBottom: 12,
@@ -74,7 +73,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   helpButton: {
-    backgroundColor: appColors.blue,
+    backgroundColor: appColors.font,
     borderRadius: 24,
     paddingHorizontal: 32,
     paddingVertical: 10,

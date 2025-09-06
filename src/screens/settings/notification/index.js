@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F9FD",
   },
   listContainer: {
-    padding: 16,
+    paddingHorizontal: 16,
   },
   card: {
     flexDirection: "row",

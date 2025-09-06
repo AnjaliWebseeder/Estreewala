@@ -19,6 +19,11 @@ import ManageAddress from '../screens/settings/manageAddress'
 import Settings from '../screens/settings/settings'
 import { useDrawer } from './customDrawer/drawerContext';
 import Search from '../otherComponent/search'
+import SignIn from '../screens/auth/signIn'
+import SignUp from '../screens/auth/signUp'
+import ForgotPassword from '../screens/auth/forgotPassword'
+import ChangePassword from '../screens/settings/changePassword'
+import LoginSecurity from '../screens/settings/userProfile'
 
 const Stack = createNativeStackNavigator();
 
@@ -41,13 +46,18 @@ export default function AppNavigation() {
         }}
       >
         
-          <Stack.Screen name="Splash" component={Splash} />
-            <Stack.Screen name="OnBoarding" component={OnBoarding} />
-              <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
+      <Stack.Screen name="Splash" component={Splash} />
+      <Stack.Screen name="OnBoarding" component={OnBoarding} />
+         <Stack.Screen name="SignIn" component={SignIn} />
+                          <Stack.Screen name="SignUp" component={SignUp} />
+                            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
                 <Stack.Screen name="OtpInput" component={OtpInput} />
                   <Stack.Screen name="SetLocation" component={SetLocation} />
                     <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
                       <Stack.Screen name="SearchLocation" component={SearchLocation} />
+                     
+                  
         <Stack.Screen 
           name="Main" 
           component={BottomTab}
@@ -62,6 +72,10 @@ export default function AppNavigation() {
         <Stack.Screen name="ManageAddress" component={ManageAddress} />
         <Stack.Screen name="Settings" component={Settings} />
            <Stack.Screen name="Search" component={Search} />
+            <Stack.Screen name="ChangePassword" component={ChangePassword} />
+              <Stack.Screen name="LoginSecurity" component={LoginSecurity} />
+           
+           
       </Stack.Navigator>
 
       <SimpleDrawer 

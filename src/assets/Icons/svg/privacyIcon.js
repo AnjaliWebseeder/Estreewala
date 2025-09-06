@@ -2,7 +2,7 @@ import React from "react";
 import Svg, { Path, Circle, Rect } from "react-native-svg";
 import appColors from "../../../theme/appColors";
 
-const PrivacyIcon = ({ color = appColors.blue, size = 21 }) => (
+const PrivacyIcon = ({ color = "#000", size = 21 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     <Circle cx="12" cy="16" r="1" stroke={color} strokeWidth={1.5} />
     <Rect

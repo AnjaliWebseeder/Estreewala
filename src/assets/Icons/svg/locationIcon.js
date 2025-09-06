@@ -2,7 +2,7 @@ import React from "react";
 import Svg, { Path } from "react-native-svg";
 import appColors from "../../../theme/appColors";
 
-export function LocationIcon({ color = appColors.blue, size = 18 }) {
+export function LocationIcon({ color = appColors.black, size = 18 }) {
   return (
      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     <Path
