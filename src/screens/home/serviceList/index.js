@@ -16,12 +16,12 @@ const services = [
 // { id: 5, name: "SocksClean", icon: socksClean },
 ];
 
-const ServiceList = () => {
+const ServiceList = ({navigation}) => {
   return (
    <View style={styles.container}>
      <ScrollView contentContainerStyle={styles.contentContainerStyle} horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
       {services.map((service) => (
-        <TouchableOpacity key={service.id} style={styles.card}>
+        <TouchableOpacity onPress={()=> navigation.navigate('LaundryServiceList')} key={service.id} style={styles.card}>
           <Image source={service.icon} style={styles.icon} />
           <Text numberOfLines={1} style={styles.name}>{service.name}</Text>
         </TouchableOpacity>

@@ -3,16 +3,16 @@ import Icon from "react-native-vector-icons/Ionicons";
 import fonts from "../../theme/appFonts";
 import appColors from "../../theme/appColors";
 
-const Header = ({ title, onBackPress, onRightPress, showNotificationIcon }) => {
+const Header = ({ title, onBackPress, onRightPress, showNotificationIcon,containerStyle,titleStyle }) => {
   return (
-    <View style={styles.header}>
+    <View style={[styles.header,{...containerStyle}]}>
       {/* Back button */}
     <TouchableOpacity style={styles.arrowView} onPress={onBackPress}>
         <Icon name="chevron-back" size={16} color={appColors.black} />
       </TouchableOpacity>
 
       {/* Centered title */}
-      <Text style={styles.headerTitle}>{title}</Text>
+      <Text style={[styles.headerTitle,{...titleStyle}]}>{title}</Text>
 
       {/* Right icon or empty space */}
       {showNotificationIcon ? (

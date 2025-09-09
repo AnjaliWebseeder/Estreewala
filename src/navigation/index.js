@@ -24,6 +24,8 @@ import SignUp from '../screens/auth/signUp'
 import ForgotPassword from '../screens/auth/forgotPassword'
 import ChangePassword from '../screens/settings/changePassword'
 import LoginSecurity from '../screens/settings/userProfile'
+import LaundryServiceList from '../otherComponent/home/laundryServiceList'
+import LaundryService from '../otherComponent/home/laundryService'
 
 const Stack = createNativeStackNavigator();
 
@@ -71,11 +73,11 @@ export default function AppNavigation() {
         <Stack.Screen name="Faqs" component={Faqs} />
         <Stack.Screen name="ManageAddress" component={ManageAddress} />
         <Stack.Screen name="Settings" component={Settings} />
-           <Stack.Screen name="Search" component={Search} />
-            <Stack.Screen name="ChangePassword" component={ChangePassword} />
-              <Stack.Screen name="LoginSecurity" component={LoginSecurity} />
-           
-           
+        <Stack.Screen name="Search" component={Search} />
+        <Stack.Screen name="ChangePassword" component={ChangePassword} />
+        <Stack.Screen name="LoginSecurity" component={LoginSecurity} />
+        <Stack.Screen name="LaundryServiceList" component={ LaundryServiceList} />
+        <Stack.Screen name="LaundryService" component={ LaundryService} />
       </Stack.Navigator>
 
       <SimpleDrawer 

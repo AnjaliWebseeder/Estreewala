@@ -11,7 +11,7 @@ export const Home = ({navigation}) => {
     <ScrollView contentContainerStyle={styles.contentContainerStyle}  style={styles.container} showsVerticalScrollIndicator={false}>
      <View style={styles.mainView}>
        <Header navigation={navigation}/>
-        <ServiceList />
+        <ServiceList navigation={navigation} />
      </View>
      <BannerOffer />
     <PopularLaundry />

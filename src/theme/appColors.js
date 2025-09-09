@@ -11,7 +11,8 @@ const appColors = {
   lightBorder:'#f0f0f0',
   lightBlue:"#f6fbff",
   card:"#f0f6ff",
-  error:"#EF4444"
+  error:"#EF4444",
+  lightFont:"#9AA0A6"
 }
 
 export default appColors;

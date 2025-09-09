@@ -15,5 +15,20 @@ module.exports = {
   offer2:require('../../assets/images/offer2.png'),
   deliveryman: require('../../assets/images/deliveryman.png'),
   delivery: require('../../assets/images/delivery.png'),
-  socksClean: require('../../assets/images/socksClean.png')
+  socksClean: require('../../assets/images/socksClean.png'),
+  service: require('../../assets/images/service.png'),
+  service1: require('../../assets/images/service1.png'),
+  service2: require('../../assets/images/service2.png'),
+  service3: require('../../assets/images/service3.png'),
+  service4: require('../../assets/images/service4.png'),
+    service5: require('../../assets/images/service5.png'),
+     service6: require('../../assets/images/service6.png'),
+      service7: require('../../assets/images/service7.png'),
+        service8: require('../../assets/images/service8.png'),
+         service9: require('../../assets/images/service9.png'),
+             service10: require('../../assets/images/service10.png'),
+      
+        
+  
+  
 }

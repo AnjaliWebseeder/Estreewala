@@ -1,0 +1,177 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import FastImage from 'react-native-fast-image';
+import FilterModal from '../filterModal';
+import Header from '../../../components/header';
+import SearchBar from '../../../components/searchBar';
+import {styles} from './styles'
+import appColors from '../../../theme/appColors';
+import { service , service1, service2, service3, service4 } from '../../../utils/images/images';
+
+
+// Laundry Card Component
+const LaundryCard = ({ laundry , navigation }) => {
+  return (
+    <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('LaundryService') } style={styles.card}>
+   <View style={styles.imageWrapper}>
+      <FastImage
+        source={ laundry.image}
+        style={styles.cardImage}
+        resizeMode="cover"
+      /> 
+   </View>
+      <View style={styles.cardContent}>
+        <Text style={styles.cardTitle}>{laundry.name}</Text>
+        <Text style={styles.cardLocation}>{laundry.location}</Text>
+        
+        {/* Delivery Info */}
+        <View style={styles.deliveryInfo}>
+          <Icon name="delivery-dining" size={16} color={appColors.font} />
+          <Text style={styles.deliveryText}>{laundry.deliveryTime}</Text>
+          <Text style={styles.distanceText}>• {laundry.distance}</Text>
+        </View>
+
+        {/* Dashed line below delivery info */}
+        <View style={styles.dashedLine} />
+
+        {/* Rating Section */}
+        <View style={styles.ratingRow}>
+          <View style={styles.ratingBadge}>
+          <Icon style={styles.iconStyle} name="star" size={14} color="#FFD700" />
+            <Text style={styles.ratingBadgeText}>
+              {laundry.rating.toFixed(1)}
+            </Text>
+          </View>
+          <Text style={styles.ratingsCount}>{laundry.ratingsCount} Rated</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+
+// Main Component
+const LaundryServiceList = ({ navigation }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filteredLaundries, setFilteredLaundries] = useState([]);
+
+  // Sample data
+  const laundryData = [
+    {
+      id: 1,
+      name: "QuickClean Laundry",
+      location: "Central Park",
+      deliveryTime: "Delivery in 1 hour",
+      distance: "1.5 km",
+      rating: 4.0,
+      ratingsCount: 256,
+      image:service
+    },
+    {
+      id: 2,
+      name: "Sparkle Wash",
+      location: "Jamsom",
+      deliveryTime: "Delivery in 1 hour",
+      distance: "1.5 km",
+      rating: 5.0,
+      ratingsCount: 112,
+      image: service1
+    },
+    {
+      id: 3,
+      name: "FreshFold Express",
+      location: "Central Park",
+      deliveryTime: "Delivery in 1 hour",
+      distance: "1.5 km",
+      rating: 5.0,
+      ratingsCount: 225,
+      image: service2
+    },
+    {
+      id: 4,
+      name: "UrbanWash Hub",
+      location: "Central Park",
+      deliveryTime: "Delivery in 1 hour",
+      distance: "1.5 km",
+      rating: 5.0,
+      ratingsCount: 256,
+      image: service3
+    },
+    {
+      id: 5,
+      name: "Mr. Neat Laundry Co.",
+      location: "Jamsom",
+      deliveryTime: "Delivery in 2 hours",
+      distance: "2.2 km",
+      rating: 4.5,
+      ratingsCount: 189,
+      image: service4
+    }
+  ];
+
+  useEffect(() => {
+    setFilteredLaundries(laundryData);
+  }, []);
+
+  const applyFilters = (filters) => {
+    let filtered = laundryData;
+    if (filters.rating > 0) {
+      filtered = filtered.filter(item => item.rating >= filters.rating);
+    }
+    if (filters.deliveryTime) {
+      const time = parseInt(filters.deliveryTime);
+      filtered = filtered.filter(item => {
+        const itemTime = parseInt(item.deliveryTime);
+        return itemTime <= time;
+      });
+    }
+    if (filters.distance) {
+      // Simple distance filtering logic
+      const maxDistance = filters.distance.includes('Under') ? 1 :
+        filters.distance.includes('1-3') ? 3 : 5;
+      filtered = filtered.filter(item => {
+        const itemDistance = parseFloat(item.distance);
+        return itemDistance <= maxDistance;
+      });
+    }
+    setFilteredLaundries(filtered);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Header
+        title="Dry Wash"
+        onBackPress={() => navigation.goBack()}
+        containerStyle={{ justifyContent: "flex-start"}}
+        titleStyle={{marginHorizontal:20}}
+      />
+    <SearchBar
+  value={searchQuery}
+  onChangeText={setSearchQuery}
+  placeholder="Search"
+  onFilterPress={() => setShowFilters(true)}
+  showFilter={true}
+/>
+      <Text style={styles.searchTitle}>Laundry near me</Text>
+      <ScrollView contentContainerStyle={styles.contentContainerStyle} style={styles.listContainer} showsVerticalScrollIndicator={false}>
+        {filteredLaundries.map((laundry) => (
+          <LaundryCard key={laundry.id} laundry={laundry} navigation={navigation} />
+        ))}
+      </ScrollView>
+      <FilterModal
+        visible={showFilters}
+        onClose={() => setShowFilters(false)}
+        onApplyFilters={applyFilters}
+      />
+    </View>
+  );
+};
+
+export default LaundryServiceList;
