@@ -55,28 +55,7 @@ export default function FilterModal ({ visible, onClose, onApplyFilters }) {
             </View>
           </View>
 
-          <View style={[styles.filterSection,{marginBottom:12}]}>
-            <Text style={[styles.filterLabel,{marginBottom:10}]}>Delivery Time</Text>
-            <View style={styles.optionsContainer}>
-              {['1 hour', '2 hours', '3 hours', '4+ hours'].map((time) => (
-                <TouchableOpacity
-                  key={time}
-                  style={[
-                    styles.optionButton,
-                    deliveryTime === time && styles.optionButtonSelected
-                  ]}
-                  onPress={() => setDeliveryTime(time)}
-                >
-                  <Text style={[
-                    styles.optionText,
-                    deliveryTime === time && styles.optionTextSelected
-                  ]}>
-                    {time}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
+       
 
           <View style={styles.filterSection}>
             <Text style={styles.filterLabel}>Distance</Text>

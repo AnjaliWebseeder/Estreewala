@@ -7,7 +7,7 @@ import AuthFooter from '../../../components/auth/authFooter';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {styles} from './styles'
 
-const SignUpScreen = () => {
+const SignUpScreen = ({}) => {
   const navigation = useNavigation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -16,6 +16,7 @@ const SignUpScreen = () => {
 
   const handleSignUp = () => {
     console.log('Sign up with:', { name, email, password, confirmPassword });
+     navigation.navigate("SignIn");
     // Handle sign up logic
   };
 

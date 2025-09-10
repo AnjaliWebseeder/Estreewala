@@ -5,8 +5,10 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Header from '../../../components/header';
 import { styles } from './styles';
 import appColors from '../../../theme/appColors';
+import { useAuth } from '../../../utils/context/authContext';
 
 const ChangePasswordScreen = ({ navigation }) => {
+    const { userToken, userLocation, isLoading } = useAuth();
   const [passwords, setPasswords] = useState({
     currentPassword: '',
     newPassword: '',
@@ -67,9 +69,12 @@ const ChangePasswordScreen = ({ navigation }) => {
     // Simulate password change
     // In a real app, you would call your API here
     console.log('Password changed successfully');
-    
+    userToken ? navigation.goBack() :
     // Navigate back after successful password change
-    navigation.goBack();
+   navigation.reset({
+  index: 0,
+  routes: [{ name: "SignIn" }],
+});
   };
 
   const togglePasswordVisibility = (field) => {

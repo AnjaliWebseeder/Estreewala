@@ -28,13 +28,15 @@ const LaundryCard = ({ laundry , navigation }) => {
    </View>
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>{laundry.name}</Text>
-        <Text style={styles.cardLocation}>{laundry.location}</Text>
+      <View style={styles.deliveryInfo}>
+          <Icon style={styles.locationIcon} name="location-on" size={16} color={"#878787ff"} />
+          <Text style={styles.cardLocation}>{laundry.location}</Text>
+      </View>
         
         {/* Delivery Info */}
         <View style={styles.deliveryInfo}>
-          <Icon name="delivery-dining" size={16} color={appColors.font} />
-          <Text style={styles.deliveryText}>{laundry.deliveryTime}</Text>
-          <Text style={styles.distanceText}>• {laundry.distance}</Text>
+          <Icon name="access-time" size={14} color={appColors.font} />
+          <Text style={styles.deliveryText}>{laundry.time}{" "}<Text style={styles.dash}> | </Text>{" "}{laundry.distance}</Text>
         </View>
 
         {/* Dashed line below delivery info */}
@@ -67,8 +69,8 @@ const LaundryServiceList = ({ navigation }) => {
     {
       id: 1,
       name: "QuickClean Laundry",
-      location: "Central Park",
-      deliveryTime: "Delivery in 1 hour",
+      location: "No 6,Akok road,yaba",
+      time: "9AM - 11 PM",
       distance: "1.5 km",
       rating: 4.0,
       ratingsCount: 256,
@@ -78,17 +80,17 @@ const LaundryServiceList = ({ navigation }) => {
       id: 2,
       name: "Sparkle Wash",
       location: "Jamsom",
-      deliveryTime: "Delivery in 1 hour",
+      time: "9AM - 11 PM",
       distance: "1.5 km",
       rating: 5.0,
       ratingsCount: 112,
-      image: service1
+      image: service3
     },
     {
       id: 3,
       name: "FreshFold Express",
-      location: "Central Park",
-      deliveryTime: "Delivery in 1 hour",
+      location: "No 6,Akok road,yaba",
+      time: "9AM - 11 PM",
       distance: "1.5 km",
       rating: 5.0,
       ratingsCount: 225,
@@ -97,18 +99,18 @@ const LaundryServiceList = ({ navigation }) => {
     {
       id: 4,
       name: "UrbanWash Hub",
-      location: "Central Park",
-      deliveryTime: "Delivery in 1 hour",
+      location: "No 6,Akok road,yaba",
+      time: "9AM - 11 PM",
       distance: "1.5 km",
       rating: 5.0,
       ratingsCount: 256,
-      image: service3
+      image: service1
     },
     {
       id: 5,
       name: "Mr. Neat Laundry Co.",
       location: "Jamsom",
-      deliveryTime: "Delivery in 2 hours",
+      time: "9AM - 11 PM",
       distance: "2.2 km",
       rating: 4.5,
       ratingsCount: 189,
@@ -125,10 +127,10 @@ const LaundryServiceList = ({ navigation }) => {
     if (filters.rating > 0) {
       filtered = filtered.filter(item => item.rating >= filters.rating);
     }
-    if (filters.deliveryTime) {
-      const time = parseInt(filters.deliveryTime);
+    if (filters.time) {
+      const time = parseInt(filters.time);
       filtered = filtered.filter(item => {
-        const itemTime = parseInt(item.deliveryTime);
+        const itemTime = parseInt(item.time);
         return itemTime <= time;
       });
     }

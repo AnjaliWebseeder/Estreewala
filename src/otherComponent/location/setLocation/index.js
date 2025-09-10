@@ -10,6 +10,17 @@ import {styles} from './styles'
 const SetLocationScreen = () => {
   const navigation = useNavigation();
 
+  
+  const handleAutoDetect = () => {
+    // Navigate directly to ConfirmLocation which will auto-detect
+    navigation.navigate('ConfirmLocation');
+  };
+
+  const handleManualSearch = () => {
+    // Navigate to search location screen
+    navigation.navigate('SearchLocation');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Skip Button */}
@@ -17,7 +28,7 @@ const SetLocationScreen = () => {
         style={styles.skipButton}
         onPress={() => navigation.navigate('MainDrawer')}
       >
-        <Text style={styles.skipText}>Skip</Text>
+        {/* <Text style={styles.skipText}>Skip</Text> */}
       </TouchableOpacity>
 
       {/* Content */}

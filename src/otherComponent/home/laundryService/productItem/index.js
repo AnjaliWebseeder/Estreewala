@@ -8,6 +8,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import CustomDropdown from '../../../../components/dropdown'
 import {styles} from './styles'
 import FastImage from "react-native-fast-image";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default function ProductItem({
   product,
@@ -27,7 +28,7 @@ export default function ProductItem({
 
       <View style={styles.info}>
         <Text style={styles.name}>{product.name}</Text>
-        <Text style={styles.price}>₹ {product.price.toFixed(2)}</Text>
+        <Text style={styles.price}>  <Icon name="currency-rupee" size={12} color={"#7B7F86"} />{product.price.toFixed(2)}</Text>
 
         <View style={{ marginTop: 8 }}>
           <CustomDropdown

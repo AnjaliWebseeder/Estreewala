@@ -18,7 +18,7 @@ import OtpInput from './otpInput/index';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {styles} from './styles'
 import {countries} from '../../../utils/data/index'
-
+import {useAuth} from '../../../utils/context/authContext'
 const PhoneLoginScreen = () => {
   const navigation = useNavigation();
   const [phone, setPhone] = useState('');
@@ -30,6 +30,7 @@ const PhoneLoginScreen = () => {
   const [showCountryPicker, setShowCountryPicker] = useState(false);
   const phoneInputRef = useRef();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+    const {  login } = useAuth();
 
   // Countdown timer for resend OTP
   useEffect(() => {
@@ -54,8 +55,9 @@ const PhoneLoginScreen = () => {
     }).start();
   };
 
-  const handleVerifyOtp = () => {
+  const handleVerifyOtp =  async () => {
     console.log('Verify OTP:', otp);
+      await login('user_token_here'); // Save token
     navigation.navigate('SetLocation')
     // Handle OTP verification logic
   };

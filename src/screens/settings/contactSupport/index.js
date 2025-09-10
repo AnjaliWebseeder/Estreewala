@@ -30,7 +30,7 @@ export default function ContactSupport({ navigation }) {
   };
 
   const handleSubmit = () => {
-  
+     navigation.goBack()
   };
 
 

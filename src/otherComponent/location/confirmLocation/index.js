@@ -1,3 +1,4 @@
+// otherComponent/location/confirmLocation.js
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
@@ -16,10 +17,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import WebView from 'react-native-webview';
 import { styles } from './styles';
 import appColors from '../../../theme/appColors';
+import { useAuth } from '../../../utils/context/authContext';
 
 const ConfirmLocationScreen = ({ route }) => {
   const { selectedLocation } = route.params || {};
   const navigation = useNavigation();
+  const { saveLocation } = useAuth();
   const [location, setLocation] = useState(null);
   const [address, setAddress] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -128,8 +131,26 @@ const ConfirmLocationScreen = ({ route }) => {
     }
   };
 
-  const handleConfirmLocation = () => {
-    navigation.navigate("MainDrawer");
+  const handleConfirmLocation = async () => {
+    if (location) {
+      try {
+        // Save the location to context and storage
+        await saveLocation({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          address: address
+        });
+        
+        // Navigate to main app
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Main" }],
+        });
+      } catch (error) {
+        console.error("Error saving location:", error);
+        Alert.alert("Error", "Could not save your location.");
+      }
+    }
   };
 
   const openInMapsApp = () => {

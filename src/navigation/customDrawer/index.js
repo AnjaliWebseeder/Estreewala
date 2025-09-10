@@ -6,20 +6,29 @@ import appColors from "../../theme/appColors";
 import { useNavigation } from '@react-navigation/native';
 import {BellIcon} from '../../assets/Icons/svg/bell'
 import HelpSupportIcon from '../../assets/Icons/svg/helpSupport'
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "../../utils/context/authContext";
 const CustomDrawerContent = (props) => {
+
+  const {logout} = useAuth()
   const handleRateApp = () => {
     Linking.openURL('market://details?id=your.package.name');
   };
     const navigation = useNavigation(); // Use the actual navigation object
-    const handleLogout = () => {
-   props.navigation.closeDrawer();
-     navigation.reset({
-              index: 0,
-              routes: [{ name: 'SignIn' }],
-            });
-          }
+ 
+// In your CustomDrawerContent component
+const handleLogout = async () => {
+  try {
+    props.navigation.closeDrawer();
 
+    await AsyncStorage.removeItem("userToken");
+    await logout()
+
+
+  } catch (error) {
+    console.log("Logout error:", error);
+  }
+};
 
   return (
     <View style={styles.container}>

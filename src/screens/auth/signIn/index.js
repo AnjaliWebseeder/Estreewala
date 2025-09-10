@@ -6,18 +6,25 @@ import InputField from '../../../components/auth/inputField';
 import AuthFooter from '../../../components/auth/authFooter';
 import { styles } from './styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {useAuth} from '../../../utils/context/authContext'
 
 
 const SignInScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const {  login } = useAuth();
 
-  const handleSignIn = () => {
-    console.log('Sign in with:', { email, password });
-    // Handle sign in logic
+ const handleSignIn = async () => {
+     try {
+      await login('user_token_here'); // Save token
+        console.log('Sign in with:', { email, password });
+          navigation.navigate('SetLocation')
+    } catch (error) {
+      console.log('Login error:', error);
+    }
   };
-  
+
   return (
     <SafeAreaView style={styles.container}>
           <ScrollView  
@@ -48,7 +55,7 @@ const SignInScreen = () => {
                 secureTextEntry={true}
               />
 
-              <TouchableOpacity onPress={() => navigation.navigate('forgotPassword')} style={styles.forgotPassword}>
+              <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')} style={styles.forgotPassword}>
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
 

@@ -139,11 +139,7 @@ export default function ManageAddress({ navigation, route }) {
     const selected = addresses.find(addr => addr.id === selectedAddress);
     if (selected) {
       // Navigate back with selected address or perform other actions
-      navigation.navigate({
-        name: 'PreviousScreen',
-        params: { selectedAddress: selected },
-        merge: true,
-      });
+  navigation.goBack()
     }
   };
 

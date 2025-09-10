@@ -31,7 +31,7 @@ export const styles = StyleSheet.create({
     borderColor: appColors.blue,
     borderRadius: 20,
     paddingHorizontal: 18,
-    paddingVertical: windowHeight(2),
+    paddingVertical: windowHeight(1),
     backgroundColor: "#fff",
   },
   addText: { color: appColors.blue, fontFamily:fonts.PoppinsRegular,paddingTop:2},

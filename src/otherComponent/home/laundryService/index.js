@@ -11,22 +11,36 @@ import CustomDropdown from "../../../components/dropdown";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../../components/header";
 import {styles} from './styles'
-import { service5,service6,service7,service8,service9,service10} from "../../../utils/images/images";
+import { service5,service6,service7,service8,service9,service10,service11,service12,service13,service14,service15,service16,service17,service18,service19} from "../../../utils/images/images";
+import fonts from "../../../theme/appFonts";
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import appColors from "../../../theme/appColors";
+import { useNavigation } from '@react-navigation/native';
 
 const PRODUCT_DATA = {
   men: [
-    { id: "1", name: "Formal Shirt", price: 5, image:service6},
-    { id: "2", name: "Casual Shirt", price: 8, image: service5},
+    { id: "1", name: "Formal Shirt", price: 5, image: service6 },
+    { id: "2", name: "Casual Shirt", price: 8, image: service5 },
+    { id: "3", name: "Jeans", price: 12, image: service11 },
+    { id: "4", name: "Trousers", price: 10, image: service12 },
+    { id: "5", name: "Suit", price: 25, image: service13 },
+    { id: "6", name: "Jacket", price: 18, image: service14 },
   ],
   women: [
-    { id: "3", name: "Dress", price: 15, image: service7 },
-    { id: "4", name: "Blouse", price: 12, image: service8 },
+    { id: "7", name: "Dress", price: 15, image: service7 },
+    { id: "8", name: "Blouse", price: 12, image: service8 },
+    { id: "9", name: "Saree", price: 20, image: service15 },
+    { id: "10", name: "Skirt", price: 10, image: service16 },
+    { id: "11", name: "Kurti", price: 14, image: service17 },
+    { id: "12", name: "Jacket", price: 16, image: service18 },
   ],
   kids: [
-    { id: "5", name: "Tshirt", price: 10, image: service9 },
-    { id: "6", name: "Joggers", price: 10, image: service10 },
+    { id: "13", name: "Tshirt", price: 10, image: service9 },
+    { id: "14", name: "Joggers", price: 10, image: service10 },
+    { id: "15", name: "School Uniform", price: 12, image: service19 },
   ],
 };
+
 
 const SERVICES = [
   { label: "Wash & Iron", value: "wash_iron" },
@@ -101,10 +115,10 @@ const PRODUCTS = PRODUCT_DATA[category];
       </View>
      <View style={styles.dashedLine}/>
       <View style={styles.metaRow}>
-        <Text style={styles.meta}>⭐ 4.0</Text>
-        <Text style={styles.meta}>🚴 Delivery · 1 Hour</Text>
+        <Text style={styles.meta}>⭐ {" "}4.0</Text>
+       <Text style={styles.meta}>🕒 {" "}9 AM - 11 PM</Text>
       </View>
-          <View style={{ paddingHorizontal: 18, marginBottom: 8,flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}>
+          <View style={{ paddingHorizontal: 18, marginBottom:0,flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}>
             <Text style={styles.categoryTitle}>Choose Service</Text>
   <CustomDropdown
     options={CATEGORIES}
@@ -136,12 +150,14 @@ const PRODUCTS = PRODUCT_DATA[category];
         <View style={styles.cartBar}>
           <View>
             <Text style={styles.cartTitle}>
-              {totalItems} Item{totalItems > 1 ? "s" : ""} • ₹{totalPrice.toFixed(2)}
+              {totalItems} Item{totalItems > 1 ? "s" : ""} • <Text style={{fontFamily:fonts.PoppinsRegular}}>
+                <Icon name="currency-rupee" size={13} color={appColors.white} />
+                </Text>{totalPrice.toFixed(2)}
             </Text>
             <Text style={styles.cartSub}>Extra charges may apply</Text>
           </View>
 
-          <TouchableOpacity style={styles.cartBtn} activeOpacity={0.85}>
+          <TouchableOpacity onPress={() => navigation.navigate('LaundryCheckoutScreen') } style={styles.cartBtn} activeOpacity={0.85}>
             <Text style={styles.cartBtnText}>View Cart</Text>
           </TouchableOpacity>
         </View>

@@ -68,6 +68,10 @@ export const styles = StyleSheet.create({
     marginBottom: 2,
      fontFamily:fonts.PoppinsRegular,
   },
+  locationIcon:{
+  marginRight:3,
+  marginBottom:2
+  },
   deliveryInfo: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -79,11 +83,9 @@ export const styles = StyleSheet.create({
       fontFamily:fonts.PoppinsSemiBold,
     marginLeft: 6,
   },
-  distanceText: {
-        fontSize: fontSizes.FONT13,
-color: appColors.font,
-    marginLeft: 8,
-     fontFamily:fonts.PoppinsSemiBold,
+  dash:{
+    color:"#888",
+    fontFamily:fonts.PoppinsRegular
   },
 
   // 🔹 New dashed line style

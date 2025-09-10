@@ -12,7 +12,7 @@ const ForgotPasswordScreen = () => {
 
   const handleResetPassword = () => {
     console.log('Reset password for:', { email });
-    navigation.navigate('SignIn')
+    navigation.navigate('ChangePassword')
     // Handle reset password logic
     // After successful request, you might navigate to a confirmation screen
   };
