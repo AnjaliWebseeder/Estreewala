@@ -33,7 +33,7 @@ const laundries = [
   },
 ];
 
-const PopularLaundry = () => {
+const PopularLaundry = (props) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -50,7 +50,7 @@ const PopularLaundry = () => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
-          <TouchableOpacity activeOpacity={0.9} style={styles.card}>
+          <TouchableOpacity onPress={() => props.navigation.navigate('LaundryScreen')} activeOpacity={0.9} style={styles.card}>
             <View style={styles.imageContainer}>
               <Image source={item.image} style={styles.image} />
              

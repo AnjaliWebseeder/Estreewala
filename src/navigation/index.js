@@ -31,6 +31,8 @@ import LoginSecurity from '../screens/settings/userProfile';
 import LaundryServiceList from '../otherComponent/home/laundryServiceList';
 import LaundryService from '../otherComponent/home/laundryService';
 import LaundryCheckoutScreen from '../screens/checkOut'
+import OrderConfirmation from '../screens/order/orderConfirm';
+import LaundryScreen from '../otherComponent/home/laundryService';
 
 const Stack = createNativeStackNavigator();
 
@@ -68,14 +70,12 @@ export default function AppNavigation() {
   return (
    <>
      <Stack.Navigator
-        // initialRouteName={getInitialRoute()}
+        initialRouteName={getInitialRoute()}
         screenOptions={{
           headerShown: false,
         }}
       >
-
-           <Stack.Screen name="LaundryCheckoutScreen" component={LaundryCheckoutScreen} />
-        {/* {userToken ? (
+      {userToken ? (
          
           userLocation ? (
             <>
@@ -94,8 +94,10 @@ export default function AppNavigation() {
               <Stack.Screen name="ChangePassword" component={ChangePassword} />
               <Stack.Screen name="LoginSecurity" component={LoginSecurity} />
               <Stack.Screen name="LaundryServiceList" component={LaundryServiceList} />
+                 <Stack.Screen name="LaundryScreen" component={LaundryScreen} />
               <Stack.Screen name="LaundryService" component={LaundryService} />
               <Stack.Screen name="LaundryCheckoutScreen" component={LaundryCheckoutScreen} />
+              <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} />
               
             </>
           ) : (
@@ -135,7 +137,7 @@ export default function AppNavigation() {
               <Stack.Screen name="SetLocation" component={SetLocation} />
               <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
           </>
-        )} */}
+        )} 
       </Stack.Navigator>
 
       <SimpleDrawer isOpen={isOpen} onClose={closeDrawer}>

@@ -14,7 +14,7 @@ export const Home = ({navigation}) => {
         <ServiceList navigation={navigation} />
      </View>
      <BannerOffer />
-    <PopularLaundry />
+    <PopularLaundry navigation={navigation} />
     </ScrollView>
   );
 };

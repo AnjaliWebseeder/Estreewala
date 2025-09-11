@@ -1,42 +1,141 @@
-import React, { useState } from "react";
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  ScrollView, 
-  StyleSheet, 
-  TextInput,
-  Modal,
-  FlatList
-} from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, TextInput } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { TouchableOpacity } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ArrowIcon from "react-native-vector-icons/Feather";
+
+// Import components
+import { AddressCard } from '../../otherComponent/checkout/addressCard'
+import { AddressModal } from "../../otherComponent/checkout/addressModal";
+import { ScheduleModal } from '../../otherComponent/checkout/scheduleModal'
+import { CouponModal } from '../../otherComponent/checkout/couponModal'
+import { PaymentModal } from '../../otherComponent/checkout/paymentModal'
+import ConfirmationModal from '../../otherComponent/checkout/confirmationModal'
+import EmptyCart from '../../otherComponent/checkout/emptyCart'
+import OrderItem from '../../otherComponent/checkout/OrderItem'
+
+// Import styles
+import { styles } from './styles';
+import Header from "../../components/header";
 import appColors from "../../theme/appColors";
 import fonts from "../../theme/appFonts";
-import PickupDropModal from '../../otherComponent/checkout/pickupDropModal'
-import PaymentModal from '../../otherComponent/checkout/paymentModal'
+import { fontSizes } from "../../theme/appConstant";
 
-const LaundryCheckoutScreen = () => {
+const LaundryCheckoutScreen = ({ navigation }) => {
+  const [addressModalVisible, setAddressModalVisible] = useState(false);
   const [pickupModalVisible, setPickupModalVisible] = useState(false);
   const [dropModalVisible, setDropModalVisible] = useState(false);
-  const [paymentModalVisible, setPaymentModalVisible] = useState(false);
-  const [instructionModalVisible, setInstructionModalVisible] = useState(false);
   const [couponModalVisible, setCouponModalVisible] = useState(false);
-  const [addressModalVisible, setAddressModalVisible] = useState(false);
-  const [instruction, setInstruction] = useState("");
-  const [couponCode, setCouponCode] = useState("");
-  const [selectedAddress, setSelectedAddress] = useState({
-    id: 1,
-    name: "Home",
-    address: "B101, Nirvana Point, Hamilton",
-    isDefault: true
-  });
+  const [paymentModalVisible, setPaymentModalVisible] = useState(false);
+  const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'info' });
+  
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState("B 101, Nirvana Point, Hemllition");
+  const [selectedPickupDate, setSelectedPickupDate] = useState(new Date());
+  const [selectedDropDate, setSelectedDropDate] = useState(new Date(Date.now() + 24 * 60 * 60 * 1000));
+  const [selectedPickupSlot, setSelectedPickupSlot] = useState(null);
+  const [selectedDropSlot, setSelectedDropSlot] = useState(null);
+  const [couponCode, setCouponCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [selectedPayment, setSelectedPayment] = useState('card');
+  const [orderNote, setOrderNote] = useState('');
+  
+  const timeSlots = [
+    { id: '1', time: '09:00 AM - 11:00 AM' },
+    { id: '2', time: '11:00 AM - 01:00 PM' },
+    { id: '3', time: '01:00 PM - 03:00 PM' },
+    { id: '4', time: '03:00 PM - 05:00 PM' },
+    { id: '5', time: '05:00 PM - 07:00 PM' },
+    { id: '6', time: '07:00 PM - 09:00 PM' },
+  ];
+
   const [items, setItems] = useState([
-    { id: 1, name: "Formal Shirt", price: 5.00, service: "Wash & Iron", quantity: 1 },
-    { id: 2, name: "Tshirt", price: 8.00, service: "Wash & Iron", quantity: 1 }
+    { id: 1, name: "Formal Shirt", price: 5.00, service: "Wash & Iron", quantity: 2 },
+    { id: 2, name: "Tshirt", price: 8.00, service: "Wash & Iron", quantity: 3 }
   ]);
-  const [pickupDate, setPickupDate] = useState("20 Jun, 15:00 AM");
-  const [dropDate, setDropDate] = useState("20 Jun, 08:00 PM");
-  const [selectedPayment, setSelectedPayment] = useState("PayPal");
+
+  // Show toast message
+  const showToast = (message, type = 'info') => {
+    setToast({ visible: true, message, type });
+    setTimeout(() => setToast({ visible: false, message: '', type: 'info' }), 3000);
+  };
+
+  // Load addresses from AsyncStorage and current location
+  useEffect(() => {
+    loadAddresses();
+    loadCurrentLocation();
+  }, []);
+
+  const loadAddresses = async () => {
+    try {
+      const savedAddresses = await AsyncStorage.getItem('userAddresses');
+      if (savedAddresses) {
+        const addressesData = JSON.parse(savedAddresses);
+        setAddresses(addressesData);
+        
+        const defaultAddress = addressesData.find(addr => addr.isDefault);
+        if (defaultAddress) {
+          setSelectedAddress(defaultAddress);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading addresses:', error);
+      showToast('Error loading addresses', 'error');
+    }
+  };
+
+  const loadCurrentLocation = async () => {
+    try {
+      const currentLocation = await AsyncStorage.getItem('currentLocation');
+      if (currentLocation) {
+        const locationData = JSON.parse(currentLocation);
+        
+        const currentLocationAddress = {
+          id: 'current',
+          name: 'Current Location',
+          address: locationData.address,
+          isCurrent: true,
+          isDefault: !selectedAddress
+        };
+        
+        setAddresses(prev => {
+          const exists = prev.find(addr => addr.id === 'current');
+          if (!exists) {
+            return [currentLocationAddress, ...prev];
+          }
+          return prev;
+        });
+        
+        if (!selectedAddress) {
+          setSelectedAddress(currentLocationAddress);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading current location:', error);
+    }
+  };
+
+  // Date validation logic
+  const validateDates = (pickupDate, dropDate, pickupSlot, dropSlot) => {
+    if (pickupDate > dropDate) {
+      showToast('Delivery date cannot be before pickup date', 'error');
+      return false;
+    }
+    
+    if (pickupDate.toDateString() === dropDate.toDateString()) {
+      const pickupTime = parseInt(pickupSlot.time.split(':')[0]);
+      const dropTime = parseInt(dropSlot.time.split(':')[0]);
+      
+      if (dropTime <= pickupTime) {
+        showToast('Delivery time must be after pickup time', 'error');
+        return false;
+      }
+    }
+    
+    return true;
+  };
 
   const updateQuantity = (id, change) => {
     setItems(items.map(item => 
@@ -46,826 +145,335 @@ const LaundryCheckoutScreen = () => {
     ));
   };
 
+  const removeItem = (id) => {
+    setItems(items.filter(item => item.id !== id));
+    showToast('Item removed from cart', 'info');
+  };
+
+  const showClearAllConfirmation = () => {
+    setConfirmationModalVisible(true);
+  };
+
+  const clearAllItems = () => {
+    setItems([]);
+    setConfirmationModalVisible(false);
+    showToast('All items removed from cart', 'info');
+  };
+
+  const applyCoupon = (code) => {
+    if (code === 'WELCOME10') {
+      setDiscount(calculateSubtotal() * 0.1);
+      showToast('Coupon applied successfully! 10% discount', 'success');
+    } else if (code === 'CLEAN15') {
+      const subtotal = calculateSubtotal();
+      if (subtotal > 30) {
+        setDiscount(subtotal * 0.15);
+        showToast('Coupon applied successfully! 15% discount', 'success');
+      } else {
+        showToast('This coupon requires order above $30', 'error');
+        setCouponCode('');
+        setDiscount(0);
+      }
+    } else if (code) {
+      showToast('The coupon code is not valid', 'error');
+      setCouponCode('');
+      setDiscount(0);
+    } else {
+      setDiscount(0);
+    }
+  };
+
+  const calculateSubtotal = () => {
+    return items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  };
+
   const calculateTotal = () => {
-    const itemTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const deliveryFee = 2.50;
-    const taxes = 1.50;
-    const discount = couponCode ? 2.00 : 0; // Example discount
+    const subtotal = calculateSubtotal();
+    const deliveryFee = items.length > 0 ? 2.50 : 0;
+    const taxes = subtotal * 0.08;
+    const total = subtotal + deliveryFee + taxes - discount;
+    
     return {
-      itemTotal: itemTotal.toFixed(2),
+      subtotal: subtotal.toFixed(2),
       deliveryFee: deliveryFee.toFixed(2),
       taxes: taxes.toFixed(2),
       discount: discount.toFixed(2),
-      total: (itemTotal + deliveryFee + taxes - discount).toFixed(2)
+      total: total.toFixed(2)
     };
+  };
+
+  const handleConfirmPayment = () => {
+    // if (!selectedAddress) {
+    //   showToast('Please select a delivery address', 'error');
+    //   return;
+    // }
+    
+    // if (!selectedPickupSlot || !selectedDropSlot) {
+    //   showToast('Please select pickup and delivery time slots', 'error');
+    //   return;
+    // }
+    
+    // if (!validateDates(selectedPickupDate, selectedDropDate, selectedPickupSlot, selectedDropSlot)) {
+    //   return;
+    // }
+    
+    // if (items.length === 0) {
+    //   showToast('Please add items to your cart', 'error');
+    //   return;
+    // }
+    
+    // showToast('Your laundry order has been placed successfully!', 'success');
+    setPaymentModalVisible(false);
+    
+    // In a real app, you would navigate to order confirmation screen
+    setTimeout(() => {
+      navigation.navigate('OrderConfirmation');
+    }, 1000);
   };
 
   const totals = calculateTotal();
 
+  const handleBrowseServices = () => {
+    navigation.navigate('Main');
+  };
+
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      {/* Header */}
+      <Header 
+        onBackPress={() => navigation.goBack()} 
+        title={"QuickClean Laundry"} 
+        titleStyle={styles.titleStyle} 
+        containerStyle={{ justifyContent: "flex-start" }}
+      />
+      <View style={styles.border}/>
+      
+      {items.length === 0 ? (
+        <EmptyCart onBrowseServices={handleBrowseServices} />
+      ) : (
+        <ScrollView contentContainerStyle={styles.contentContainerStyle} showsVerticalScrollIndicator={false}>
+          <View style={styles.sectionStyle}>
+            <View style={styles.row}>
+              <Icon name="home" size={20} color={appColors.blue} style={styles.iconStyle} />
+              <Text style={[styles.sectionTitle, {marginTop: 1}]}>Pick up and Drop to Home</Text>
+            </View>
+            <AddressCard 
+              address={selectedAddress}
+              onPress={() => setAddressModalVisible(true)}
+              showEdit={true}
+            /> 
+          </View>
 
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>QuickClean Laundry</Text>
-        </View>
-
-        {/* Address Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Delivery Address</Text>
-            <TouchableOpacity onPress={() => setAddressModalVisible(true)}>
-              <Text style={styles.changeText}>Change</Text>
-            </TouchableOpacity>
+          <View style={[styles.section, {paddingBottom: 7,paddingHorizontal:0}]}>
+            <View style={styles.horizontalBorder}/>
+            <View style={styles.scheduleRow}>
+              <TouchableOpacity 
+                style={styles.scheduleCard}
+                onPress={() => setPickupModalVisible(true)}
+              >
+                <ArrowIcon name="arrow-up-right" size={24} color={appColors.blue} />
+                <View style={styles.scheduleInfo}>
+                  <Text style={styles.scheduleLabel}>Pickup on</Text>
+                  <Text style={styles.scheduleDate}>
+                    {selectedPickupDate.toLocaleDateString('en-US', { 
+                      month: 'short', 
+                      day: 'numeric' 
+                    })}
+                  </Text>
+                  <Text style={[styles.scheduleDate, {fontSize: fontSizes.FONT14}]}>
+                    {selectedPickupSlot ? selectedPickupSlot.time : 'select time-slots'}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              
+              <View style={styles.verticalLine}/>
+              
+              <TouchableOpacity 
+                style={styles.scheduleCard}
+                onPress={() => setDropModalVisible(true)}
+              >
+                <ArrowIcon name="arrow-down-left" size={24} color={appColors.blue} />
+                <View style={styles.scheduleInfo}>
+                  <Text style={styles.scheduleLabel}>Delivery on</Text>
+                  <Text style={styles.scheduleDate}>
+                    {selectedDropDate.toLocaleDateString('en-US', { 
+                      month: 'short', 
+                      day: 'numeric' 
+                    })}
+                  </Text>
+                  <Text style={[styles.scheduleDate, {fontSize: fontSizes.FONT14HALF}]}>
+                    {selectedDropSlot ? selectedDropSlot.time : 'select time-slots'}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
           
-          <View style={styles.addressContainer}>
-            <View style={styles.addressBadge}>
-              <Text style={styles.addressBadgeText}>{selectedAddress.name}</Text>
+          <View style={styles.horizontalBorder}/>
+
+          <View style={[styles.section, {paddingVertical: 4}]}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+              <Text style={[styles.sectionTitle, {marginHorizontal: 10}]}>Order Items</Text>
+              <TouchableOpacity onPress={showClearAllConfirmation} style={styles.clearAllButton}>
+                <Icon name="delete" size={18} color="#e53935" />
+              </TouchableOpacity>
             </View>
-            <Text style={styles.addressText}>{selectedAddress.address}</Text>
-            {selectedAddress.isDefault && (
-              <Text style={styles.defaultText}>Default Address</Text>
-            )}
+            
+            {items.map((item) => (
+              <OrderItem 
+                key={item.id} 
+                item={item} 
+                onUpdateQuantity={updateQuantity}
+                onRemoveItem={removeItem}
+              />
+            ))}
           </View>
-        </View>
 
-        {/* Pickup & Drop Row */}
-        <View style={styles.row}>
-          <TouchableOpacity 
-            style={styles.timeBox} 
-            onPress={() => setPickupModalVisible(true)}
-          >
-            <Icon name="calendar-outline" size={20} color={appColors.primary} />
-            <Text style={styles.timeLabel}>Pickup on</Text>
-            <Text style={styles.timeValue}>{pickupDate}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.timeBox} 
-            onPress={() => setDropModalVisible(true)}
-          >
-            <Icon name="calendar-outline" size={20} color={appColors.primary} />
-            <Text style={styles.timeLabel}>Drop on</Text>
-            <Text style={styles.timeValue}>{dropDate}</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Items */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Order Items</Text>
-          {items.map((item) => (
-            <View key={item.id} style={styles.itemContainer}>
-              <View style={styles.itemRow}>
-                <View style={styles.itemInfo}>
-                  <Text style={styles.itemText}>{item.name}</Text>
-                  <Text style={styles.itemSubText}>{item.service}</Text>
-                </View>
-                <View style={styles.counter}>
-                  <TouchableOpacity 
-                    style={styles.counterBtn}
-                    onPress={() => updateQuantity(item.id, -1)}
-                  >
-                    <Text style={styles.counterText}>-</Text>
-                  </TouchableOpacity>
-                  <Text style={styles.qty}>{item.quantity}</Text>
-                  <TouchableOpacity 
-                    style={styles.counterBtn}
-                    onPress={() => updateQuantity(item.id, 1)}
-                  >
-                    <Text style={styles.counterText}>+</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <View style={styles.priceRow}>
-                <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
-                <Text style={styles.itemTotal}>${(item.price * item.quantity).toFixed(2)}</Text>
-              </View>
+          <View style={[styles.section, {marginHorizontal: 10}]}>
+            <View style={{flexDirection: "row", alignItems: "center"}}>
+              <Icon name="description" size={20} style={styles.iconStyle} color='#888' />
+              <TextInput
+                style={styles.orderNoteInput}
+                placeholder="Add Instructions (Optional)"
+                value={orderNote}
+                onChangeText={setOrderNote}
+                multiline
+                numberOfLines={5} 
+                textAlignVertical="top" 
+                placeholderTextColor={'#888'}
+              />
             </View>
-          ))}
-        </View>
-
-        {/* Add Instruction */}
-        <TouchableOpacity 
-          style={styles.addInstruction}
-          onPress={() => setInstructionModalVisible(true)}
-        >
-          <Icon name="create-outline" size={20} color={appColors.gray} />
-          <Text style={styles.addInstructionText}>
-            {instruction ? instruction : "Add Special Instructions"}
-          </Text>
-          <Icon name="chevron-forward" size={20} color={appColors.gray} />
-        </TouchableOpacity>
-
-        {/* Coupon */}
-        <TouchableOpacity 
-          style={styles.couponRow}
-          onPress={() => setCouponModalVisible(true)}
-        >
-          <Icon name="pricetag-outline" size={20} color={appColors.primary} />
-          <Text style={styles.couponText}>
-            {couponCode ? `Coupon: ${couponCode}` : "Apply Coupon"}
-          </Text>
-          <Icon name="chevron-forward" size={20} color={appColors.gray} />
-        </TouchableOpacity>
-
-        {/* Price Details */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Price Details</Text>
-          <View style={styles.priceRow}>
-            <Text style={styles.priceLabel}>Item total</Text>
-            <Text style={styles.priceValue}>${totals.itemTotal}</Text>
           </View>
-          <View style={styles.priceRow}>
-            <Text style={styles.priceLabel}>Delivery fee</Text>
-            <Text style={styles.priceValue}>${totals.deliveryFee}</Text>
-          </View>
-          <View style={styles.priceRow}>
-            <Text style={styles.priceLabel}>Taxes & Charges</Text>
-            <Text style={styles.priceValue}>${totals.taxes}</Text>
-          </View>
-          {couponCode && (
+
+          <View style={styles.horizontalBorder}/>
+          
+          <TouchableOpacity 
+            style={styles.couponSection}
+            onPress={() => setCouponModalVisible(true)}
+          >
+            <Icon name="local-offer" size={20} color='#888'/>
+            <Text style={[styles.couponText, {color: couponCode ? appColors.font : "#888"}]}>
+              {couponCode ? `Applied : ${couponCode}` : 'Apply Coupon'}
+            </Text>
+            <Icon style={styles.couponIcon} name="chevron-right" size={20} color='#888' />
+          </TouchableOpacity>
+          
+          <View style={styles.horizontalBorder}/>
+
+          <View style={[styles.section, {marginHorizontal: 10, marginTop: 10}]}>
             <View style={styles.priceRow}>
-              <Text style={[styles.priceLabel, styles.discountText]}>Discount</Text>
-              <Text style={[styles.priceValue, styles.discountText]}>-${totals.discount}</Text>
+              <Text style={styles.priceLabel}>Subtotal</Text>
+              <Text style={styles.priceValue}>
+                <Icon name="currency-rupee" size={13} color={appColors.font} />
+                {totals.subtotal}
+              </Text>
             </View>
-          )}
-          <View style={[styles.priceRow, styles.totalRow]}>
-            <Text style={styles.totalLabel}>To Pay</Text>
-            <Text style={styles.totalValue}>${totals.total}</Text>
+            <View style={styles.priceRow}>
+              <Text style={styles.priceLabel}>Delivery fee</Text>
+              <Text style={styles.priceValue}>
+                <Icon name="currency-rupee" size={13} color={appColors.font} />
+                {totals.deliveryFee}
+              </Text>
+            </View>
+            <View style={styles.priceRow}>
+              <Text style={styles.priceLabel}>Taxes</Text>
+              <Text style={styles.priceValue}>
+                <Icon name="currency-rupee" size={13} color={appColors.font} />
+                {totals.taxes}
+              </Text>
+            </View>
+            {discount > 0 && (
+              <View style={styles.priceRow}>
+                <Text style={[styles.priceLabel, styles.discountText]}>Discount</Text>
+                <Text style={[styles.priceValue, styles.discountText]}>
+                  -<Icon name="currency-rupee" size={13} color={'#4CAF50'} />
+                  {totals.discount}
+                </Text>
+              </View>
+            )}
+            <View style={[styles.priceRow, styles.totalRow]}>
+              <Text style={styles.totalLabel}>Total</Text>
+              <Text style={styles.totalValue}>${totals.total}</Text>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      )}
 
-      {/* Proceed to Pay Button */}
-      <View style={styles.footer}>
-        <View style={styles.footerPrice}>
-          <Text style={styles.footerLabel}>Total Amount:</Text>
-          <Text style={styles.footerValue}>${totals.total}</Text>
+      {items.length > 0 && (
+        <View style={styles.footer}>
+          <TouchableOpacity 
+            style={styles.payButton}
+            onPress={() => setPaymentModalVisible(true)}
+          >
+            <Text style={styles.payButtonText}>
+              <Text style={{marginBottom: 10}}>Proceed to Pay</Text> 
+              <Text style={[styles.footerValue, {color: appColors.blue, fontFamily: fonts.PoppinsSemiBold}]}>
+              {" "} ${totals.total}
+              </Text>
+            </Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity 
-          style={styles.payBtn} 
-          onPress={() => setPaymentModalVisible(true)}
-        >
-          <Text style={styles.payBtnText}>Proceed to Pay</Text>
-        </TouchableOpacity>
-      </View>
+      )}
 
       {/* Modals */}
-      <PickupDropModal 
-        type="pickup"
-        visible={pickupModalVisible} 
+      <AddressModal
+        visible={addressModalVisible}
+        onClose={() => setAddressModalVisible(false)}
+        addresses={addresses}
+        selectedAddress={selectedAddress}
+        onSelectAddress={setSelectedAddress}
+        onAddNewAddress={() => navigation.navigate('AddAddress')}
+      />
+
+      <ScheduleModal
+        visible={pickupModalVisible}
         onClose={() => setPickupModalVisible(false)}
-        onSelect={(date, time) => setPickupDate(`${date}, ${time}`)}
+        type="pickup"
+        selectedDate={selectedPickupDate}
+        onDateChange={setSelectedPickupDate}
+        selectedSlot={selectedPickupSlot}
+        onSlotSelect={setSelectedPickupSlot}
+        timeSlots={timeSlots}
+        minDate={new Date()}
       />
-      
-      <PickupDropModal 
-        type="drop"
-        visible={dropModalVisible} 
+
+      <ScheduleModal
+        visible={dropModalVisible}
         onClose={() => setDropModalVisible(false)}
-        onSelect={(date, time) => setDropDate(`${date}, ${time}`)}
+        type="delivery"
+        selectedDate={selectedDropDate}
+        onDateChange={setSelectedDropDate}
+        selectedSlot={selectedDropSlot}
+        onSlotSelect={setSelectedDropSlot}
+        timeSlots={timeSlots}
+        minDate={selectedPickupDate}
       />
-      
-      <PaymentModal 
-        visible={paymentModalVisible} 
-        onClose={() => setPaymentModalVisible(false)}
-        selected={selectedPayment}
-        onSelect={setSelectedPayment}
-      />
-      
-      <InstructionModal 
-        visible={instructionModalVisible} 
-        onClose={() => setInstructionModalVisible(false)}
-        instruction={instruction}
-        setInstruction={setInstruction}
-      />
-      
-      <CouponModal 
-        visible={couponModalVisible} 
+
+      <CouponModal
+        visible={couponModalVisible}
         onClose={() => setCouponModalVisible(false)}
         couponCode={couponCode}
         setCouponCode={setCouponCode}
+        applyCoupon={applyCoupon}
       />
-      
-      <AddressModal 
-        visible={addressModalVisible} 
-        onClose={() => setAddressModalVisible(false)}
-        selectedAddress={selectedAddress}
-        setSelectedAddress={setSelectedAddress}
+
+      <PaymentModal
+        visible={paymentModalVisible}
+        onClose={() => setPaymentModalVisible(false)}
+        selectedMethod={selectedPayment}
+        onSelectMethod={setSelectedPayment}
+        onConfirmPayment={handleConfirmPayment}
+      />
+
+      <ConfirmationModal
+        visible={confirmationModalVisible}
+        onClose={() => setConfirmationModalVisible(false)}
+        onConfirm={clearAllItems}
+        title="Delete All Items"
+        message="Are you sure you want to remove all items from your cart?"
       />
     </View>
   );
 };
-
-// Instruction Modal Component
-const InstructionModal = ({ visible, onClose, instruction, setInstruction }) => {
-  const [tempInstruction, setTempInstruction] = useState(instruction);
-
-  const handleSave = () => {
-    setInstruction(tempInstruction);
-    onClose();
-  };
-
-  const handleCancel = () => {
-    setTempInstruction(instruction);
-    onClose();
-  };
-
-  return (
-    <Modal visible={visible} animationType="slide" transparent>
-      <View style={modalStyles.modalContainer}>
-        <View style={modalStyles.modalContent}>
-          <View style={modalStyles.modalHeader}>
-            <Text style={modalStyles.modalTitle}>Add Instruction</Text>
-            <TouchableOpacity onPress={handleCancel}>
-              <Icon name="close" size={24} color={appColors.gray} />
-            </TouchableOpacity>
-          </View>
-          
-          <TextInput
-            style={modalStyles.input}
-            placeholder="Enter your instructions here..."
-            value={tempInstruction}
-            onChangeText={setTempInstruction}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-          />
-          
-          <View style={modalStyles.buttonContainer}>
-            <TouchableOpacity style={modalStyles.cancelButton} onPress={handleCancel}>
-              <Text style={modalStyles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={modalStyles.confirmButton} onPress={handleSave}>
-              <Text style={modalStyles.confirmButtonText}>Save</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
-};
-
-// Coupon Modal Component
-const CouponModal = ({ visible, onClose, couponCode, setCouponCode }) => {
-  const [tempCoupon, setTempCoupon] = useState(couponCode);
-
-  const handleApply = () => {
-    setCouponCode(tempCoupon);
-    onClose();
-  };
-
-  const handleCancel = () => {
-    setTempCoupon(couponCode);
-    onClose();
-  };
-
-  return (
-    <Modal visible={visible} animationType="slide" transparent>
-      <View style={modalStyles.modalContainer}>
-        <View style={modalStyles.modalContent}>
-          <View style={modalStyles.modalHeader}>
-            <Text style={modalStyles.modalTitle}>Apply Coupon</Text>
-            <TouchableOpacity onPress={handleCancel}>
-              <Icon name="close" size={24} color={appColors.gray} />
-            </TouchableOpacity>
-          </View>
-          
-          <TextInput
-            style={modalStyles.input}
-            placeholder="Enter coupon code"
-            value={tempCoupon}
-            onChangeText={setTempCoupon}
-          />
-          
-          <View style={modalStyles.buttonContainer}>
-            <TouchableOpacity style={modalStyles.cancelButton} onPress={handleCancel}>
-              <Text style={modalStyles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={modalStyles.confirmButton} onPress={handleApply}>
-              <Text style={modalStyles.confirmButtonText}>Apply</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
-};
-
-// Address Modal Component
-const AddressModal = ({ visible, onClose, selectedAddress, setSelectedAddress }) => {
-  const [addresses, setAddresses] = useState([
-    { id: 1, name: "Home", address: "B101, Nirvana Point, Hamilton", isDefault: true },
-    { id: 2, name: "Work", address: "Tech Park, Building C, Floor 5", isDefault: false },
-    { id: 3, name: "Mom's House", address: "123 Main Street, Apartment 4B", isDefault: false }
-  ]);
-
-  const handleSelect = (address) => {
-    setSelectedAddress(address);
-  };
-
-  const handleCancel = () => {
-    onClose();
-  };
-
-  return (
-    <Modal visible={visible} animationType="slide" transparent>
-      <View style={modalStyles.modalContainer}>
-        <View style={modalStyles.modalContent}>
-          <View style={modalStyles.modalHeader}>
-            <Text style={modalStyles.modalTitle}>Select Address</Text>
-            <TouchableOpacity onPress={handleCancel}>
-              <Icon name="close" size={24} color={appColors.gray} />
-            </TouchableOpacity>
-          </View>
-          
-          <FlatList
-            data={addresses}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity 
-                style={[
-                  modalStyles.addressItem,
-                  selectedAddress.id === item.id && modalStyles.addressItemSelected
-                ]}
-                onPress={() => handleSelect(item)}
-              >
-                <View style={modalStyles.radio}>
-                  {selectedAddress.id === item.id && <View style={modalStyles.radioSelected} />}
-                </View>
-                <View style={modalStyles.addressDetails}>
-                  <View style={modalStyles.addressNameRow}>
-                    <Text style={modalStyles.addressName}>{item.name}</Text>
-                    {item.isDefault && (
-                      <View style={modalStyles.defaultBadge}>
-                        <Text style={modalStyles.defaultBadgeText}>Default</Text>
-                      </View>
-                    )}
-                  </View>
-                  <Text style={modalStyles.addressText}>{item.address}</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-          
-          <TouchableOpacity style={modalStyles.addAddressButton}>
-            <Icon name="add" size={20} color={appColors.primary} />
-            <Text style={modalStyles.addAddressText}>Add New Address</Text>
-          </TouchableOpacity>
-          
-          <View style={modalStyles.buttonContainer}>
-            <TouchableOpacity style={modalStyles.cancelButton} onPress={handleCancel}>
-              <Text style={modalStyles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={modalStyles.confirmButton} onPress={onClose}>
-              <Text style={modalStyles.confirmButtonText}>Confirm</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
-};
-
-// Styles
-const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: "#f8f9fa" 
-  },
-  header: {
-    backgroundColor: appColors.primary,
-    padding: 20,
-    alignItems: 'center',
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontFamily: fonts.bold,
-    color: '#fff'
-  },
-  section: { 
-    backgroundColor: "#fff", 
-    padding: 16,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12
-  },
-  sectionTitle: { 
-    fontSize: 16, 
-    fontFamily: fonts.semiBold, 
-    color: appColors.text,
-  },
-  changeText: {
-    fontSize: 14,
-    color: appColors.primary,
-    fontFamily: fonts.medium
-  },
-  addressContainer: {
-    marginTop: 4
-  },
-  addressBadge: {
-    backgroundColor: appColors.lightPrimary,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-    marginBottom: 8
-  },
-  addressBadgeText: {
-    fontSize: 12,
-    color: appColors.primary,
-    fontFamily: fonts.medium
-  },
-  addressText: { 
-    fontSize: 14, 
-    color: appColors.text,
-    fontFamily: fonts.regular,
-    marginBottom: 4
-  },
-  defaultText: {
-    fontSize: 12,
-    color: appColors.gray
-  },
-  row: { 
-    flexDirection: "row", 
-    justifyContent: "space-between", 
-    marginHorizontal: 16,
-    marginVertical: 8
-  },
-  timeBox: { 
-    flex: 1, 
-    padding: 16, 
-    margin: 4, 
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    alignItems: 'center',
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3
-  },
-  timeLabel: { 
-    fontSize: 12, 
-    color: appColors.gray, 
-    marginTop: 8,
-    marginBottom: 4,
-    fontFamily: fonts.medium
-  },
-  timeValue: { 
-    fontSize: 14, 
-    fontFamily: fonts.medium, 
-    color: appColors.text
-  },
-  itemContainer: {
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: appColors.border
-  },
-  itemRow: { 
-    flexDirection: "row", 
-    justifyContent: "space-between", 
-    alignItems: 'center',
-    marginBottom: 8
-  },
-  itemInfo: {
-    flex: 1
-  },
-  itemText: { 
-    fontSize: 16, 
-    fontFamily: fonts.medium,
-    color: appColors.text,
-    marginBottom: 4
-  },
-  itemSubText: { 
-    fontSize: 14, 
-    color: appColors.gray,
-    fontFamily: fonts.regular
-  },
-  priceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  itemPrice: {
-    fontSize: 14,
-    color: appColors.gray
-  },
-  itemTotal: {
-    fontSize: 14,
-    fontFamily: fonts.medium,
-    color: appColors.text
-  },
-  counter: { 
-    flexDirection: "row", 
-    alignItems: "center",
-    backgroundColor: '#f0f0f0',
-    borderRadius: 20,
-    padding: 4
-  },
-  counterBtn: { 
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2
-  },
-  counterText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: appColors.primary
-  },
-  qty: { 
-    fontSize: 16, 
-    fontFamily: fonts.medium,
-    marginHorizontal: 12,
-    color: appColors.text
-  },
-  addInstruction: { 
-    flexDirection: "row", 
-    alignItems: "center", 
-    padding: 16,
-    backgroundColor: "#fff",
-    marginHorizontal: 16,
-    marginVertical: 8,
-    borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3
-  },
-  addInstructionText: { 
-    flex: 1,
-    marginLeft: 12, 
-    fontSize: 14, 
-    color: appColors.gray,
-    fontFamily: fonts.regular
-  },
-  couponRow: { 
-    flexDirection: "row", 
-    alignItems: "center", 
-    padding: 16,
-    backgroundColor: "#fff",
-    marginHorizontal: 16,
-    marginVertical: 8,
-    borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3
-  },
-  couponText: { 
-    flex: 1,
-    marginLeft: 12, 
-    fontSize: 14, 
-    fontFamily: fonts.medium, 
-    color: appColors.primary 
-  },
-  priceRow: { 
-    flexDirection: "row", 
-    justifyContent: "space-between", 
-    marginBottom: 8
-  },
-  totalRow: {
-    borderTopWidth: 1,
-    borderTopColor: appColors.border,
-    paddingTop: 12,
-    marginTop: 8
-  },
-  priceLabel: { 
-    fontSize: 14, 
-    color: appColors.gray,
-    fontFamily: fonts.regular
-  },
-  priceValue: { 
-    fontSize: 14, 
-    fontFamily: fonts.medium,
-    color: appColors.text
-  },
-  discountText: {
-    color: appColors.success
-  },
-  totalLabel: { 
-    fontSize: 16, 
-    fontFamily: fonts.semiBold,
-    color: appColors.text
-  },
-  totalValue: { 
-    fontSize: 16, 
-    fontFamily: fonts.semiBold,
-    color: appColors.primary
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: appColors.border,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  footerPrice: {
-    flex: 1
-  },
-  footerLabel: {
-    fontSize: 14,
-    color: appColors.gray,
-    fontFamily: fonts.regular
-  },
-  footerValue: {
-    fontSize: 18,
-    fontFamily: fonts.bold,
-    color: appColors.primary
-  },
-  payBtn: { 
-    backgroundColor: appColors.primary, 
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 12, 
-    marginLeft: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 6
-  },
-  payBtnText: { 
-    fontSize: 16, 
-    fontFamily: fonts.semiBold, 
-    color: "#fff" 
-  },
-});
-
-const modalStyles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    maxHeight: '90%'
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontFamily: fonts.semiBold,
-    color: appColors.text
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-    borderRadius: 12,
-    padding: 16,
-    marginVertical: 12,
-    fontSize: 14,
-    fontFamily: fonts.regular,
-    minHeight: 100
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20
-  },
-  cancelButton: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginRight: 12,
-    borderWidth: 1,
-    borderColor: appColors.border
-  },
-  cancelButtonText: {
-    color: appColors.text,
-    fontFamily: fonts.medium,
-    fontSize: 16
-  },
-  confirmButton: {
-    flex: 1,
-    backgroundColor: appColors.primary,
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginLeft: 12
-  },
-  confirmButtonText: {
-    color: '#fff',
-    fontFamily: fonts.semiBold,
-    fontSize: 16
-  },
-  addressItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e9ecef'
-  },
-  addressItemSelected: {
-    backgroundColor: '#f8f9fa',
-    borderRadius: 12,
-    marginHorizontal: -8,
-    paddingHorizontal: 8
-  },
-  radio: {
-    height: 22,
-    width: 22,
-    borderRadius: 11,
-    borderWidth: 2,
-    borderColor: appColors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 15,
-    marginTop: 4
-  },
-  radioSelected: {
-    height: 12,
-    width: 12,
-    borderRadius: 6,
-    backgroundColor: appColors.primary
-  },
-  addressDetails: {
-    flex: 1
-  },
-  addressNameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4
-  },
-  addressName: {
-    fontSize: 16,
-    fontFamily: fonts.medium,
-    color: appColors.text,
-    marginRight: 8
-  },
-  defaultBadge: {
-    backgroundColor: appColors.lightPrimary,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4
-  },
-  defaultBadgeText: {
-    fontSize: 10,
-    color: appColors.primary,
-    fontFamily: fonts.medium
-  },
-  addressText: {
-    fontSize: 14,
-    color: appColors.gray,
-    fontFamily: fonts.regular
-  },
-  addAddressButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 16,
-    justifyContent: 'center'
-  },
-  addAddressText: {
-    fontSize: 14,
-    color: appColors.primary,
-    fontFamily: fonts.medium,
-    marginLeft: 8
-  }
-});
 
 export default LaundryCheckoutScreen;
