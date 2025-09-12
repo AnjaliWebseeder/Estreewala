@@ -7,6 +7,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";   // ₹ Rupee
 import { service1 , service2,service3,service4 } from "../../utils/images/images";
 import Header from "../../components/header";
 import appColors from "../../theme/appColors";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const orders = [
   {
@@ -97,7 +98,7 @@ const OrdersScreen = ({navigation}) => {
             <Text style={styles.subText}>{item.items}</Text>
             <View style={styles.dot}/>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <FontAwesome name="rupee" size={14} color="#333" />
+              <FontAwesome name="rupee" style={{marginTop:3}} size={14} color="#8E8E93" />
               <Text style={[styles.subText, { marginLeft: 4 }]}>{item.price}</Text>
             </View>
           </View> 
@@ -127,8 +128,9 @@ const OrdersScreen = ({navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
-     <Header title={"Orders"} onBackPress={() => navigation.goBack()}/>
+  <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+     <Header title={"My Orders"} onBackPress={() => navigation.goBack()}/>
       <View style={styles.separator}/>
       <FlatList
         contentContainerStyle={styles.contentContainerStyle}
@@ -139,6 +141,7 @@ const OrdersScreen = ({navigation}) => {
         showsVerticalScrollIndicator={false}
       />
     </View>
+  </SafeAreaView>
   );
 };
 

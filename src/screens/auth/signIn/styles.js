@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
   
   },
   forgotPasswordText: {
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: appColors.blue,
     fontSize: fontSizes.FONT16,
   },
@@ -45,7 +45,7 @@ export const styles = StyleSheet.create({
   },
   submitButtonText: {
     color: appColors.white,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     fontSize: 16,
   },
   dividerContainer: {
@@ -60,7 +60,7 @@ export const styles = StyleSheet.create({
     backgroundColor: appColors.border,
   },
   dividerText: {
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: appColors.subTitle,
     fontSize: 14,
     marginHorizontal: 16,
@@ -76,7 +76,7 @@ export const styles = StyleSheet.create({
   },
   phoneLoginButtonText: {
     color: appColors.font,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
     fontSize: 16,
   },
 });

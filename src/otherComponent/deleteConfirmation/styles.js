@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 12,
  color: appColors.font,
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily:fonts.InterMedium,
     textAlign:"center"
   },
   modalMessage: {
@@ -30,7 +30,7 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "center",
     lineHeight: 22,
-     fontFamily:fonts.PoppinsRegular,
+     fontFamily:fonts.InterRegular,
   },
   modalActions: {
     flexDirection: "row",
@@ -49,14 +49,14 @@ export const styles = StyleSheet.create({
   },
   cancelBtnText: {
      color: appColors.subTitle,
-      fontFamily:fonts.PoppinsMedium,
+      fontFamily:fonts.InterMedium,
   },
   deleteBtn: {
     backgroundColor: "#FF4D4D",
   },
   deleteBtnText: {
     color: appColors.white,
-      fontFamily:fonts.PoppinsMedium,
+      fontFamily:fonts.InterMedium,
     
   },
 });

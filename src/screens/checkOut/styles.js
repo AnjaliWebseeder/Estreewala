@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
    container: { flex: 1, backgroundColor: '#f8f9fa' },
   titleStyle:{
     marginHorizontal:20,
-    fontFamily:fonts.PoppinsSemiBold
+    fontFamily:fonts.InterSemiBold
   },
    border:{
     width: "100%",
@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
     marginRight:windowHeight(10),
     marginTop:windowHeight(3)
   },
-  sectionTitle: { fontSize: fontSizes.FONT21, color: appColors.font, fontFamily:fonts.PoppinsSemiBold},
+  sectionTitle: { fontSize: fontSizes.FONT21, color: appColors.font, fontFamily:fonts.InterSemiBold},
   scheduleRow: { flexDirection: 'row', justifyContent: 'space-between' },
   horizontalBorder:{
       width: "100%",       // full width
@@ -53,38 +53,25 @@ export const styles = StyleSheet.create({
     paddingHorizontal:windowHeight(8) 
   },
   scheduleInfo: { marginLeft: 12, flex: 1 },
-  scheduleLabel: { fontSize: fontSizes.FONT18, color: appColors.font ,fontFamily:fonts.PoppinsSemiBold},
+  scheduleLabel: { fontSize: fontSizes.FONT18, color: appColors.font ,fontFamily:fonts.InterSemiBold},
   rowStyle:{
     flexDirection:"row",alignItems:"center"
   },
-  scheduleDate: { fontSize: fontSizes.FONT15, color: "#666", marginBottom: 2,fontFamily:fonts.PoppinsRegular },
+  scheduleDate: { fontSize: fontSizes.FONT15, color: "#666", marginBottom: 2,fontFamily:fonts.InterRegular },
   verticalLine:{
      width: 1, height: windowHeight(60), backgroundColor: "#ece4e4ff", marginHorizontal: 10,
      marginTop:windowHeight(12)
   },
-  couponSection: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    padding: 16, 
-    marginHorizontal: 1, 
-    marginBottom: 2, 
-    borderRadius: 12,
-    
-  },
-  couponIcon:{
-   marginTop:10
-  },
-  couponText: { flex: 1, marginLeft: 12, fontSize: 14, color: '#888' ,fontFamily:fonts.PoppinsMedium},
   priceRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
   totalRow: { borderTopWidth: 1, borderTopColor: '#f0f0f0', paddingTop: 12, marginTop: 8 },
-  priceLabel: { fontSize: 14, color: appColors.font,fontFamily:fonts.PoppinsMedium},
-  priceValue: { fontSize: 14, color: appColors.font,fontFamily:fonts.PoppinsMedium },
+  priceLabel: { fontSize: 14, color: appColors.font,fontFamily:fonts.InterMedium},
+  priceValue: { fontSize: 14, color: appColors.font,fontFamily:fonts.InterMedium },
    ruppes:{
     marginTop:10
   },
   discountText: { color: '#4CAF50' },
-  totalLabel: { fontSize: 16, fontFamily:fonts.PoppinsMedium, color: appColors.font },
-  totalValue: { fontSize: 16, fontFamily:fonts.PoppinsMedium, color: appColors.blue },
+  totalLabel: { fontSize: 16, fontFamily:fonts.InterMedium, color: appColors.font },
+  totalValue: { fontSize: 16, fontFamily:fonts.InterMedium, color: appColors.blue },
   footer: { 
     flexDirection: 'row', 
     justifyContent: 'space-between', 
@@ -104,7 +91,7 @@ export const styles = StyleSheet.create({
     alignItems:"center",
     justifyContent:"center"
   },
-  payButtonText: { color: '#fff', fontWeight: '600', fontSize: fontSizes.FONT18HALF,fontFamily:fonts.PoppinsMedium },
+  payButtonText: { color: '#fff', fontWeight: '600', fontSize: fontSizes.FONT18HALF,fontFamily:fonts.InterMedium },
   emptyCartContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -131,7 +118,7 @@ export const styles = StyleSheet.create({
   clearAllText: {
     color: appColors.error,
     marginLeft: 8,
-   fontFamily:fonts.PoppinsRegular,
+   fontFamily:fonts.InterRegular,
    fontSize:fontSizes.FONT13
   },
   serviceTag: {
@@ -143,14 +130,74 @@ export const styles = StyleSheet.create({
   serviceTagText: {
     color: "#958f8fff",
     fontSize: 11,
-     fontFamily:fonts.PoppinsRegular
+     fontFamily:fonts.InterRegular
   },
   orderNoteInput: {
     borderRadius: 8,
     paddingHorizontal: 2,
     textAlignVertical: 'top',
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily:fonts.InterMedium,
     paddingTop:12,
     lineHeight:windowHeight(20)
-  }
+  },
+  deliveryCard: {
+  opacity: 0.9, // Slightly dim to indicate it's auto-calculated
+},
+deliveryNote: {
+  fontSize: fontSizes.FONT12,
+  color: appColors.subTitle,
+  marginTop: 3,
+  fontStyle: 'italic',
+},
+paymentOption: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  paddingTop: windowHeight(3),
+  backgroundColor: '#f8f9fa',
+  borderRadius: 12,
+  marginBottom: 4,
+},
+radioContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+radioOuter: {
+  width: 14,
+  height: 14,
+  borderRadius: 11,
+  borderWidth: 2,
+  borderColor: appColors.blue,
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginRight: 12,
+},
+radioOuterSelected: {
+  borderColor: appColors.blue,
+},
+radioInner: {
+  width: 6,
+  height: 6,
+  borderRadius: 6,
+  backgroundColor: appColors.blue,
+  marginBottom:1
+},
+image:{
+  height:windowHeight(22),
+  width:windowHeight(22),
+  resizeMode:"contain"
+},
+paymentLabel: {
+  fontSize: fontSizes.FONT16,
+  fontFamily: fonts.InterMedium,
+  color: appColors.font,
+},
+paymentNote: {
+  fontSize: fontSizes.FONT13,
+  fontFamily: fonts.InterRegular,
+  color: "#b5aeaeff",
+  marginLeft: windowHeight(22),
+   fontStyle: 'italic',
+   marginBottom:windowHeight(2)
+},
 });

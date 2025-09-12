@@ -9,13 +9,16 @@ export const styles = StyleSheet.create({
     backgroundColor:appColors.white,
     elevation:5
   },
+  contentContainerStyle:{
+    paddingBottom:20
+  },
   main:{
    padding:10,
    paddingHorizontal:20
   },
   welcomeText: {
     fontSize: 20,
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily:fonts.InterMedium,
     color: appColors.font,
     marginTop: 10,
   },
@@ -55,7 +58,7 @@ export const styles = StyleSheet.create({
   userNameText: {
     fontSize: 16,
     color: appColors.font,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
     marginTop: 12,
   },
   userDetails: {
@@ -65,13 +68,13 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: appColors.subTitle, // light text for gradient background
     marginTop: 0,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
     marginBottom:3
   },
   phoneText: {
     fontSize: 14,
     color: '#E0F8FC',
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
     marginTop: 2,
   },
   menuItem: {
@@ -83,7 +86,7 @@ export const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: 14,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
     color: appColors.font,
     marginLeft: 15,
     flex: 1,
@@ -99,7 +102,7 @@ export const styles = StyleSheet.create({
   badgeText: {
     color: appColors.white,
     fontSize: 9,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
     paddingTop:1
   },
 
@@ -136,13 +139,13 @@ export const styles = StyleSheet.create({
   statusText: {
     fontSize: 14,
     fontWeight: '600',
-   fontFamily:fonts.PoppinsRegular,
+   fontFamily:fonts.InterRegular,
   },
   statusSubText: {
     fontSize: 12,
     color: appColors.subTitle,
     textAlign: 'center',
-       fontFamily:fonts.PoppinsRegular,
+       fontFamily:fonts.InterRegular,
   },
   // Sign Out
   signOut: {
@@ -154,7 +157,7 @@ export const styles = StyleSheet.create({
   },
   signOutText: {
     fontSize: 16,
-     fontFamily:fonts.PoppinsRegular,
+     fontFamily:fonts.InterRegular,
     color: "#E74C3C",
     marginLeft: 10,
     marginTop:3

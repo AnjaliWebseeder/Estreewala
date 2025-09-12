@@ -11,6 +11,7 @@ import { styles } from './styles';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Header from "../../../components/header";
 import appColors from '../../../theme/appColors';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ContactSupport({ navigation }) {
   const [message, setMessage] = useState('');
@@ -35,7 +36,8 @@ export default function ContactSupport({ navigation }) {
 
 
   return (
-    <View style={styles.container}>
+ <SafeAreaView style={styles.container}>
+     <View style={styles.container}>
         <Header
         title="Contact Support"
         onBackPress={() => navigation.goBack()}
@@ -91,5 +93,6 @@ export default function ContactSupport({ navigation }) {
         </TouchableOpacity>
       </ScrollView>
     </View>
+ </SafeAreaView>
   );
 }

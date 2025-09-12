@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     color: appColors.font,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
     marginBottom: windowHeight(10),
   },
   sectionCard: {
@@ -57,7 +57,7 @@ export const styles = StyleSheet.create({
   input: {
     fontSize: 14,
     color: '#333',
-   fontFamily:fonts.PoppinsRegular,
+   fontFamily:fonts.InterRegular,
     paddingVertical: 4,
     width: windowWidth(200),
     borderBottomWidth: 1,
@@ -72,7 +72,7 @@ export const styles = StyleSheet.create({
   },
   editText: {
     color: appColors.font,
-    fontFamily:fonts.PoppinsMedium
+    fontFamily:fonts.InterMedium
   },
   saveButton: {
     backgroundColor:appColors.font,
@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: appColors.white,
-   fontFamily:fonts.PoppinsMedium,
+   fontFamily:fonts.InterMedium,
     fontSize: 16,
   },
   errorText: {

@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
   },
   title: { 
    fontSize: fontSizes.FONT22,
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily:fonts.InterMedium,
    color:appColors.font
   },
   viewAllButton: {
@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
   viewAllText: { 
     fontSize: 14, 
     color: appColors.blue,
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily:fonts.InterMedium,
     marginRight: 4,
   },
   listContainer: {
@@ -70,7 +70,7 @@ export const styles = StyleSheet.create({
   },
   name: { 
     fontSize: 16, 
-    fontFamily:fonts.PoppinsMedium, 
+    fontFamily:fonts.InterMedium, 
     color: appColors.font,
     marginBottom: 5,
   },
@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
     fontSize: 12, 
     color: appColors.font,
     marginLeft: 6,
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   },
   timeContainer: {
     flexDirection: 'row',
@@ -94,6 +94,6 @@ export const styles = StyleSheet.create({
     fontSize: 12, 
     color: appColors.font,
     marginLeft: 6,
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   }
 });

@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: fontSizes.FONT21,
-   fontFamily:fonts.PoppinsMedium,
+   fontFamily:fonts.InterMedium,
     color: appColors.font,
     marginBottom: windowHeight(2),
    
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
     fontSize: fontSizes.FONT15,
     lineHeight: 24,
     color:appColors.subTitle,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
   },
   policySection: {
     marginTop: windowHeight(0),
@@ -55,13 +55,13 @@ export const styles = StyleSheet.create({
     fontSize: windowHeight(13),
     color: appColors.font,
     marginBottom: windowHeight(1),
-   fontFamily:fonts.PoppinsRegular,
+   fontFamily:fonts.InterRegular,
   },
   policyText: {
     fontSize: fontSizes.FONT15,
     lineHeight: 22,
     color: appColors.font,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
   },
   updateSection: {
     marginTop: 0,
@@ -71,7 +71,7 @@ export const styles = StyleSheet.create({
   updateText: {
     fontSize: 14,
     color: appColors.font,
-     fontFamily:fonts.PoppinsSemiBold,
+     fontFamily:fonts.InterSemiBold,
     textAlign: 'center',
   },
 });

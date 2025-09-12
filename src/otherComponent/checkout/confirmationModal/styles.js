@@ -35,14 +35,14 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 10,
     color: appColors.font,
-    fontFamily: fonts.PoppinsSemiBold
+    fontFamily: fonts.InterSemiBold
   },
   modalMessage: {
     fontSize: fontSizes.FONT16,
     textAlign: 'center',
     marginBottom: 20,
     color: appColors.font,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     width: '100%',
   },
   modalButtons: {
@@ -66,12 +66,12 @@ export const styles = StyleSheet.create({
   },
   cancelButtonText: {
     color: appColors.font,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     fontSize: fontSizes.FONT16,
   },
   confirmButtonText: {
     color: 'white',
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     fontSize: fontSizes.FONT16,
   },
 });

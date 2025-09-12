@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
   },
   submitButtonText: {
     color: appColors.white,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
     fontSize: 16,
   },
 });

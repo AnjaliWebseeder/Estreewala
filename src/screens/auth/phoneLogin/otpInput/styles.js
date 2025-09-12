@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
   },
   boxText: {
     fontSize: 20,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
     color: '#333',
   },
   hiddenInput: {

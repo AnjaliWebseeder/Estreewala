@@ -3,10 +3,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from "../../../components/header";
 import { styles } from './styles';
 import appColors from '../../../theme/appColors';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PrivacyPolicy = ({ navigation }) => {
   return (
-    <View style={styles.container}>
+   <SafeAreaView style={styles.container}>
+     <View style={styles.container}>
        <Header
         title="Privacy Policy"
         onBackPress={() => navigation.goBack()}
@@ -86,6 +88,7 @@ const PrivacyPolicy = ({ navigation }) => {
         </View>
       </ScrollView>
     </View>
+   </SafeAreaView>
   );
 };
 

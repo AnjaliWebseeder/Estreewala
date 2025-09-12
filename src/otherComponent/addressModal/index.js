@@ -6,10 +6,9 @@ import {
   TextInput,
   Modal,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
 import {styles} from './styles'
 import appColors from "../../theme/appColors";
-import fonts from "../../theme/appFonts";
+
 
 const AddressModal = ({ visible, onClose, onSave, editingAddress }) => {
   const [addressType, setAddressType] = useState("home");

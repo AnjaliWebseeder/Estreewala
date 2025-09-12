@@ -2,7 +2,6 @@ import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import Header from '../home/header'
 import ServiceList from '../home/serviceList'
-import BannerOffer from '../home/offerBanner'
 import PopularLaundry from '../home/popularLaundry'
 import appColors from "../../theme/appColors";
 
@@ -13,7 +12,6 @@ export const Home = ({navigation}) => {
        <Header navigation={navigation}/>
         <ServiceList navigation={navigation} />
      </View>
-     <BannerOffer />
     <PopularLaundry navigation={navigation} />
     </ScrollView>
   );

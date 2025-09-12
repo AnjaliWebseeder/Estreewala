@@ -4,13 +4,12 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { TouchableOpacity } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ArrowIcon from "react-native-vector-icons/Feather";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // Import components
 import { AddressCard } from '../../otherComponent/checkout/addressCard'
-import { AddressModal } from "../../otherComponent/checkout/addressModal";
+import AddressModal from "../../otherComponent/addressModal";
 import { ScheduleModal } from '../../otherComponent/checkout/scheduleModal'
-import { CouponModal } from '../../otherComponent/checkout/couponModal'
-import { PaymentModal } from '../../otherComponent/checkout/paymentModal'
 import ConfirmationModal from '../../otherComponent/checkout/confirmationModal'
 import EmptyCart from '../../otherComponent/checkout/emptyCart'
 import OrderItem from '../../otherComponent/checkout/OrderItem'
@@ -21,26 +20,26 @@ import Header from "../../components/header";
 import appColors from "../../theme/appColors";
 import fonts from "../../theme/appFonts";
 import { fontSizes } from "../../theme/appConstant";
+import FastImage from "react-native-fast-image";
+import { cashpayment } from "../../utils/images/images";
+import {CustomTooltip} from '../../components/tooltip'
 
-const LaundryCheckoutScreen = ({ navigation }) => {
+const LaundryCheckoutScreen = ({ navigation, route }) => {
+  const { laundryName } = route.params || {};
   const [addressModalVisible, setAddressModalVisible] = useState(false);
   const [pickupModalVisible, setPickupModalVisible] = useState(false);
-  const [dropModalVisible, setDropModalVisible] = useState(false);
-  const [couponModalVisible, setCouponModalVisible] = useState(false);
-  const [paymentModalVisible, setPaymentModalVisible] = useState(false);
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'info' });
-  
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState("B 101, Nirvana Point, Hemllition");
   const [selectedPickupDate, setSelectedPickupDate] = useState(new Date());
-  const [selectedDropDate, setSelectedDropDate] = useState(new Date(Date.now() + 24 * 60 * 60 * 1000));
   const [selectedPickupSlot, setSelectedPickupSlot] = useState(null);
-  const [selectedDropSlot, setSelectedDropSlot] = useState(null);
-  const [couponCode, setCouponCode] = useState('');
-  const [discount, setDiscount] = useState(0);
-  const [selectedPayment, setSelectedPayment] = useState('card');
+  const [selectedPayment, setSelectedPayment] = useState('cod'); // Default to Cash on Delivery
   const [orderNote, setOrderNote] = useState('');
+  const [address, setAddress] = useState(null);
+  const [editingAddress, setEditingAddress] = useState(null);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipText, setTooltipText] = useState("");
+
   
   const timeSlots = [
     { id: '1', time: '09:00 AM - 11:00 AM' },
@@ -56,11 +55,28 @@ const LaundryCheckoutScreen = ({ navigation }) => {
     { id: 2, name: "Tshirt", price: 8.00, service: "Wash & Iron", quantity: 3 }
   ]);
 
-  // Show toast message
-  const showToast = (message, type = 'info') => {
-    setToast({ visible: true, message, type });
-    setTimeout(() => setToast({ visible: false, message: '', type: 'info' }), 3000);
+  // Calculate delivery date based on pickup date (2 days later)
+  const calculateDeliveryDate = (pickupDate) => {
+    const deliveryDate = new Date(pickupDate);
+    deliveryDate.setDate(deliveryDate.getDate() + 2);
+    return deliveryDate;
   };
+
+  const [selectedDropDate, setSelectedDropDate] = useState(null);
+  const [selectedDropSlot, setSelectedDropSlot] = useState(null);
+
+  // Update delivery date when pickup date changes
+  useEffect(() => {
+    if (selectedPickupDate && selectedPickupSlot) {
+      const newDeliveryDate = calculateDeliveryDate(selectedPickupDate);
+      setSelectedDropDate(newDeliveryDate);
+      // Set a default delivery time slot
+      setSelectedDropSlot(timeSlots[2]); // Default to 3rd time slot
+    } else {
+      setSelectedDropDate(null);
+      setSelectedDropSlot(null);
+    }
+  }, [selectedPickupDate, selectedPickupSlot]);
 
   // Load addresses from AsyncStorage and current location
   useEffect(() => {
@@ -82,7 +98,7 @@ const LaundryCheckoutScreen = ({ navigation }) => {
       }
     } catch (error) {
       console.error('Error loading addresses:', error);
-      showToast('Error loading addresses', 'error');
+    
     }
   };
 
@@ -117,26 +133,6 @@ const LaundryCheckoutScreen = ({ navigation }) => {
     }
   };
 
-  // Date validation logic
-  const validateDates = (pickupDate, dropDate, pickupSlot, dropSlot) => {
-    if (pickupDate > dropDate) {
-      showToast('Delivery date cannot be before pickup date', 'error');
-      return false;
-    }
-    
-    if (pickupDate.toDateString() === dropDate.toDateString()) {
-      const pickupTime = parseInt(pickupSlot.time.split(':')[0]);
-      const dropTime = parseInt(dropSlot.time.split(':')[0]);
-      
-      if (dropTime <= pickupTime) {
-        showToast('Delivery time must be after pickup time', 'error');
-        return false;
-      }
-    }
-    
-    return true;
-  };
-
   const updateQuantity = (id, change) => {
     setItems(items.map(item => 
       item.id === id 
@@ -147,7 +143,6 @@ const LaundryCheckoutScreen = ({ navigation }) => {
 
   const removeItem = (id) => {
     setItems(items.filter(item => item.id !== id));
-    showToast('Item removed from cart', 'info');
   };
 
   const showClearAllConfirmation = () => {
@@ -157,30 +152,6 @@ const LaundryCheckoutScreen = ({ navigation }) => {
   const clearAllItems = () => {
     setItems([]);
     setConfirmationModalVisible(false);
-    showToast('All items removed from cart', 'info');
-  };
-
-  const applyCoupon = (code) => {
-    if (code === 'WELCOME10') {
-      setDiscount(calculateSubtotal() * 0.1);
-      showToast('Coupon applied successfully! 10% discount', 'success');
-    } else if (code === 'CLEAN15') {
-      const subtotal = calculateSubtotal();
-      if (subtotal > 30) {
-        setDiscount(subtotal * 0.15);
-        showToast('Coupon applied successfully! 15% discount', 'success');
-      } else {
-        showToast('This coupon requires order above $30', 'error');
-        setCouponCode('');
-        setDiscount(0);
-      }
-    } else if (code) {
-      showToast('The coupon code is not valid', 'error');
-      setCouponCode('');
-      setDiscount(0);
-    } else {
-      setDiscount(0);
-    }
   };
 
   const calculateSubtotal = () => {
@@ -191,44 +162,43 @@ const LaundryCheckoutScreen = ({ navigation }) => {
     const subtotal = calculateSubtotal();
     const deliveryFee = items.length > 0 ? 2.50 : 0;
     const taxes = subtotal * 0.08;
-    const total = subtotal + deliveryFee + taxes - discount;
+    const total = subtotal + deliveryFee + taxes ;
     
     return {
       subtotal: subtotal.toFixed(2),
       deliveryFee: deliveryFee.toFixed(2),
       taxes: taxes.toFixed(2),
-      discount: discount.toFixed(2),
       total: total.toFixed(2)
     };
   };
 
-  const handleConfirmPayment = () => {
-    // if (!selectedAddress) {
-    //   showToast('Please select a delivery address', 'error');
-    //   return;
-    // }
-    
-    // if (!selectedPickupSlot || !selectedDropSlot) {
-    //   showToast('Please select pickup and delivery time slots', 'error');
-    //   return;
-    // }
-    
-    // if (!validateDates(selectedPickupDate, selectedDropDate, selectedPickupSlot, selectedDropSlot)) {
-    //   return;
-    // }
-    
-    // if (items.length === 0) {
-    //   showToast('Please add items to your cart', 'error');
-    //   return;
-    // }
-    
-    // showToast('Your laundry order has been placed successfully!', 'success');
-    setPaymentModalVisible(false);
-    
-    // In a real app, you would navigate to order confirmation screen
-    setTimeout(() => {
-      navigation.navigate('OrderConfirmation');
-    }, 1000);
+ const handleBookPickup = () => {
+  // Validate required fields
+  if (!selectedPickupSlot) {
+    setTooltipText("Please select a pickup time slot");
+    setTooltipVisible(true);
+    return;
+  }
+
+  if (!selectedAddress) {
+    setTooltipText("Please select a delivery address");
+    setTooltipVisible(true);
+    return;
+  }
+
+  navigation.navigate("OrderConfirmation");
+};
+
+
+  const handleSave = (newAddress) => {
+    setAddress(newAddress);
+    setAddressModalVisible(false);
+    setEditingAddress(null);
+  };
+
+  const handleEdit = () => {
+    setEditingAddress(address);
+    setAddressModalVisible(true);
   };
 
   const totals = calculateTotal();
@@ -238,11 +208,12 @@ const LaundryCheckoutScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+   <SafeAreaView style={styles.container}>
+     <View style={styles.container}>
       {/* Header */}
       <Header 
         onBackPress={() => navigation.goBack()} 
-        title={"QuickClean Laundry"} 
+        title={ laundryName ? laundryName :"QuickClean Laundry"} 
         titleStyle={styles.titleStyle} 
         containerStyle={{ justifyContent: "flex-start" }}
       />
@@ -281,34 +252,59 @@ const LaundryCheckoutScreen = ({ navigation }) => {
                     })}
                   </Text>
                   <Text style={[styles.scheduleDate, {fontSize: fontSizes.FONT14}]}>
-                    {selectedPickupSlot ? selectedPickupSlot.time : 'select time-slots'}
+                    {selectedPickupSlot ? selectedPickupSlot.time : 'Select time slot'}
                   </Text>
                 </View>
               </TouchableOpacity>
               
               <View style={styles.verticalLine}/>
               
-              <TouchableOpacity 
-                style={styles.scheduleCard}
-                onPress={() => setDropModalVisible(true)}
-              >
+              {/* Delivery Card - Not clickable, automatically calculated */}
+              <View style={[styles.scheduleCard, styles.deliveryCard]}>
                 <ArrowIcon name="arrow-down-left" size={24} color={appColors.blue} />
                 <View style={styles.scheduleInfo}>
                   <Text style={styles.scheduleLabel}>Delivery on</Text>
-                  <Text style={styles.scheduleDate}>
-                    {selectedDropDate.toLocaleDateString('en-US', { 
-                      month: 'short', 
-                      day: 'numeric' 
-                    })}
-                  </Text>
-                  <Text style={[styles.scheduleDate, {fontSize: fontSizes.FONT14HALF}]}>
-                    {selectedDropSlot ? selectedDropSlot.time : 'select time-slots'}
-                  </Text>
+                  {selectedDropDate ? (
+                    <>
+                      <Text style={styles.scheduleDate}>
+                        {selectedDropDate.toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric' 
+                        })}
+                      </Text>
+                      <Text style={styles.deliveryNote}>
+                        Estimated delivery in 2-3 days
+                      </Text>
+                    </>
+                  ) : (
+                    <Text style={[styles.scheduleDate, {fontSize: fontSizes.FONT14, color: appColors.subTitle,lineHeight:16}]}>
+                      Select pickup time first
+                    </Text>
+                  )}
                 </View>
-              </TouchableOpacity>
+              </View>
             </View>
           </View>
           
+          <View style={styles.horizontalBorder}/>
+
+          {/* Cash on Delivery Option */}
+          <View style={[styles.section, {marginHorizontal: 10, marginTop: 10}]}>
+            <Text style={styles.sectionTitle}>Payment Method</Text>
+            <View style={styles.paymentOption}>
+              <View style={styles.radioContainer}>
+                <View style={[styles.radioOuter, selectedPayment === 'cod' && styles.radioOuterSelected]}>
+                  {selectedPayment === 'cod' && <View style={styles.radioInner} />}
+                </View>
+                <Text style={styles.paymentLabel}>Cash on Delivery</Text>
+              </View>
+           <FastImage source={cashpayment} style={styles.image}/>
+            </View>
+            <Text style={styles.paymentNote}>
+              Pay cash when your laundry is delivered
+            </Text>
+          </View>
+
           <View style={styles.horizontalBorder}/>
 
           <View style={[styles.section, {paddingVertical: 4}]}>
@@ -347,19 +343,6 @@ const LaundryCheckoutScreen = ({ navigation }) => {
 
           <View style={styles.horizontalBorder}/>
           
-          <TouchableOpacity 
-            style={styles.couponSection}
-            onPress={() => setCouponModalVisible(true)}
-          >
-            <Icon name="local-offer" size={20} color='#888'/>
-            <Text style={[styles.couponText, {color: couponCode ? appColors.font : "#888"}]}>
-              {couponCode ? `Applied : ${couponCode}` : 'Apply Coupon'}
-            </Text>
-            <Icon style={styles.couponIcon} name="chevron-right" size={20} color='#888' />
-          </TouchableOpacity>
-          
-          <View style={styles.horizontalBorder}/>
-
           <View style={[styles.section, {marginHorizontal: 10, marginTop: 10}]}>
             <View style={styles.priceRow}>
               <Text style={styles.priceLabel}>Subtotal</Text>
@@ -382,15 +365,6 @@ const LaundryCheckoutScreen = ({ navigation }) => {
                 {totals.taxes}
               </Text>
             </View>
-            {discount > 0 && (
-              <View style={styles.priceRow}>
-                <Text style={[styles.priceLabel, styles.discountText]}>Discount</Text>
-                <Text style={[styles.priceValue, styles.discountText]}>
-                  -<Icon name="currency-rupee" size={13} color={'#4CAF50'} />
-                  {totals.discount}
-                </Text>
-              </View>
-            )}
             <View style={[styles.priceRow, styles.totalRow]}>
               <Text style={styles.totalLabel}>Total</Text>
               <Text style={styles.totalValue}>${totals.total}</Text>
@@ -403,26 +377,27 @@ const LaundryCheckoutScreen = ({ navigation }) => {
         <View style={styles.footer}>
           <TouchableOpacity 
             style={styles.payButton}
-            onPress={() => setPaymentModalVisible(true)}
+            onPress={handleBookPickup}
+            // disabled={!selectedPickupSlot}
           >
             <Text style={styles.payButtonText}>
-              <Text style={{marginBottom: 10}}>Proceed to Pay</Text> 
-              <Text style={[styles.footerValue, {color: appColors.blue, fontFamily: fonts.PoppinsSemiBold}]}>
-              {" "} ${totals.total}
+              <Text style={{marginBottom: 10}}>Schedule Pickup</Text> 
+              <Text style={[styles.footerValue, {color: appColors.blue, fontFamily: fonts.InterSemiBold}]}>
+                {" "} ${totals.total}
               </Text>
             </Text>
           </TouchableOpacity>
         </View>
       )}
 
-      {/* Modals */}
       <AddressModal
         visible={addressModalVisible}
-        onClose={() => setAddressModalVisible(false)}
-        addresses={addresses}
-        selectedAddress={selectedAddress}
-        onSelectAddress={setSelectedAddress}
-        onAddNewAddress={() => navigation.navigate('AddAddress')}
+        onClose={() => {
+          setAddressModalVisible(false);
+          setEditingAddress(null);
+        }}
+        onSave={handleSave}
+        editingAddress={editingAddress}
       />
 
       <ScheduleModal
@@ -437,34 +412,6 @@ const LaundryCheckoutScreen = ({ navigation }) => {
         minDate={new Date()}
       />
 
-      <ScheduleModal
-        visible={dropModalVisible}
-        onClose={() => setDropModalVisible(false)}
-        type="delivery"
-        selectedDate={selectedDropDate}
-        onDateChange={setSelectedDropDate}
-        selectedSlot={selectedDropSlot}
-        onSlotSelect={setSelectedDropSlot}
-        timeSlots={timeSlots}
-        minDate={selectedPickupDate}
-      />
-
-      <CouponModal
-        visible={couponModalVisible}
-        onClose={() => setCouponModalVisible(false)}
-        couponCode={couponCode}
-        setCouponCode={setCouponCode}
-        applyCoupon={applyCoupon}
-      />
-
-      <PaymentModal
-        visible={paymentModalVisible}
-        onClose={() => setPaymentModalVisible(false)}
-        selectedMethod={selectedPayment}
-        onSelectMethod={setSelectedPayment}
-        onConfirmPayment={handleConfirmPayment}
-      />
-
       <ConfirmationModal
         visible={confirmationModalVisible}
         onClose={() => setConfirmationModalVisible(false)}
@@ -472,7 +419,14 @@ const LaundryCheckoutScreen = ({ navigation }) => {
         title="Delete All Items"
         message="Are you sure you want to remove all items from your cart?"
       />
+
+         <CustomTooltip 
+        visible={tooltipVisible} 
+        message={tooltipText} 
+        onClose={() => setTooltipVisible(false)} 
+      />
     </View>
+   </SafeAreaView>
   );
 };
 

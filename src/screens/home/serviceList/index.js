@@ -21,7 +21,7 @@ const ServiceList = ({navigation}) => {
    <View style={styles.container}>
      <ScrollView contentContainerStyle={styles.contentContainerStyle} horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
       {services.map((service) => (
-        <TouchableOpacity onPress={()=> navigation.navigate('LaundryServiceList')} key={service.id} style={styles.card}>
+        <TouchableOpacity  onPress={() => navigation.push('LaundryServiceList',{serviceName: service.name})}  key={service.id} style={styles.card}>
           <Image source={service.icon} style={styles.icon} />
           <Text numberOfLines={1} style={styles.name}>{service.name}</Text>
         </TouchableOpacity>
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   icon: { width: windowHeight(140), height: windowWidth(110), resizeMode: "contain" },
-  name: { fontSize: fontSizes.FONT16,fontFamily:fonts.PoppinsRegular,marginBottom:8 },
+  name: { fontSize: fontSizes.FONT16,fontFamily:fonts.InterRegular,marginBottom:8 },
 });
 
 export default ServiceList;

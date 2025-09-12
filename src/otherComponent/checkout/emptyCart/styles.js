@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     marginTop: 16,
-    fontFamily: fonts.PoppinsMedium
+    fontFamily: fonts.InterMedium
   },
   browseButton: {
     backgroundColor: appColors.blue,
@@ -28,6 +28,6 @@ export const styles = StyleSheet.create({
   browseButtonText: {
     color: '#fff',
     fontSize: fontSizes.FONT16,
-    fontFamily: fonts.PoppinsMedium
+    fontFamily: fonts.InterMedium
   },
 });

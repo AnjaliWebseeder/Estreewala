@@ -33,7 +33,7 @@ export const styles = StyleSheet.create({
   },
   submitButtonText: {
     color: appColors.white,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     fontSize: 16,
   },
   backToLoginButton: {
@@ -41,7 +41,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backToLoginText: {
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: appColors.blue,
     fontSize: fontSizes.FONT16,
   },

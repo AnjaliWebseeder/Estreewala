@@ -35,13 +35,13 @@ export const styles = StyleSheet.create({
     fontSize: 16, 
     fontWeight: "600", 
     color: appColors.font,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     marginRight: 8,
   },
   details: { 
     fontSize: 13, 
     color: appColors.subTitle, 
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     lineHeight: 25,
   },
   iconBtn: { 
@@ -85,7 +85,7 @@ export const styles = StyleSheet.create({
   defaultText: {
     color: appColors.green,
     fontSize: 10,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
   },
 
   // Set Default Button
@@ -99,7 +99,7 @@ export const styles = StyleSheet.create({
   setDefaultText: {
     color: appColors.blue,
     fontSize: 11,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
   },
 
   addBtn: {
@@ -117,16 +117,17 @@ export const styles = StyleSheet.create({
     marginLeft: 6,
     fontSize: 15,
     color: appColors.blue,
-    fontFamily: fonts.PoppinsMedium
+    fontFamily: fonts.InterMedium
   },
 
   applyBtn: {
     backgroundColor: appColors.blue,
-    padding: 14,
+    paddingHorizontal: 14,
     marginHorizontal: 16,
-    borderRadius: 25,
+    borderRadius: 10,
     marginBottom: 20,
     alignItems: "center",
+    paddingVertical:12
   },
   applyBtnDisabled: {
     backgroundColor: appColors.grayLight,
@@ -134,7 +135,7 @@ export const styles = StyleSheet.create({
   applyBtnText: { 
     color: appColors.white, 
     fontSize: 16,  
-    fontFamily: fonts.PoppinsMedium 
+    fontFamily: fonts.InterMedium 
   },
   
   currentLocationBtn: {
@@ -159,7 +160,7 @@ export const styles = StyleSheet.create({
     marginLeft: 12,
     fontSize: 16,
     color: appColors.blue,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
   },
   loadingSpinner: {
     // Style for loading indicator
@@ -171,7 +172,7 @@ export const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 18,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: appColors.font,
     marginTop: 16,
     marginBottom: 8,
@@ -180,7 +181,7 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: appColors.subTitle,
     textAlign: 'center',
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     lineHeight: 27
   },
 });

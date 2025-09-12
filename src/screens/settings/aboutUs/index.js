@@ -5,10 +5,12 @@ import { styles } from './styles';
 import Header from "../../../components/header";
 import appColors from '../../../theme/appColors';
 import { windowHeight } from '../../../theme/appConstant';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const AboutUs = ({ navigation }) => {
   return (
-    <View style={styles.container}>
+   <SafeAreaView style={styles.container}>
+     <View style={styles.container}>
          <Header
         title="About Us"
         onBackPress={() => navigation.goBack()}
@@ -109,6 +111,7 @@ const AboutUs = ({ navigation }) => {
         </View>
       </ScrollView>
     </View>
+   </SafeAreaView>
   );
 };
 

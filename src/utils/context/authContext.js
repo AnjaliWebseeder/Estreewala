@@ -1,7 +1,6 @@
 // context/AuthContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { navigationRef, resetToSignIn } from '../navigation/navigationService';
 
 const AuthContext = createContext();
 
@@ -10,7 +9,6 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [userToken, setUserToken] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
-  console.log("fffffffffffff",userLocation)
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -65,7 +63,6 @@ export const AuthProvider = ({ children }) => {
       ]);
       setUserToken(null);
       setUserLocation(null);
-      resetToSignIn();
     } catch (error) {
       console.log('Logout error:', error);
       throw error;

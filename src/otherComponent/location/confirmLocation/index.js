@@ -18,6 +18,7 @@ import WebView from 'react-native-webview';
 import { styles } from './styles';
 import appColors from '../../../theme/appColors';
 import { useAuth } from '../../../utils/context/authContext';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ConfirmLocationScreen = ({ route }) => {
   const { selectedLocation } = route.params || {};
@@ -28,7 +29,7 @@ const ConfirmLocationScreen = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [mapLoading, setMapLoading] = useState(true);
   const webViewRef = useRef(null);
-
+const insets = useSafeAreaInsets();
   useEffect(() => {
     if (selectedLocation) {
       setAddress(selectedLocation.formattedAddress || selectedLocation.name);
@@ -251,7 +252,7 @@ const ConfirmLocationScreen = ({ route }) => {
       </View>
 
       {/* Bottom Card with Address and Confirm Button */}
-      <View style={styles.bottomCard}>
+    <View style={[styles.bottomCard, { paddingBottom: insets.bottom + 12 }]}>
         <View style={styles.addressSection}>
           <Icon name="location" size={20} color={appColors.blue} style={styles.addressIcon} />
           <View style={styles.addressTextContainer}>

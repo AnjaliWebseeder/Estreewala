@@ -13,6 +13,7 @@ import { ProfileIcon } from "../../assets/Icons/svg/profile";
 import {styles} from './styles'
 import appColors from "../../theme/appColors";
 import fonts from '../../theme/appFonts';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
@@ -42,13 +43,16 @@ const MinimalTabButton = ({ focused, icon: IconComponent, label }) => {
 };
 
 export default function BottomTab() {
+    const insets = useSafeAreaInsets();
   return (
     <SafeAreaProvider>
       <Tab.Navigator
         screenOptions={{
           tabBarShowLabel: false,
           headerShown: false,
-          tabBarStyle: styles.minimalTabBar,
+          tabBarStyle: [styles.minimalTabBar,{
+             height: 73 + insets.bottom, 
+          }],
         }}
       >
         <Tab.Screen 

@@ -24,44 +24,35 @@ export const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontFamily:fonts.PoppinsMedium,
-    color:appColors.font
+    fontFamily: fonts.InterMedium,
+    color: appColors.font
   },
   filterSection: {
-    marginBottom: 20,
+    marginBottom: 18,
   },
   filterLabel: {
     fontSize: 16,
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     color: appColors.font,
-    marginBottom: 6,
+    // marginBottom: 6,
   },
-  optionsContainer: {
+  sliderContainer: {
+    // marginTop: 10,
+   
+  },
+  slider: {
+    width: '100%',
+    // height: 30,
+  },
+  sliderLabels: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
+    justifyContent: 'space-between',
+ 
   },
-  optionButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 5,
-    borderRadius: 20,
-    backgroundColor: '#f8f9fa',
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-    marginBottom:5
-  },
-  optionButtonSelected: {
-    backgroundColor: appColors.font,
-    borderColor: appColors.font,
-  },
-  optionText: {
-    fontSize: 14,
-    color:appColors.subTitle,
-    fontFamily:fonts.PoppinsRegular,
-  },
-  optionTextSelected: {
-    color:appColors.white,
-   fontFamily:fonts.PoppinsRegular
+  sliderLabel: {
+    fontSize: 12,
+    color: appColors.subTitle,
+    fontFamily: fonts.InterRegular,
   },
   modalButtons: {
     flexDirection: 'row',
@@ -84,15 +75,17 @@ export const styles = StyleSheet.create({
   },
   resetButtonText: {
     color: '#666',
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
   },
   applyButtonText: {
-    color:appColors.white,
-    fontFamily:fonts.PoppinsMedium,
+    color: appColors.white,
+    fontFamily: fonts.InterMedium,
   },
-    ratingContainer: {
+  ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
   },
-})
+  starIcon: {
+    marginRight: 4,
+  },
+});

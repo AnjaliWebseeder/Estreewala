@@ -10,14 +10,14 @@ export const styles = StyleSheet.create({
   },
   helpTitle: {
     fontSize: 17,
-    fontFamily:fonts.PoppinsSemiBold,
+    fontFamily:fonts.InterSemiBold,
     color: appColors.font,
     marginBottom: 5,
    
   },
   helpSubText: {
     fontSize: 14,
-     fontFamily:fonts.PoppinsRegular,
+     fontFamily:fonts.InterRegular,
     color:appColors.font,
     marginBottom: 23,
     lineHeight:25
@@ -40,13 +40,13 @@ export const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 14,
-   fontFamily:fonts.PoppinsRegular,
+   fontFamily:fonts.InterRegular,
     color: appColors.font,
     marginLeft: 8,
   },
   cardValue: {
     fontSize: 14,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color:appColors.blue,
     marginLeft: 28,
   },
@@ -57,7 +57,7 @@ export const styles = StyleSheet.create({
   },
   messageLabel: {
     fontSize: 14,
-fontFamily:fonts.PoppinsRegular,
+fontFamily:fonts.InterRegular,
     marginLeft: 6,
     color: '#000',
   },
@@ -67,7 +67,7 @@ fontFamily:fonts.PoppinsRegular,
     borderRadius: 10,
     backgroundColor: '#fff',
     padding: 12,
-fontFamily:fonts.PoppinsRegular,
+fontFamily:fonts.InterRegular,
     fontSize: 14,
     minHeight: windowHeight(100),
     color:appColors.black
@@ -77,7 +77,7 @@ fontFamily:fonts.PoppinsRegular,
     fontSize: 12,
     color:appColors.font,
     marginTop: 4,
-fontFamily:fonts.PoppinsRegular,
+fontFamily:fonts.InterRegular,
   },
   submitBtn: {
     backgroundColor: appColors.blue,
@@ -88,7 +88,7 @@ fontFamily:fonts.PoppinsRegular,
   },
   submitText: {
     color:appColors.white,
-  fontFamily:fonts.PoppinsMedium,
+  fontFamily:fonts.InterMedium,
     fontSize: 16,
   },
   disabledBtn: {

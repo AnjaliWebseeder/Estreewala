@@ -28,14 +28,14 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     color: appColors.font,
     marginBottom: 2,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
   },
   sectionText: {
     fontSize: 14,
     lineHeight: 24,
     color: appColors.subTitle,
     marginBottom: 16,
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   },
   
   // Stats Section
@@ -67,12 +67,12 @@ export const styles = StyleSheet.create({
     fontWeight: '800',
     color: appColors.blue,
     marginBottom: 4,
-    fontFamily:fonts.PoppinsSemiBold
+    fontFamily:fonts.InterSemiBold
   },
   statLabel: {
     fontSize: 14,
     color: appColors.font,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
     textAlign: 'center',
   },
   
@@ -104,16 +104,16 @@ export const styles = StyleSheet.create({
   },
   valueTitle: {
     fontSize: 16,
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily:fonts.InterMedium,
     color: appColors.font,
     marginBottom: 3,
-    fontFamily:fonts.PoppinsMedium
+    fontFamily:fonts.InterMedium
   },
   valueText: {
     fontSize: 12,
     color: appColors.subTitle,
     lineHeight: 20,
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   },
   
   // Team Section
@@ -133,7 +133,7 @@ export const styles = StyleSheet.create({
     color: appColors.white,
     marginBottom: 8,
     textAlign: 'center',
-    fontFamily:fonts.PoppinsMedium
+    fontFamily:fonts.InterMedium
   },
   ctaText: {
     fontSize: 14,
@@ -141,7 +141,7 @@ export const styles = StyleSheet.create({
     opacity: 0.9,
     textAlign: 'center',
     marginBottom: 20,
-   fontFamily:fonts.PoppinsMedium,
+   fontFamily:fonts.InterMedium,
     lineHeight:windowHeight(20)
   },
   ctaButton: {
@@ -153,6 +153,6 @@ export const styles = StyleSheet.create({
   ctaButtonText: {
     fontSize: 14,
     color: appColors.white,
- fontFamily:fonts.PoppinsMedium
+ fontFamily:fonts.InterMedium
   },
 });

@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
     color: appColors.font,
     paddingHorizontal: 20,
     marginTop: windowHeight(10),
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     marginBottom:windowHeight(4)
   },
   listContainer: {
@@ -21,7 +21,11 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20, 
   },
   contentContainerStyle:{
-    paddingBottom:windowHeight(20)
+    paddingBottom:windowHeight(70)
+  },
+  textStyle:{
+    fontSize: 16, color: appColors.font,
+    fontFamily:fonts.InterRegular
   },
   card: {
     flexDirection: 'row',
@@ -29,7 +33,7 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
     minHeight: 110,
     alignItems: 'center',
-    marginBottom: 12, // 🔹 Reduced distance between cards
+    marginBottom: 8, // 🔹 Reduced distance between cards
   },
   imageWrapper: {
   backgroundColor: '#fff',        // white background for shadow
@@ -58,7 +62,7 @@ export const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-   fontFamily:fonts.PoppinsMedium,
+   fontFamily:fonts.InterMedium,
    color:appColors.font,
     marginBottom: 2,
   },
@@ -66,7 +70,7 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: '#888',
     marginBottom: 2,
-     fontFamily:fonts.PoppinsRegular,
+     fontFamily:fonts.InterRegular,
   },
   locationIcon:{
   marginRight:3,
@@ -80,12 +84,12 @@ export const styles = StyleSheet.create({
   deliveryText: {
     fontSize: fontSizes.FONT15,
     color: appColors.font,
-      fontFamily:fonts.PoppinsSemiBold,
+      fontFamily:fonts.InterSemiBold,
     marginLeft: 6,
   },
   dash:{
     color:"#888",
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   },
 
   // 🔹 New dashed line style
@@ -112,7 +116,7 @@ export const styles = StyleSheet.create({
   },
   ratingBadgeText: {
     color: appColors.font,
-     fontFamily:fonts.PoppinsSemiBold,
+     fontFamily:fonts.InterSemiBold,
     fontSize: fontSizes.FONT14,
     marginHorizontal:4,
     marginRight:5,
@@ -122,7 +126,7 @@ export const styles = StyleSheet.create({
     color: '#baacacff',
     fontSize: fontSizes.FONT14,
     marginLeft: 8,
-      fontFamily:fonts.PoppinsRegular,
+      fontFamily:fonts.InterRegular,
   },
 });
 

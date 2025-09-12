@@ -8,7 +8,6 @@ import {
   Animated,
   StatusBar,
   ScrollView,
-  PanResponder
 } from "react-native";
 import { styles } from "./styles";
 import {
@@ -19,8 +18,9 @@ import {
 } from "../../utils/images/images";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const slides = [
   {
@@ -63,20 +63,21 @@ const OnboardingScreen = ({ navigation }) => {
   const flatListRef = useRef(null);
   const scrollX = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef(null);
+    const insets = useSafeAreaInsets();
 
   const handleNext = async () => {
     if (currentIndex < slides.length - 1) {
       flatListRef.current.scrollToIndex({ index: currentIndex + 1 });
     } else {
      await AsyncStorage.setItem("hasSeenOnboarding", "true");
-navigation.replace("SignIn");
+    navigation.replace("PhoneLogin");
    
     }
   };
 
   const handleSkip = async () => {
    await  AsyncStorage.setItem("hasSeenOnboarding", "true");
-navigation.replace("SignIn");
+navigation.replace("PhoneLogin");
    
   };
 
@@ -156,7 +157,7 @@ navigation.replace("SignIn");
         />
 
         {/* Bottom Card */}
-        <View style={styles.bottomCard}>
+         <View style={[styles.bottomCard, { paddingBottom: insets.bottom + 12 }]}>
           <ScrollView 
             ref={scrollViewRef}
             showsVerticalScrollIndicator={false}

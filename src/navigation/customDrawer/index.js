@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Linking } from "react-native";
+import { View, Text, TouchableOpacity, Linking, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { styles } from './styles';
 import appColors from "../../theme/appColors";
@@ -31,7 +31,7 @@ const handleLogout = async () => {
 };
 
   return (
-    <View style={styles.container}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainerStyle} style={styles.container}>
 <View style={styles.welcomeSection}>
  <View style={styles.avatar}>
             <Icon name="shirt-outline" size={28} color={appColors.white} />
@@ -61,7 +61,7 @@ const handleLogout = async () => {
           style={styles.menuItem}
           onPress={() => {
            props.navigation.closeDrawer();
-           navigation.navigate("OrderHistory");
+           navigation.navigate("Main" , {screen: "Orders"});
           }}
         >
           <Icon name="document-text-outline" size={20} color={appColors.font} />
@@ -155,7 +155,7 @@ const handleLogout = async () => {
 </View>
      
     
-    </View>
+    </ScrollView>
   );
 };
 

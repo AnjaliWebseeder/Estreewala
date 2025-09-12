@@ -6,6 +6,12 @@ const fonts = {
  PoppinsThin: 'Poppins-Thin',
  PoppinsExtraBold: 'Poppins-ExtraBold',
  PoppinsSemiBold: 'Poppins-Bold',
+ InterBlack:"Inter-Black",
+ InterBold:"Inter-Bold",
+ InterExtraBold:"Inter-ExtraBold",
+ InterMedium:"Inter-Medium",
+ InterRegular:"Inter-Regular",
+ InterSemiBold:"Inter-SemiBold"
 };
 
 export default fonts;

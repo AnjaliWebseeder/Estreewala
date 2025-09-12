@@ -53,14 +53,6 @@ const SetLocationScreen = () => {
           <Icon name="location" size={20} color={appColors.white} style={styles.locationIcon} />
           <Text style={styles.locationButtonText}>Use Current Location</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.manualLocationButton}
-          onPress={() => navigation.navigate('SearchLocation')}
-        >
-          <Icon name="search" size={21} color={appColors.blue} style={styles.searchIcon} />
-          <Text style={styles.manualLocationButtonText}>Search for location</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

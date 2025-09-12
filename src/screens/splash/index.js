@@ -82,12 +82,12 @@ export default function Splash({ navigation }) {
             navigation.replace("Main");
           } else {
             // Returning user but not logged in - go to SignIn
-            navigation.replace("SignIn");
+            navigation.replace("PhoneLogin");
           }
         }, 2000);
       } catch (error) {
         console.log("Splash error:", error);
-        navigation.replace("SignIn");
+        navigation.replace("PhoneLogin");
       }
     };
 

@@ -24,7 +24,8 @@ export const styles = StyleSheet.create({
     borderTopRightRadius:25
   },
   minimalTabButton: {
-     height: '60%',
+      height: '60%',
+    
 
   },
   minimalIconContainer: {
@@ -37,9 +38,10 @@ export const styles = StyleSheet.create({
     marginBottom:3
   },
   minimalTabLabel: {
-    fontSize: 11,
-    letterSpacing: 0.2,
-   
-    
+     fontSize: 11,
+  letterSpacing: 0.2,
+  lineHeight: 14,  // makes sure letters like "e" render fully
+  color: appColors.subTitle,
+  width:40,   
   },
 });

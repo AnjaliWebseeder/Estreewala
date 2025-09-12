@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { styles } from './styles';
 import appColors from '../../../theme/appColors';
 import Header from '../../../components/header'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const OrderConfirmation = ({ navigation }) => {
@@ -39,7 +40,8 @@ const OrderConfirmation = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
         <Header onBackPress={() => navigation.goBack()} titleStyle={{marginHorizontal:20}} containerStyle={{  justifyContent:"flex-start"}} title={`Order No. ${orderDetails.orderId}`}/>
       {/* Status with custom progress circle */}
@@ -119,6 +121,7 @@ const OrderConfirmation = ({ navigation }) => {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 };
 

@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
   mapLoadingText: {
     marginTop: 10,
     fontSize: fontSizes.FONT14,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: appColors.subTitle,
   },
   currentLocationButton: {
@@ -102,13 +102,13 @@ export const styles = StyleSheet.create({
   },
   addressLabel: {
     fontSize: fontSizes.FONT14,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     color: appColors.subTitle,
     marginBottom: 4,
   },
   addressText: {
     fontSize: fontSizes.FONT16,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: appColors.font,
     lineHeight: 22,
   },
@@ -125,7 +125,7 @@ export const styles = StyleSheet.create({
   confirmText: {
     color: appColors.white,
     fontSize: fontSizes.FONT16,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
   },
   disabled: {
     opacity: 0.6,
@@ -143,7 +143,7 @@ export const styles = StyleSheet.create({
   mapOverlayText: {
     marginTop: 10,
     fontSize: fontSizes.FONT16,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     color: appColors.font,
   },
 });

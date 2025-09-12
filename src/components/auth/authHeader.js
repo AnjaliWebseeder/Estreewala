@@ -31,14 +31,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: fontSizes.FONT26,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
     color: appColors.font,
     marginBottom: 4,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 14,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: appColors.subTitle,
     textAlign: 'center',
    

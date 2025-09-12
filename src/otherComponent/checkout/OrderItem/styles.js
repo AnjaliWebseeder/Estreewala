@@ -16,8 +16,8 @@ export const styles = StyleSheet.create({
   },
   itemImage: { width: 45, height: 45, borderRadius: 8, marginRight: 12 },
   itemInfo: { flex: 1 },
-  itemName: { fontSize: fontSizes.FONT17, fontFamily: fonts.PoppinsMedium, color: appColors.font, marginBottom: 0 },
-  itemPrice: { fontSize: fontSizes.FONT18, color: appColors.blue, fontFamily: fonts.PoppinsMedium },
+  itemName: { fontSize: fontSizes.FONT17, fontFamily: fonts.InterMedium, color: appColors.font, marginBottom: 0 },
+  itemPrice: { fontSize: fontSizes.FONT18, color: appColors.blue, fontFamily: fonts.InterMedium },
   quantityContainer: { 
     flexDirection: 'row', 
     alignItems: 'center', 
@@ -38,7 +38,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: 8, 
     minWidth: 20, 
     textAlign: 'center',
-    fontFamily: fonts.PoppinsRegular
+    fontFamily: fonts.InterRegular
   },
   removeItemButton: {
     padding: 8,
@@ -50,6 +50,6 @@ export const styles = StyleSheet.create({
   serviceTagText: {
     color: "#958f8fff",
     fontSize: 11,
-    fontFamily: fonts.PoppinsRegular
+    fontFamily: fonts.InterRegular
   },
 });

@@ -21,13 +21,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   text: {
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: appColors.subTitle,
     marginRight: 4,
     fontSize: 14,
   },
   buttonText: {
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
     color: appColors.blue,
     fontSize: 14,
   },

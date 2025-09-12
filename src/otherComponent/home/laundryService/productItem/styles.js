@@ -8,44 +8,65 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingHorizontal: 18,
     borderBottomWidth: 1,
     borderColor: "#F2F4F7",
     backgroundColor: "#fff",
-    paddingBottom:windowHeight(16),
-    paddingTop:windowHeight(10)
+    paddingVertical: windowHeight(8), // reduced vertical space
+    paddingBottom:windowHeight(12)
   },
   img: {
-    width: 64,
-    height: 64,
+    width: 56, // slightly smaller
+    height: 56,
     borderRadius: 8,
-    marginRight: windowHeight(17),
+    marginRight: windowHeight(12), // reduced gap between image and text
     resizeMode: "contain",
   },
   info: { flex: 1 },
-  name: { fontSize: 16, fontWeight: "600", color: appColors.font,fontFamily:fonts.PoppinsMedium },
-  price: { marginTop: 4, fontSize: 14, color: "#7B7F86",fontFamily:fonts.PoppinsRegular },
-  right: { width: 92, alignItems: "center", justifyContent: "center" },
+  name: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: appColors.font,
+    fontFamily: fonts.InterMedium,
+    marginBottom: 4, // tighter spacing
+  },
+  price: {
+    fontSize: 13,
+    color: "#7B7F86",
+    fontFamily: fonts.InterRegular,
+    flexDirection: "row",
+    alignItems: "center",
+    right:windowHeight(5)
+  
+  },
+  right: {
+    width: 88,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   addButton: {
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: appColors.blue,
     borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: windowHeight(1),
+    paddingHorizontal: 14,
+    paddingVertical: windowHeight(2),
     backgroundColor: "#fff",
   },
-  addText: { color: appColors.blue, fontFamily:fonts.PoppinsRegular,paddingTop:2},
+  addText: {
+    color: appColors.blue,
+    fontFamily: fonts.InterRegular,
+    paddingTop: 1,
+  },
   counter: {
     backgroundColor: appColors.blue,
-    borderRadius: 24,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    borderRadius: 20,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     flexDirection: "row",
     alignItems: "center",
   },
   qty: {
     color: "#fff",
-    marginHorizontal: 10,
+    marginHorizontal: 8,
     fontWeight: "700",
     minWidth: 18,
     textAlign: "center",

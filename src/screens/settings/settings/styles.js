@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 8,
-    fontFamily:fonts.PoppinsMedium
+    fontFamily:fonts.InterMedium
   },
   menuItem: {
     flexDirection: "row",
@@ -53,7 +53,7 @@ export const styles = StyleSheet.create({
   menuText: {
     fontSize: 16,
     color: appColors.font,
-   fontFamily:fonts.PoppinsRegular,
+   fontFamily:fonts.InterRegular,
     flex: 1,
   }
 });

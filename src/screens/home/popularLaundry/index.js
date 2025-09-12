@@ -38,7 +38,7 @@ const PopularLaundry = (props) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Popular Laundry</Text>
-        <TouchableOpacity style={styles.viewAllButton}>
+        <TouchableOpacity onPress={() => props.navigation.navigate('LaundryServiceList',{serviceName:"Popular Laundry"})} style={styles.viewAllButton}>
           <Text style={styles.viewAllText}>View All</Text>
         </TouchableOpacity>
       </View>
@@ -50,7 +50,7 @@ const PopularLaundry = (props) => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => props.navigation.navigate('LaundryScreen')} activeOpacity={0.9} style={styles.card}>
+          <TouchableOpacity onPress={() => props.navigation.navigate('LaundryScreen',{title: item.name})} activeOpacity={0.9} style={styles.card}>
             <View style={styles.imageContainer}>
               <Image source={item.image} style={styles.image} />
              

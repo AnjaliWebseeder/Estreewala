@@ -254,13 +254,7 @@ export default function ManageAddress({ navigation, route }) {
           </View>
         }
       />
-
-      {/* Add New Address */}
-      <TouchableOpacity style={styles.addBtn} onPress={() => openModal()}>
-        <Icon name="add-outline" size={20} color={appColors.blue} />
-        <Text style={styles.addBtnText}>Add New Address</Text>
-      </TouchableOpacity>
-
+      
       {/* Apply Button */}
       <TouchableOpacity 
         style={[styles.applyBtn, !selectedAddress && styles.applyBtnDisabled]} 

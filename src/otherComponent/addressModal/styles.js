@@ -22,13 +22,13 @@ export const styles = StyleSheet.create({
     marginBottom: 7,
     textAlign: "center",
     color: appColors.font,
-    fontFamily: fonts.PoppinsMedium
+    fontFamily: fonts.InterMedium
   },
   sectionLabel: {
     fontSize: 14,
     color: appColors.font,
     marginBottom: 8,
-    fontFamily: fonts.PoppinsMedium
+    fontFamily: fonts.InterMedium
   },
   
   // Address Type Row Styles
@@ -72,10 +72,10 @@ export const styles = StyleSheet.create({
   addressTypeLabel: {
     fontSize: 14,
     color: appColors.subTitle,
-    fontFamily: fonts.PoppinsRegular
+    fontFamily: fonts.InterRegular
   },
   addressTypeLabelSelected: {
-    fontFamily: fonts.PoppinsMedium
+    fontFamily: fonts.InterMedium
   },
 
   // Input Styles
@@ -86,7 +86,7 @@ export const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 8,
     fontSize: 14,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: appColors.font,
     lineHeight:23
   },
@@ -101,7 +101,7 @@ export const styles = StyleSheet.create({
     color: appColors.error,
     fontSize: 12,
     marginBottom: 12,
-    fontFamily: fonts.PoppinsRegular
+    fontFamily: fonts.InterRegular
   },
   
   // Button Styles
@@ -123,13 +123,13 @@ export const styles = StyleSheet.create({
   },
   cancelBtnText: {
     color: appColors.white,
-    fontFamily: fonts.PoppinsMedium
+    fontFamily: fonts.InterMedium
   },
   saveBtn: {
     backgroundColor: appColors.blue,
   },
   saveBtnText: {
     color: appColors.white,
-    fontFamily: fonts.PoppinsMedium
+    fontFamily: fonts.InterMedium
   },
 });

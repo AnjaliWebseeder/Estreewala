@@ -11,13 +11,13 @@ export const styles = StyleSheet.create({
   
   orderNo: {
     fontSize: fontSizes.FONT18,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
     color: appColors.darkText,
     marginLeft: 10,
   },
   orderDate: {
     fontSize: fontSizes.FONT13,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: appColors.subTitle,
 
   },
@@ -41,13 +41,13 @@ export const styles = StyleSheet.create({
   },
   statusLabel: {
     fontSize: fontSizes.FONT20,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: "#666",
     marginBottom: 1,
   },
   statusValue: {
     fontSize: fontSizes.FONT18,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     color: appColors.blue,
   },
     horizontalBorder:{
@@ -77,18 +77,18 @@ export const styles = StyleSheet.create({
   },
   grayLabel: {
     fontSize: fontSizes.FONT14HALF,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: "#666",
     marginBottom: 3,
   },
   timeTitle: {
     fontSize: fontSizes.FONT16,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
     color: appColors.darkText,
   },
   timeValue: {
     fontSize: fontSizes.FONT14HALF,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: "#666",
   },
   addressBox: {
@@ -99,7 +99,7 @@ export const styles = StyleSheet.create({
   },
   addressValue: {
     fontSize: fontSizes.FONT15HALF,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     color: appColors.darkText,
   },
   itemList: {
@@ -108,7 +108,7 @@ export const styles = StyleSheet.create({
   },
   itemHeader: {
     fontSize: fontSizes.FONT18,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     color: "#666",
     marginBottom: 10,
   },
@@ -119,20 +119,20 @@ export const styles = StyleSheet.create({
   },
   itemName: {
     fontSize: fontSizes.FONT16,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
     color: appColors.darkText,
     flex: 1,
   },
   itemService: {
     fontSize: fontSizes.FONT14,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: "#666",
     flex: 1,
     textAlign: 'center',
   },
   itemPrice: {
     fontSize: fontSizes.FONT17,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
     color: appColors.darkText,
   },
   totalBox: {
@@ -149,22 +149,22 @@ export const styles = StyleSheet.create({
   },
   totalLabel: {
     fontSize: fontSizes.FONT15,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     color: "#666",
   },
   totalValue: {
     fontSize: fontSizes.FONT17,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
     color: appColors.darkText,
   },
   paymentMethod: {
     fontSize: fontSizes.FONT18,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     color: appColors.blue,
   },
   totalFinal: {
     fontSize: fontSizes.FONT22,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     color: appColors.blue,
   },
 });

@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: fontSizes.FONT17,
     color:appColors.font,
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily:fonts.InterMedium,
     marginRight: 12,
     lineHeight:windowHeight(21)
   },
@@ -51,7 +51,7 @@ export const styles = StyleSheet.create({
     fontSize: fontSizes.FONT15,
     lineHeight: 22,
     color:appColors.font,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
   },
   helpSection: {
     backgroundColor:'#EEF4F7',
@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
     fontSize: 17,
     color:appColors.font,
     marginBottom: 8,
-     fontFamily:fonts.PoppinsMedium,
+     fontFamily:fonts.InterMedium,
   },
   helpText: {
     fontSize: 15,
@@ -81,6 +81,6 @@ export const styles = StyleSheet.create({
   helpButtonText: {
     fontSize: 14,
     color: appColors.white,
-fontFamily:fonts.PoppinsMedium,
+fontFamily:fonts.InterMedium,
   },
 });

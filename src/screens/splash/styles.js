@@ -22,7 +22,7 @@ export const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.8)',
     letterSpacing: 3,
     marginBottom: 5,
-  fontFamily:fonts.PoppinsSemiBold
+  fontFamily:fonts.InterSemiBold
   },
   appName: {
     fontSize: 32,
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 5,
-    fontFamily:fonts.PoppinsBold
+    fontFamily:fonts.InterBold
   },
   bubble: {
     position: 'absolute',

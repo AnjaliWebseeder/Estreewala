@@ -51,7 +51,7 @@ export const styles = StyleSheet.create({
   menuText: {
     fontSize: 14.5,
     color: appColors.font,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     flex: 1,
   },
   chevron: {

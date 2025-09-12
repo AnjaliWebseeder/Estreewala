@@ -15,7 +15,7 @@ import { service5,service6,service7,service8,service9,service10,service11,servic
 import fonts from "../../../theme/appFonts";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import appColors from "../../../theme/appColors";
-import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const PRODUCT_DATA = {
   men: [
@@ -48,9 +48,11 @@ const SERVICES = [
   { label: "Iron Only", value: "iron_only" },
 ];
 
-export default function LaundryScreen({navigation}) {
+export default function LaundryScreen({ navigation, route }) {
+    const { title } = route.params || {};
   const [cart, setCart] = useState({});
   const [category, setCategory] = useState("men");
+    const insets = useSafeAreaInsets();  
 
 const PRODUCTS = PRODUCT_DATA[category];
   const [selectedService, setSelectedService] = useState(() =>
@@ -108,9 +110,9 @@ const PRODUCTS = PRODUCT_DATA[category];
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <Header containerStyle={{ paddingVertical: 10}}  onBackPress={() => navigation.goBack() } />
+      <Header title={"My Cart"} containerStyle={{ paddingVertical: 10}}  onBackPress={() => navigation.goBack() } />
       <View style={styles.header}>
-        <Text style={styles.title}>QuickClean Laundry</Text>
+        <Text style={styles.title}>{title ? title : "QuickClean Laundry"} </Text>
         <Text style={styles.sub}>Central Park | 1.5 km</Text>
       </View>
      <View style={styles.dashedLine}/>
@@ -147,17 +149,17 @@ const PRODUCTS = PRODUCT_DATA[category];
       />
 
       {totalItems > 0 && (
-        <View style={styles.cartBar}>
+         <View style={[styles.cartBar, { marginBottom: insets.bottom || 12 }]}>
           <View>
             <Text style={styles.cartTitle}>
-              {totalItems} Item{totalItems > 1 ? "s" : ""} • <Text style={{fontFamily:fonts.PoppinsRegular}}>
+              {totalItems} Item{totalItems > 1 ? "s" : ""} • <Text style={{fontFamily:fonts.InterRegular}}>
                 <Icon name="currency-rupee" size={13} color={appColors.white} />
                 </Text>{totalPrice.toFixed(2)}
             </Text>
             <Text style={styles.cartSub}>Extra charges may apply</Text>
           </View>
 
-          <TouchableOpacity onPress={() => navigation.navigate('LaundryCheckoutScreen') } style={styles.cartBtn} activeOpacity={0.85}>
+          <TouchableOpacity onPress={() => navigation.navigate('LaundryCheckoutScreen',{laundryName:title}) } style={styles.cartBtn} activeOpacity={0.85}>
             <Text style={styles.cartBtnText}>View Cart</Text>
           </TouchableOpacity>
         </View>

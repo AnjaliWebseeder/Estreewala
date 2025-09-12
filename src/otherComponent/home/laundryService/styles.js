@@ -4,9 +4,9 @@ import { fontSizes, windowHeight } from "../../../theme/appConstant";
 import appColors from "../../../theme/appColors";
 export const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: appColors.white },
-  header: { paddingHorizontal: 18 },
-  title: { fontSize: fontSizes.FONT25, color: appColors.font , fontFamily:fonts.PoppinsSemiBold},
-  sub: { marginTop: windowHeight(0), color:appColors.lightFont,fontFamily: fonts.PoppinsRegular,fontSize:fontSizes.FONT16},
+  header: { paddingHorizontal: 18,paddingTop:windowHeight(6) },
+  title: { fontSize: fontSizes.FONT22, color: appColors.font , fontFamily:fonts.InterSemiBold},
+  sub: { marginTop: windowHeight(0), color:appColors.lightFont,fontFamily: fonts.InterRegular,fontSize:fontSizes.FONT16},
   metaRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     paddingBottom: 3,
   },
   categoryTitle:{
-     fontSize: fontSizes.FONT20, color: appColors.font , fontFamily:fonts.PoppinsMedium
+     fontSize: fontSizes.FONT20, color: appColors.font , fontFamily:fonts.InterMedium
 
   },
   dashedLine: {
@@ -24,7 +24,7 @@ borderColor: "#ccc",
 marginVertical: 3,
 marginTop:windowHeight(10)
 },
-  meta: { paddingVertical: 12, color:appColors.subTitle,fontFamily:fonts.PoppinsSemiBold,fontSize:fontSizes.FONT16 },
+  meta: { paddingVertical: 12, color:appColors.subTitle,fontFamily:fonts.InterSemiBold,fontSize:fontSizes.FONT16 },
   cartBar: {
     position: "absolute",
     left: 12,
@@ -39,13 +39,13 @@ marginTop:windowHeight(10)
     justifyContent: "space-between",
     elevation: 10,
   },
-  cartTitle: { color:appColors.white, fontFamily:fonts.PoppinsMedium, fontSize: 15 },
-  cartSub: { color: "#EDEFFF", fontSize: 12, marginTop: 0,fontFamily:fonts.PoppinsRegular },
+  cartTitle: { color:appColors.white, fontFamily:fonts.InterMedium, fontSize: 15 },
+  cartSub: { color: "#EDEFFF", fontSize: 12, marginTop: 0,fontFamily:fonts.InterRegular },
   cartBtn: {
     backgroundColor:appColors.white,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 12,
   },
-  cartBtnText: { color: appColors.font, fontFamily:fonts.PoppinsMedium },
+  cartBtnText: { color: appColors.font, fontFamily:fonts.InterMedium },
 });

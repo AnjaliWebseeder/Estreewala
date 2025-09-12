@@ -5,7 +5,7 @@ import fonts from '../../../theme/appFonts';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FD',
+    backgroundColor: appColors.white,
   },
   content: {
     paddingHorizontal: 20,
@@ -15,7 +15,7 @@ export const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     color: appColors.subTitle,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     textAlign: 'center',
     marginBottom: 32,
   },
@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     color: appColors.font,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     marginBottom: 8,
   },
   passwordInput: {
@@ -41,12 +41,12 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: appColors.font,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
   },
   saveButton: {
     backgroundColor: appColors.blue,
-    borderRadius: 12,
-    height: 50,
+    borderRadius: 10,
+    paddingVertical:12,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 8,
@@ -55,18 +55,18 @@ export const styles = StyleSheet.create({
   saveButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
   },
   passwordRequirements: {
     fontSize: 12,
     color: appColors.subTitle,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     lineHeight: 20,
   },
     errorText: {
     color: appColors.error || '#FF3B30',
     fontSize: 12,
     marginTop: 4,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
   }
 });

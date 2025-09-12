@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     color: appColors.font,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
     marginTop:2
 
   },
@@ -38,7 +38,7 @@ export const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-   fontFamily:fonts.PoppinsMedium,
+   fontFamily:fonts.InterMedium,
     color: appColors.font,
 
     marginBottom: 8,
@@ -59,7 +59,7 @@ export const styles = StyleSheet.create({
   popularTagText: {
     color: appColors.blue,
     fontSize: 12.6,
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily:fonts.InterMedium,
   },
   recentSearches: {
     minHeight: 100,
@@ -69,7 +69,7 @@ export const styles = StyleSheet.create({
   noRecentText: {
     color: appColors.font,
     fontSize: 14,
-        fontFamily:fonts.PoppinsRegular,
+        fontFamily:fonts.InterRegular,
   },
   resultsContainer: {
     flex: 1,
@@ -111,7 +111,7 @@ export const styles = StyleSheet.create({
   },
   serviceName: {
     fontSize: 16,
-  fontFamily:fonts.PoppinsMedium,
+  fontFamily:fonts.InterMedium,
     color: appColors.font,
 
     flex: 1,
@@ -126,7 +126,7 @@ export const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 12,
-  fontFamily:fonts.PoppinsMedium,
+  fontFamily:fonts.InterMedium,
     color: appColors.font,
    marginTop:2,
     marginLeft: 4,
@@ -137,7 +137,7 @@ export const styles = StyleSheet.create({
   servicesText: {
     fontSize: 12,
     color: appColors.subTitle,
-      fontFamily:fonts.PoppinsRegular,
+      fontFamily:fonts.InterRegular,
   },
   serviceFooter: {
     flexDirection: 'row',
@@ -152,13 +152,13 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: appColors.subTitle,
     marginLeft: 8,
-      fontFamily:fonts.PoppinsRegular,
+      fontFamily:fonts.InterRegular,
       marginTop:2.5
      
   },
   priceText: {
     fontSize: 13,
-  fontFamily:fonts.PoppinsMedium,
+  fontFamily:fonts.InterMedium,
     color: appColors.blue,
     marginTop:7
   },
@@ -170,7 +170,7 @@ export const styles = StyleSheet.create({
   },
   noResultsText: {
     fontSize: 18,
-  fontFamily:fonts.PoppinsMedium,
+  fontFamily:fonts.InterMedium,
     color: appColors.subTitle,
     marginTop: 16,
     marginBottom: 8,

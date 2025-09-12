@@ -17,7 +17,7 @@ const SignInScreen = () => {
 
  const handleSignIn = async () => {
      try {
-      await login('user_token_here'); // Save token
+      // await login('user_token_here'); // Save token
         console.log('Sign in with:', { email, password });
           navigation.navigate('SetLocation')
     } catch (error) {

@@ -54,7 +54,7 @@ export const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontFamily:fonts.PoppinsSemiBold,
+    fontFamily:fonts.InterSemiBold,
     color: appColors.font,
     marginBottom:windowHeight(0),
     marginTop:windowHeight(2)
@@ -62,13 +62,13 @@ export const styles = StyleSheet.create({
   date: {
     fontSize: 12,
     color: "#8E8E93",
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   },
   subText: {
     fontSize: 13,
     color: "#8E8E93",
     marginTop: 2,
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   },
   statusBadge: {
     paddingVertical: 3,
@@ -79,6 +79,6 @@ export const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 12,
-  fontFamily:fonts.PoppinsRegular
+  fontFamily:fonts.InterRegular
   },
 });

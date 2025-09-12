@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
   skipText: {
     fontSize: 16,
     color: appColors.font,
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
   },
   content: {
     flex: 1,
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
   },
   title: {
     fontSize: fontSizes.FONT25,
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily:fonts.InterMedium,
     color:appColors.font,
     textAlign: 'center',
     marginBottom: 5,
@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
   locationButtonText: {
     color: appColors.white,
     fontSize: 14,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
   },
   manualLocationButton: {
     flexDirection: 'row',
@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
   manualLocationButtonText: {
     color: appColors.blue,
     fontSize: 14,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
   },
   blank:{
     marginBottom:20

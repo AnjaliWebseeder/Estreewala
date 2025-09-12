@@ -8,8 +8,6 @@ import {
   Animated, 
   KeyboardAvoidingView, 
   Platform,
-  Modal,
-  FlatList
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,7 +25,6 @@ const PhoneLoginScreen = () => {
   const [focusedField, setFocusedField] = useState(null);
   const [resendTimer, setResendTimer] = useState(30);
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
-  const [showCountryPicker, setShowCountryPicker] = useState(false);
   const phoneInputRef = useRef();
   const fadeAnim = useRef(new Animated.Value(0)).current;
     const {  login } = useAuth();
@@ -57,8 +54,7 @@ const PhoneLoginScreen = () => {
 
   const handleVerifyOtp =  async () => {
     console.log('Verify OTP:', otp);
-      await login('user_token_here'); // Save token
-    navigation.navigate('SetLocation')
+    navigation.navigate('SignUp')
     // Handle OTP verification logic
   };
 
@@ -72,19 +68,8 @@ const PhoneLoginScreen = () => {
 
   const selectCountry = (country) => {
     setSelectedCountry(country);
-    setShowCountryPicker(false);
   };
 
-  const renderCountryItem = ({ item }) => (
-    <TouchableOpacity 
-      style={styles.countryItem}
-      onPress={() => selectCountry(item)}
-    >
-      <Text style={styles.flag}>{item.flag}</Text>
-      <Text style={styles.countryName}>{item.name}</Text>
-      <Text style={styles.dialCode}>{item.dialCode}</Text>
-    </TouchableOpacity>
-  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -106,9 +91,8 @@ const PhoneLoginScreen = () => {
           {!isOtpSent ? (
             <>
               <View style={styles.phoneInputContainer}>
-                <TouchableOpacity 
+                <TouchableOpacity  activeOpacity={0.9}
                   style={[styles.countryCodeContainer, focusedField === 'country' && styles.focusedInput]}
-                  onPress={() => setShowCountryPicker(true)}
                   onFocus={() => setFocusedField('country')}
                   onBlur={() => setFocusedField(null)}
                 >
@@ -131,7 +115,7 @@ const PhoneLoginScreen = () => {
               </View>
 
               <TouchableOpacity 
-                style={[styles.submitButton, phone.length >= 6 ? styles.activeButton : styles.inactiveButton]} 
+                style={[styles.submitButton, phone.length == 10 ? styles.activeButton : styles.inactiveButton]} 
                 onPress={handleSendOtp}
                 disabled={phone.length < 6}
               >
@@ -176,35 +160,6 @@ const PhoneLoginScreen = () => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-
-      {/* Country Picker Modal */}
-      <Modal
-        visible={showCountryPicker}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setShowCountryPicker(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select Country</Text>
-              <TouchableOpacity 
-                onPress={() => setShowCountryPicker(false)}
-                style={styles.closeButton}
-              >
-             <Ionicons name="close" size={24} color="#333" />
-              </TouchableOpacity>
-            </View>
-            
-            <FlatList
-              data={countries}
-              renderItem={renderCountryItem}
-              keyExtractor={item => item.code}
-              showsVerticalScrollIndicator={false}
-            />
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 };

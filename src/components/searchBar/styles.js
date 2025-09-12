@@ -30,7 +30,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     color: appColors.font,
-     fontFamily:fonts.PoppinsRegular
+     fontFamily:fonts.InterRegular
   },
   filterButton: {
     width: windowHeight(35),

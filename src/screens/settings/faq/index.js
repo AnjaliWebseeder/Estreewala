@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 import Header from "../../../components/header";
 import appColors from '../../../theme/appColors';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const FAQS = ({ navigation }) => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -46,7 +47,8 @@ const FAQS = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
+   <SafeAreaView style={styles.container}>
+     <View style={styles.container}>
        <Header
         title="FAQs"
         onBackPress={() => navigation.goBack()}
@@ -95,6 +97,7 @@ const FAQS = ({ navigation }) => {
         </View>
       </ScrollView>
     </View>
+   </SafeAreaView>
   );
 };
 

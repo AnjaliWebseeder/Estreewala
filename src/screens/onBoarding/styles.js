@@ -54,7 +54,7 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 16,
     lineHeight: 32,
-    fontFamily:fonts.PoppinsMedium
+    fontFamily:fonts.InterMedium
   },
   description: {
     fontSize: fontSizes.FONT16,
@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
     lineHeight: 24,
     paddingHorizontal: 20,
     marginBottom: 28,
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   },
   pagination: {
     flexDirection: "row",
@@ -99,7 +99,7 @@ export const styles = StyleSheet.create({
     color:appColors.white,
     fontSize: fontSizes.FONT16,
     textAlign: "center",
-    fontFamily:fonts.PoppinsMedium
+    fontFamily:fonts.InterMedium
   },
   skipBtn: {
     position: "absolute",
@@ -111,7 +111,7 @@ export const styles = StyleSheet.create({
   skipText: {
     fontSize: fontSizes.FONT19,
     color: appColors.font,
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   },
   row: {
     flexDirection: "row",

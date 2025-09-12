@@ -60,11 +60,11 @@ export default function Profile({ navigation }) {
             label="Notification"
             onPress={() => navigation.navigate("Notification")}
           />
-          <MenuItem
+          {/* <MenuItem
             icon={<OrdersIcon size={20} />}
             label="Order History"
             onPress={() => navigation.navigate("")}
-          />
+          /> */}
           <MenuItem
             icon={
               <Icon

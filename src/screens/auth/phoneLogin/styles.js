@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
   countryCodeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  
+  height: 56, // 👈 keep same as container height
     paddingHorizontal: 15,
     paddingVertical: 15,
     borderTopLeftRadius: 8,
@@ -41,34 +41,32 @@ export const styles = StyleSheet.create({
   flag: {
     fontSize: 20,
     marginRight: 8,
-    top:-3
   },
   countryCodeText: {
-    fontFamily: fonts.PoppinsMedium,
-    fontSize: fontSizes.FONT18,
+    fontFamily: fonts.InterMedium,
+ fontSize: fontSizes.FONT16, // slightly smaller for balance
     color: '#333',
     marginRight: 8,
   },
-  phoneInput: {
-    flex: 1,
-  
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    borderTopRightRadius: 8,
-    borderBottomRightRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e6e6e6',
-    fontFamily: fonts.PoppinsMedium,
-     fontSize: fontSizes.FONT18,
-    color: '#333',
-    backgroundColor: appColors.white,
-    shadowColor: appColors.blue,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 2,
-    borderWidth:0.1
-  },
+phoneInput: {
+  flex: 1,
+  paddingHorizontal: 12,
+  borderTopRightRadius: 8,
+  borderBottomRightRadius: 8,
+  borderColor: '#e6e6e6',
+  fontFamily: fonts.InterMedium,
+  fontSize: fontSizes.FONT16,
+  color: '#333',
+  backgroundColor: appColors.white,
+  shadowColor: appColors.blue,
+  shadowOffset: { width: 0, height: 0 },
+  shadowOpacity: 0.1,
+  shadowRadius: 10,
+  elevation: 2,
+  borderWidth: 0.1,
+  height: 56, // 👈 match height
+  textAlignVertical: 'center', // 👈 ensures text is vertically centered
+},
   focusedInput: {
     borderColor: appColors.blue,
     backgroundColor: '#fff',
@@ -88,7 +86,7 @@ export const styles = StyleSheet.create({
   },
   submitButtonText: {
     color: appColors.white,
-    fontFamily: fonts.PoppinsSemiBold,
+    fontFamily: fonts.InterSemiBold,
     fontSize: 16,
   },
   resendOtp: {
@@ -99,7 +97,7 @@ export const styles = StyleSheet.create({
     opacity: 0.5,
   },
   resendOtpText: {
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     color: appColors.blue,
     fontSize: 14,
   },
@@ -107,7 +105,7 @@ export const styles = StyleSheet.create({
     marginTop: 0,
   },
   termsText: {
-    fontFamily: fonts.PoppinsRegular,
+    fontFamily: fonts.InterRegular,
     fontSize: 12,
     color:appColors.font,
     textAlign: 'center',
@@ -116,50 +114,19 @@ export const styles = StyleSheet.create({
   highlightText: {
     color: appColors.blue,
   },
-  // Modal styles
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    maxHeight: '80%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  modalTitle: {
-    fontFamily: fonts.PoppinsSemiBold,
-    fontSize: 18,
-    color: '#333',
-  },
-  closeButton: {
-    padding: 5,
-  },
-  countryItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  countryName: {
-    flex: 1,
-    fontFamily: fonts.PoppinsRegular,
-    fontSize: 16,
-    color: '#333',
-    marginLeft: 10,
-  },
-  dialCode: {
-    fontFamily: fonts.PoppinsMedium,
-    fontSize: 16,
-    color:appColors.font,
-  },
+  errorText: {
+  color: appColors.error,
+  fontSize: 12,
+  marginTop: 4,
+  marginBottom: 8,
+  marginLeft: 10,
+  fontFamily: fonts.InterMedium
+},
+errorInput: {
+  borderColor: appColors.error,
+  borderWidth: 1,
+},
+disabledResend: {
+  opacity: 0.5,
+},
 });

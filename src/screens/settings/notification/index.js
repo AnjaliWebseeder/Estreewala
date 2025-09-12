@@ -4,6 +4,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import Header from "../../../components/header";
 import appColors from "../../../theme/appColors";
 import fonts from "../../../theme/appFonts";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const notifications = [
   {
@@ -59,7 +60,8 @@ const Notification = ({navigation}) => {
   );
 
   return (
-    <View style={styles.container}>
+  <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
       <Header
         title="Notification"
         onBackPress={() => navigation.goBack()}
@@ -75,6 +77,7 @@ const Notification = ({navigation}) => {
         showsVerticalScrollIndicator={false}
       />
     </View>
+  </SafeAreaView>
   );
 };
 
@@ -111,13 +114,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily:fonts.InterMedium,
     color:appColors.font,
     marginBottom: 2,
   },
   time: {
     fontSize: 12,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
     color:appColors.subTitle,
   },
 });

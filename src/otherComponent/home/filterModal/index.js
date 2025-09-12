@@ -1,23 +1,34 @@
-import { View, Text , Modal,TouchableOpacity} from 'react-native'
+import { View, Text, Modal, TouchableOpacity } from 'react-native'
+import Slider from '@react-native-community/slider';
 import { styles } from './styles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useState } from 'react';
+import appColors from '../../../theme/appColors';
 
 export default function FilterModal ({ visible, onClose, onApplyFilters }) {
   const [rating, setRating] = useState(0);
   const [deliveryTime, setDeliveryTime] = useState('');
-  const [distance, setDistance] = useState('');
+  const [distance, setDistance] = useState(5); // Default to 5 km
+  const [tempDistance, setTempDistance] = useState(5); // Temporary value for slider
 
   const applyFilters = () => {
-    // onApplyFilters({ rating, deliveryTime, distance });
+    // setDistance(tempDistance); // Set the final distance when applying
+    // onApplyFilters({ rating, deliveryTime, distance: tempDistance });
     onClose();
   };
 
   const resetFilters = () => {
     setRating(0);
     setDeliveryTime('');
-    setDistance('');
+    setTempDistance(5);
+    setDistance(5);
+  };
+
+  const formatDistance = (value) => {
+    if (value === 0) return 'Any distance';
+    if (value === 10) return '10+ km';
+    return `${value} km`;
   };
 
   return (
@@ -37,7 +48,7 @@ export default function FilterModal ({ visible, onClose, onApplyFilters }) {
           </View>
 
           <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>Minimum Rating</Text>
+            <Text style={[styles.filterLabel,{marginBottom:4}]}>Minimum Rating</Text>
             <View style={styles.ratingContainer}>
               {[1, 2, 3, 4, 5].map((star) => (
                 <TouchableOpacity
@@ -55,28 +66,27 @@ export default function FilterModal ({ visible, onClose, onApplyFilters }) {
             </View>
           </View>
 
-       
-
           <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>Distance</Text>
-            <View style={styles.optionsContainer}>
-              {['Under 1 km', '1-3 km', '3-5 km', '5+ km'].map((dist) => (
-                <TouchableOpacity
-                  key={dist}
-                  style={[
-                    styles.optionButton,
-                    distance === dist && styles.optionButtonSelected
-                  ]}
-                  onPress={() => setDistance(dist)}
-                >
-                  <Text style={[
-                    styles.optionText,
-                    distance === dist && styles.optionTextSelected
-                  ]}>
-                    {dist}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+            <Text style={[styles.filterLabel,{marginBottom:6}]}>
+              Maximum Distance: {formatDistance(tempDistance)}
+            </Text>
+            <View style={styles.sliderContainer}>
+              <Slider
+                style={styles.slider}
+                minimumValue={0}
+                maximumValue={10}
+                step={1}
+                value={tempDistance}
+                onValueChange={setTempDistance}
+                minimumTrackTintColor={appColors.font}
+                maximumTrackTintColor="#e9ecef"
+                thumbTintColor={appColors.font}
+              />
+              <View style={styles.sliderLabels}>
+                <Text style={styles.sliderLabel}>0 km</Text>
+                <Text style={styles.sliderLabel}>5 km</Text>
+                <Text style={styles.sliderLabel}>10+ km</Text>
+              </View>
             </View>
           </View>
 

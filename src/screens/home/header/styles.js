@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
     fontSize: fontSizes.FONT24,
     marginTop:windowHeight(10),
     lineHeight:windowHeight(22),
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily:fonts.InterMedium,
     color:appColors.font ,
      paddingHorizontal: 16,  
   

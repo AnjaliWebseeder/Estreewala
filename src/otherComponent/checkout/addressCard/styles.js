@@ -9,7 +9,7 @@ export const addressStyles = StyleSheet.create({
     paddingHorizontal: windowHeight(1),
   },
   titleStyle:{
-     fontFamily:fonts.PoppinsRegular,
+     fontFamily:fonts.InterRegular,
      color:appColors.blue,
      fontSize:fontSizes.FONT16,
 
@@ -22,13 +22,13 @@ export const addressStyles = StyleSheet.create({
     color: '#666',
     lineHeight: 20,
     marginHorizontal:windowHeight(30),
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   },
   placeholderSubtext: {
     fontSize: 14,
     color: '#666',
     marginHorizontal:windowHeight(14),
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   },
   editButton: {
     paddingHorizontal: 8,

@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import fonts from "../../theme/appFonts";
 import appColors from "../../theme/appColors";
+import { windowHeight } from "../../theme/appConstant";
 
 const Header = ({ title, onBackPress, onRightPress, showNotificationIcon,containerStyle,titleStyle }) => {
   return (
@@ -32,8 +33,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 18,
-    paddingTop: 27,
+    paddingVertical: windowHeight(12),
+    paddingTop: windowHeight(17),
     position: "relative",
   },
   arrowView: {
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
     right: 0,
     textAlign: "center",
     fontSize: 18,
-    fontFamily: fonts.PoppinsMedium,
+    fontFamily: fonts.InterMedium,
     color: appColors.font,
   },
   rightIcon: {

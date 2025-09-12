@@ -25,14 +25,14 @@ export const modalStyles = StyleSheet.create({
   modalTitle: { 
     fontSize: fontSizes.FONT20,  
     color: '#333',
-    fontFamily:fonts.PoppinsMedium
+    fontFamily:fonts.InterMedium
   },
 
   sectionTitle: { 
     fontSize: 16, 
     color: '#333', 
     marginBottom: 12,
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   },
  
   dateButton: { 
@@ -49,7 +49,7 @@ export const modalStyles = StyleSheet.create({
   dateButtonText:{
     marginHorizontal:windowHeight(10),
     color:appColors.font,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
     marginTop:windowHeight(2)
   },
   slotsSection: { 
@@ -83,7 +83,7 @@ export const modalStyles = StyleSheet.create({
   timeSlotText: { 
     fontSize: 14, 
     color: '#666', 
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   },
   timeSlotTextSelected: { 
     color: appColors.blue, 
@@ -102,7 +102,7 @@ export const modalStyles = StyleSheet.create({
   confirmButtonText: { 
     color: '#fff', 
     fontSize: 16, 
-    fontFamily:fonts.PoppinsMedium
+    fontFamily:fonts.InterMedium
   },
   addressItem: { 
     flexDirection: 'row', 
@@ -170,7 +170,7 @@ export const modalStyles = StyleSheet.create({
   addAddressText: { 
     fontSize: 14, 
     color: appColors.blue, 
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
     marginLeft: 8 
   },
   input: { 
@@ -210,17 +210,17 @@ export const modalStyles = StyleSheet.create({
   },
   couponCode: { 
     fontSize: 14, 
-   fontFamily:fonts.PoppinsMedium,
+   fontFamily:fonts.InterMedium,
     color: '#333' 
   },
   couponDesc: { 
     fontSize: 12, 
     color: '#666' ,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
   },
   applyText: { 
     color: appColors.blue, 
-  fontFamily:fonts.PoppinsMedium,
+  fontFamily:fonts.InterMedium,
   fontSize:fontSizes.FONT16
   },
   paymentItem: { 
@@ -235,12 +235,12 @@ export const modalStyles = StyleSheet.create({
     marginLeft: 12, 
     fontSize: 16, 
     color: '#333' ,
-    fontFamily:fonts.PoppinsRegular
+    fontFamily:fonts.InterRegular
   },
 
   paymentTextSelected: { 
     color: appColors.blue, 
-   fontFamily:fonts.PoppinsMedium
+   fontFamily:fonts.InterMedium
   },
     iconStyle:{
     height:windowHeight(15),
@@ -258,6 +258,6 @@ export const modalStyles = StyleSheet.create({
   payButtonText: { 
     color: '#fff', 
     fontSize: 16, 
-    fontFamily:fonts.PoppinsMedium
+    fontFamily:fonts.InterMedium
   }
 });

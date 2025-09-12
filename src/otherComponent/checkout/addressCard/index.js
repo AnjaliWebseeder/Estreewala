@@ -5,11 +5,11 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { addressStyles } from "./styles";
-import appColors from "../../../theme/appColors";
+
 export const AddressCard = ({ address, onPress, showEdit }) => {
   if (!address) {
     return (
-      <TouchableOpacity style={addressStyles.card} onPress={onPress}>
+      <TouchableOpacity style={addressStyles.card} >
         <View style={addressStyles.cardContent}>
           <View style={addressStyles.textContainer}>
             <Text style={addressStyles.placeholderSubtext}>B 101, Nirvana Point, Hemllition</Text>
@@ -21,7 +21,7 @@ export const AddressCard = ({ address, onPress, showEdit }) => {
   }
 
   return (
-   <TouchableOpacity onPress={onPress}>
+   <TouchableOpacity>
   <View style={addressStyles.cardContent}>
     <View style={addressStyles.textContainer}>
       <Text style={addressStyles.addressText} numberOfLines={2}>
@@ -29,7 +29,7 @@ export const AddressCard = ({ address, onPress, showEdit }) => {
       </Text>
     </View>
     {showEdit && (
-      <TouchableOpacity style={addressStyles.editButton}>
+      <TouchableOpacity onPress={onPress} style={addressStyles.editButton}>
         <Icon name="pencil-outline" size={15} color="#666" />
       </TouchableOpacity>
     )}

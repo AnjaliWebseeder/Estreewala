@@ -13,7 +13,6 @@ import PhoneLogin from '../screens/auth/phoneLogin';
 import OtpInput from '../screens/auth/phoneLogin/otpInput';
 import SetLocation from '../otherComponent/location/setLocation';
 import ConfirmLocation from '../otherComponent/location/confirmLocation';
-import SearchLocation from '../otherComponent/location/searchLocation';
 import BottomTab from './bottomTab';
 import Notification from '../screens/settings/notification';
 import CustomDrawerContent from './customDrawer';
@@ -82,7 +81,6 @@ export default function AppNavigation() {
               <Stack.Screen name="Main" component={BottomTab} />
               <Stack.Screen name="SetLocation" component={SetLocation} />
               <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
-              <Stack.Screen name="SearchLocation" component={SearchLocation} />
               <Stack.Screen name="Notification" component={Notification} />
               <Stack.Screen name="AboutUs" component={AboutUs} />
               <Stack.Screen name="ContactSupport" component={ContactSupport} />
@@ -105,7 +103,6 @@ export default function AppNavigation() {
             <>
               <Stack.Screen name="SetLocation" component={SetLocation} />
               <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
-              <Stack.Screen name="SearchLocation" component={SearchLocation} />
               <Stack.Screen name="Main" component={BottomTab} />
               <Stack.Screen name="Notification" component={Notification} />
               <Stack.Screen name="AboutUs" component={AboutUs} />

@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
   },
   title: {
     fontSize: fontSizes.FONT22,
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily:fonts.InterMedium,
     marginBottom: 8,
    color:appColors.font,
     paddingHorizontal: 16,
@@ -50,7 +50,7 @@ export const styles = StyleSheet.create({
   },
   offerTitle: {
     fontSize: 16,
-    fontFamily:fonts.PoppinsMedium,
+    fontFamily:fonts.InterMedium,
     color: appColors.title,
     marginBottom: 2,
   },
@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
     fontSize: fontSizes.FONT16,
     color:appColors.subTitle, 
     lineHeight: 18,
-    fontFamily:fonts.PoppinsRegular,
+    fontFamily:fonts.InterRegular,
     lineHeight:20
   },
   dotsContainer: {
