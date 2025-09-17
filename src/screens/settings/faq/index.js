@@ -17,7 +17,7 @@ const FAQS = ({ navigation }) => {
     },
     {
       question: "What payment methods do you accept?",
-      answer: "We accept credit/debit cards, UPI, net banking, and cash on delivery."
+      answer: "We accept and cash on delivery."
     },
     {
       question: "How can I track my order?",

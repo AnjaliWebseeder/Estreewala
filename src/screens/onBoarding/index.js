@@ -157,7 +157,7 @@ navigation.replace("PhoneLogin");
         />
 
         {/* Bottom Card */}
-         <View style={[styles.bottomCard, { paddingBottom: insets.bottom + 12 }]}>
+         <View style={[styles.bottomCard, { paddingBottom: insets.bottom + 18 }]}>
           <ScrollView 
             ref={scrollViewRef}
             showsVerticalScrollIndicator={false}

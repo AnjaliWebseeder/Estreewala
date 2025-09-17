@@ -36,7 +36,7 @@ const OrderConfirmation = ({ navigation }) => {
     subTotal: 73,
     tax: 5,
     total: 78,
-    paymentMethod: 'Credit Card',
+    paymentMethod: 'Cash on Delivery',
   };
 
   return (

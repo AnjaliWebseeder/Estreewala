@@ -78,7 +78,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center', 
     justifyContent:"center",
      paddingHorizontal: 16,
-     paddingBottom:16 
+     paddingBottom:16,
+     marginVertical:windowHeight(20)
    
   },
  
@@ -199,5 +200,36 @@ paymentNote: {
   marginLeft: windowHeight(22),
    fontStyle: 'italic',
    marginBottom:windowHeight(2)
+},
+deliveryOptions: {
+  marginBottom: 10,
+},
+deliveryOption: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  padding: 15,
+  borderWidth: 1,
+  borderColor: appColors.border,
+  borderRadius: 8,
+  marginBottom: 10,
+},
+primaryOption: {
+  borderColor: appColors.blue,
+  backgroundColor: appColors.blue + '10',
+},
+optionTextContainer: {
+  flex: 1,
+  marginLeft: 10,
+},
+optionTitle: {
+  fontSize: fontSizes.FONT16,
+  fontFamily: fonts.InterMedium,
+  color: appColors.font,
+},
+optionSubtitle: {
+  fontSize: fontSizes.FONT12,
+  fontFamily: fonts.InterRegular,
+  color: appColors.subTitle,
+  marginTop: 2,
 },
 });

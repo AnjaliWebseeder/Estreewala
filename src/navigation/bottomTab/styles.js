@@ -29,8 +29,12 @@ export const styles = StyleSheet.create({
 
   },
   minimalIconContainer: {
-    padding: 8,
-    borderRadius: 30,
+    padding: 18,
+    borderRadius: 50,
+    height:30,
+width:30,
+alignItems:"center",
+justifyContent:"center"
     
   },
   minimalIconContainerActive: {

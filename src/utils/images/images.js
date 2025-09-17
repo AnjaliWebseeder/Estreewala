@@ -37,7 +37,8 @@ module.exports = {
                   service18: require('../../assets/images/service18.png'),
                     service19: require('../../assets/images/service19.png'),
                     razorImg: require('../../assets/images/razorImg.png'),
-                    cashpayment: require('../../assets/images/cashpayment.png')
+                    cashpayment: require('../../assets/images/cashpayment.png'),
+               
       
         
   

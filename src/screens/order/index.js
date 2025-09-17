@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, FlatList } from "react-native";
+import React  from "react";
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { styles } from "./styles";
 import FastImage from "react-native-fast-image";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"; // ⭐ Star
@@ -8,6 +8,7 @@ import { service1 , service2,service3,service4 } from "../../utils/images/images
 import Header from "../../components/header";
 import appColors from "../../theme/appColors";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 
 const orders = [
   {
@@ -72,12 +73,14 @@ const orders = [
   },
 ];
 
+
+
 const OrdersScreen = ({navigation}) => {
   const renderItem = ({ item }) => {
     const isRating = !isNaN(item.status); // check if status is numeric (rating)
 
     return (
-      <View style={styles.card}>
+      <TouchableOpacity onPress={() => navigation.navigate('OrderDetails', { order: item })} style={styles.card}>
        <View style={{flexDirection:"row", paddingHorizontal: 16}}>
          <FastImage source={item.image} style={styles.image} />
         <View style={styles.details}>
@@ -123,7 +126,7 @@ const OrdersScreen = ({navigation}) => {
             )}
           </View>
             </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 

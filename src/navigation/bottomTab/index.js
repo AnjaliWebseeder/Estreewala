@@ -4,7 +4,6 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { View,Text } from 'react-native';
 import {Home} from "../../screens/home";
 import Order from "../../screens/order";
-import Schedule from "../../screens/schedule";
 import Profile from "../../screens/profile";
 import { HomeIcon } from "../../assets/Icons/svg/home";
 import OrderIcon from '../../assets/Icons/svg/order';
@@ -25,7 +24,7 @@ const MinimalTabButton = ({ focused, icon: IconComponent, label }) => {
         focused && styles.minimalIconContainerActive
       ]}>
         <IconComponent
-          size={24}
+          size={20}
           color={focused ? appColors.white : appColors.subTitle}
         />
       </View>
@@ -51,7 +50,7 @@ export default function BottomTab() {
           tabBarShowLabel: false,
           headerShown: false,
           tabBarStyle: [styles.minimalTabBar,{
-             height: 73 + insets.bottom, 
+             height: 72+ insets.bottom, 
           }],
         }}
       >
@@ -81,19 +80,7 @@ export default function BottomTab() {
             ),
           }}
         />
-        <Tab.Screen 
-          name="Schedule" 
-          component={Schedule}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <MinimalTabButton 
-                focused={focused} 
-                icon={ScheduleIcon} 
-                label="Schedule" 
-              />
-            ),
-          }}
-        />
+      
         <Tab.Screen 
           name="Profile" 
           component={Profile}

@@ -39,8 +39,8 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
   const [editingAddress, setEditingAddress] = useState(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [tooltipText, setTooltipText] = useState("");
+  const [showScheduleOptions, setShowScheduleOptions] = useState(false);
 
-  
   const timeSlots = [
     { id: '1', time: '09:00 AM - 11:00 AM' },
     { id: '2', time: '11:00 AM - 01:00 PM' },
@@ -161,34 +161,67 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
     const deliveryFee = items.length > 0 ? 2.50 : 0;
-    const taxes = subtotal * 0.08;
-    const total = subtotal + deliveryFee + taxes ;
+    const total = subtotal + deliveryFee  ;
     
     return {
       subtotal: subtotal.toFixed(2),
       deliveryFee: deliveryFee.toFixed(2),
-      taxes: taxes.toFixed(2),
       total: total.toFixed(2)
     };
   };
 
- const handleBookPickup = () => {
-  // Validate required fields
-  if (!selectedPickupSlot) {
-    setTooltipText("Please select a pickup time slot");
-    setTooltipVisible(true);
-    return;
-  }
+  const handleBookPickup = () => {
+    // If schedule options are shown, proceed to schedule
+    if (showScheduleOptions) {
+      // Validate required fields
+      if (!selectedPickupSlot) {
+        setTooltipText("Please select a pickup time slot");
+        setTooltipVisible(true);
+        return;
+      }
 
-  if (!selectedAddress) {
-    setTooltipText("Please select a delivery address");
-    setTooltipVisible(true);
-    return;
-  }
+      if (!selectedAddress) {
+        setTooltipText("Please select a delivery address");
+        setTooltipVisible(true);
+        return;
+      }
 
-  navigation.navigate("OrderConfirmation");
-};
+      navigation.navigate("OrderConfirmation");
+    } else {
+      // Show schedule options
+      setShowScheduleOptions(true);
+    }
+  };
 
+  const handlePlaceOrderNow = () => {
+    // Validate required fields
+    if (!selectedAddress) {
+      setTooltipText("Please select a delivery address");
+      setTooltipVisible(true);
+      return;
+    }
+
+    // Set pickup to current date/time
+    const now = new Date();
+    setSelectedPickupDate(now);
+    
+    // Find the closest available time slot
+    const currentHour = now.getHours();
+    let closestSlot = timeSlots[0];
+    
+    for (const slot of timeSlots) {
+      const slotStartHour = parseInt(slot.time.split(':')[0]);
+      if (slotStartHour >= currentHour) {
+        closestSlot = slot;
+        break;
+      }
+    }
+    
+    setSelectedPickupSlot(closestSlot);
+    
+    // Proceed to confirmation
+    navigation.navigate("OrderConfirmation");
+  };
 
   const handleSave = (newAddress) => {
     setAddress(newAddress);
@@ -208,11 +241,18 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
   };
 
   return (
-   <SafeAreaView style={styles.container}>
-     <View style={styles.container}>
+  
+     <SafeAreaView style={{flex:1,backgroundColor:"#fff"}}> 
+      <View style={styles.container}>
       {/* Header */}
       <Header 
-        onBackPress={() => navigation.goBack()} 
+        onBackPress={() => {
+          if (showScheduleOptions) {
+            setShowScheduleOptions(false);
+          } else {
+            navigation.goBack();
+          }
+        }} 
         title={ laundryName ? laundryName :"QuickClean Laundry"} 
         titleStyle={styles.titleStyle} 
         containerStyle={{ justifyContent: "flex-start" }}
@@ -235,61 +275,95 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
             /> 
           </View>
 
-          <View style={[styles.section, {paddingBottom: 7,paddingHorizontal:0}]}>
-            <View style={styles.horizontalBorder}/>
-            <View style={styles.scheduleRow}>
-              <TouchableOpacity 
-                style={styles.scheduleCard}
-                onPress={() => setPickupModalVisible(true)}
-              >
-                <ArrowIcon name="arrow-up-right" size={24} color={appColors.blue} />
-                <View style={styles.scheduleInfo}>
-                  <Text style={styles.scheduleLabel}>Pickup on</Text>
-                  <Text style={styles.scheduleDate}>
-                    {selectedPickupDate.toLocaleDateString('en-US', { 
-                      month: 'short', 
-                      day: 'numeric' 
-                    })}
-                  </Text>
-                  <Text style={[styles.scheduleDate, {fontSize: fontSizes.FONT14}]}>
-                    {selectedPickupSlot ? selectedPickupSlot.time : 'Select time slot'}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-              
-              <View style={styles.verticalLine}/>
-              
-              {/* Delivery Card - Not clickable, automatically calculated */}
-              <View style={[styles.scheduleCard, styles.deliveryCard]}>
-                <ArrowIcon name="arrow-down-left" size={24} color={appColors.blue} />
-                <View style={styles.scheduleInfo}>
-                  <Text style={styles.scheduleLabel}>Delivery on</Text>
-                  {selectedDropDate ? (
-                    <>
+          {showScheduleOptions ? (
+            <>
+              <View style={[styles.section, {paddingBottom: 7,paddingHorizontal:0}]}>
+                <View style={styles.horizontalBorder}/>
+                <View style={styles.scheduleRow}>
+                  <TouchableOpacity 
+                    style={styles.scheduleCard}
+                    onPress={() => setPickupModalVisible(true)}
+                  >
+                    <ArrowIcon name="arrow-up-right" size={24} color={appColors.blue} />
+                    <View style={styles.scheduleInfo}>
+                      <Text style={styles.scheduleLabel}>Pickup on</Text>
                       <Text style={styles.scheduleDate}>
-                        {selectedDropDate.toLocaleDateString('en-US', { 
+                        {selectedPickupDate.toLocaleDateString('en-US', { 
                           month: 'short', 
                           day: 'numeric' 
                         })}
                       </Text>
-                      <Text style={styles.deliveryNote}>
-                        Estimated delivery in 2-3 days
+                      <Text style={[styles.scheduleDate, {fontSize: fontSizes.FONT14}]}>
+                        {selectedPickupSlot ? selectedPickupSlot.time : 'Select time slot'}
                       </Text>
-                    </>
-                  ) : (
-                    <Text style={[styles.scheduleDate, {fontSize: fontSizes.FONT14, color: appColors.subTitle,lineHeight:16}]}>
-                      Select pickup time first
-                    </Text>
-                  )}
+                    </View>
+                  </TouchableOpacity>
+                  
+                  <View style={styles.verticalLine}/>
+                  
+                  {/* Delivery Card - Not clickable, automatically calculated */}
+                  <View style={[styles.scheduleCard, styles.deliveryCard]}>
+                    <ArrowIcon name="arrow-down-left" size={24} color={appColors.blue} />
+                    <View style={styles.scheduleInfo}>
+                      <Text style={styles.scheduleLabel}>Delivery on</Text>
+                      {selectedDropDate ? (
+                        <>
+                          <Text style={styles.scheduleDate}>
+                            {selectedDropDate.toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric' 
+                            })}
+                          </Text>
+                          <Text style={styles.deliveryNote}>
+                            Estimated delivery in 2-3 days
+                          </Text>
+                        </>
+                      ) : (
+                        <Text style={[styles.scheduleDate, {fontSize: fontSizes.FONT14, color: appColors.subTitle,lineHeight:16}]}>
+                          Select pickup time first
+                        </Text>
+                      )}
+                    </View>
+                  </View>
                 </View>
               </View>
+              
+              <View style={styles.horizontalBorder}/>
+            </>
+          ) : (
+            <View style={[styles.section, {marginHorizontal: 10, marginTop: 10}]}>
+              <Text style={[styles.sectionTitle, {marginBottom: 10}]}>Delivery Options</Text>
+              <View style={styles.deliveryOptions}>
+                <TouchableOpacity 
+                  style={[styles.deliveryOption, styles.primaryOption]}
+                  onPress={() => setShowScheduleOptions(true)}
+                >
+                  <Icon name="schedule" size={20} color={appColors.blue} />
+                  <View style={styles.optionTextContainer}>
+                    <Text style={styles.optionTitle}>Schedule Pickup</Text>
+                    <Text style={styles.optionSubtitle}>Choose date and time for pickup</Text>
+                  </View>
+                  <Icon name="chevron-right" size={20} color={appColors.blue} />
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={styles.deliveryOption}
+                  onPress={handlePlaceOrderNow}
+                >
+                  <Icon name="shopping-cart-checkout" size={20} color={appColors.green} />
+                  <View style={styles.optionTextContainer}>
+                    <Text style={styles.optionTitle}>Place Order Now</Text>
+                    <Text style={styles.optionSubtitle}>We'll pickup as soon as possible</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-          
+          )}
+
           <View style={styles.horizontalBorder}/>
 
           {/* Cash on Delivery Option */}
-          <View style={[styles.section, {marginHorizontal: 10, marginTop: 10}]}>
+          {/* <View style={[styles.section, {marginHorizontal: 10, marginTop: 10}]}>
             <Text style={styles.sectionTitle}>Payment Method</Text>
             <View style={styles.paymentOption}>
               <View style={styles.radioContainer}>
@@ -303,7 +377,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
             <Text style={styles.paymentNote}>
               Pay cash when your laundry is delivered
             </Text>
-          </View>
+          </View> */}
 
           <View style={styles.horizontalBorder}/>
 
@@ -358,30 +432,21 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                 {totals.deliveryFee}
               </Text>
             </View>
-            <View style={styles.priceRow}>
-              <Text style={styles.priceLabel}>Taxes</Text>
-              <Text style={styles.priceValue}>
-                <Icon name="currency-rupee" size={13} color={appColors.font} />
-                {totals.taxes}
-              </Text>
-            </View>
             <View style={[styles.priceRow, styles.totalRow]}>
               <Text style={styles.totalLabel}>Total</Text>
               <Text style={styles.totalValue}>${totals.total}</Text>
             </View>
           </View>
-        </ScrollView>
-      )}
-
-      {items.length > 0 && (
+            {items.length > 0 && (
         <View style={styles.footer}>
           <TouchableOpacity 
             style={styles.payButton}
             onPress={handleBookPickup}
-            // disabled={!selectedPickupSlot}
           >
             <Text style={styles.payButtonText}>
-              <Text style={{marginBottom: 10}}>Schedule Pickup</Text> 
+              <Text style={{marginBottom: 10}}>
+                {showScheduleOptions ? "Schedule Pickup" : "Continue to Schedule"}
+              </Text> 
               <Text style={[styles.footerValue, {color: appColors.blue, fontFamily: fonts.InterSemiBold}]}>
                 {" "} ${totals.total}
               </Text>
@@ -389,6 +454,10 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       )}
+        </ScrollView>
+      )}
+
+    
 
       <AddressModal
         visible={addressModalVisible}
@@ -426,7 +495,8 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
         onClose={() => setTooltipVisible(false)} 
       />
     </View>
-   </SafeAreaView>
+     </SafeAreaView>
+  
   );
 };
 
