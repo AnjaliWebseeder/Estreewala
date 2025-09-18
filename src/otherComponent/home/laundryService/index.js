@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Modal,
   TouchableWithoutFeedback,
+  Dimensions,
 } from "react-native";
 import ProductItem from './productItem'
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -43,6 +44,13 @@ const PRODUCT_DATA = {
   ],
 };
 
+// Combine all products for "All" category
+const ALL_PRODUCTS = [
+  ...PRODUCT_DATA.men,
+  ...PRODUCT_DATA.women,
+  ...PRODUCT_DATA.kids,
+];
+
 const SERVICES = [
   { label: "Wash & Iron", value: "wash_iron" },
   { label: "Dry Clean", value: "dry_clean" },
@@ -50,6 +58,7 @@ const SERVICES = [
 ];
 
 const CATEGORIES = [
+  { label: "All", value: "all" },
   { label: "Men's Wear", value: "men" },
   { label: "Women's Wear", value: "women" },
   { label: "Kids Wear", value: "kids" },
@@ -58,13 +67,15 @@ const CATEGORIES = [
 export default function LaundryScreen({ navigation, route }) {
   const { title } = route.params || {};
   const [cart, setCart] = useState({});
-  const [category, setCategory] = useState("men");
+  const [category, setCategory] = useState("all"); // Set default to "all"
   const [showDropdown, setShowDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
   const filterIconRef = useRef(null);
   const insets = useSafeAreaInsets();  
 
-  const PRODUCTS = PRODUCT_DATA[category];
+  // Get products based on selected category
+  const PRODUCTS = category === "all" ? ALL_PRODUCTS : PRODUCT_DATA[category];
+  
   const [selectedService, setSelectedService] = useState(() =>
     PRODUCTS.reduce((acc, p) => {
       acc[p.id] = SERVICES[0].value;
@@ -72,17 +83,19 @@ export default function LaundryScreen({ navigation, route }) {
     }, {})
   );
 
-  const handleFilterPress = () => {
-    if (filterIconRef.current) {
-      filterIconRef.current.measure((x, y, width, height, pageX, pageY) => {
-        setDropdownPosition({
-          top: pageY + height + 8, // 8px below the filter icon
-          right: 18, // Same right padding as the filter button
-        });
-        setShowDropdown(true);
+const handleFilterPress = () => {
+  if (filterIconRef.current) {
+    filterIconRef.current.measureInWindow((x, y, width, height) => {
+      const screenWidth = Dimensions.get("window").width;
+      setDropdownPosition({
+        top: y + height + 5,                 // below the icon
+        left: x + width - 160,               // align right edge (160 = dropdown minWidth)
       });
-    }
-  };
+      setShowDropdown(true);
+    });
+  }
+};
+
 
   function handleAdd(p) {
     setCart((s) => ({
@@ -124,7 +137,7 @@ export default function LaundryScreen({ navigation, route }) {
   const cartItems = Object.keys(cart).map((k) => ({ id: k, ...cart[k] }));
   const totalItems = cartItems.reduce((sum, it) => sum + it.qty, 0);
   const totalPrice = cartItems.reduce((sum, it) => {
-    const prod = PRODUCTS.find((p) => p.id === it.id);
+    const prod = ALL_PRODUCTS.find((p) => p.id === it.id); // Use ALL_PRODUCTS to find prices
     return sum + (prod ? prod.price * it.qty : 0);
   }, 0);
 
@@ -145,7 +158,7 @@ export default function LaundryScreen({ navigation, route }) {
       </View>
       
       <View style={{ paddingHorizontal: 18, marginBottom:0,flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}>
-       <View style={{flexDirection:"row"}}>
+       <View style={{flexDirection:"row", marginBottom:5}}>
          <Text style={styles.categoryTitle}>Choose Service :</Text>
           {/* Display selected category */}
       <View style={styles.selectedCategoryContainer}>
@@ -177,31 +190,36 @@ export default function LaundryScreen({ navigation, route }) {
           <View style={styles.modalOverlay} />
         </TouchableWithoutFeedback>
         
-        <View style={[styles.dropdownContainer, { top: dropdownPosition.top, right: dropdownPosition.right }]}>
-          {CATEGORIES.map((cat, index) => (
-            <View key={cat.value}>
-              <TouchableOpacity
-                style={[
-                  styles.dropdownItem,
-                  category === cat.value && styles.dropdownItemSelected
-                ]}
-                onPress={() => handleCategorySelect(cat.value)}
-              >
-                <Text style={[
-                  styles.dropdownItemText,
-                  category === cat.value && styles.dropdownItemTextSelected
-                ]}>
-                  {cat.label}
-                </Text>
-              </TouchableOpacity>
-              {index < CATEGORIES.length - 1 && <View style={styles.dropdownDivider} />}
-            </View>
-          ))}
-        </View>
+    <View
+  style={[
+    styles.dropdownContainer,
+    { top: dropdownPosition.top, left: dropdownPosition.left }
+  ]}
+>
+  {CATEGORIES.map((cat, index) => (
+    <View key={cat.value}>
+      <TouchableOpacity
+        style={[
+          styles.dropdownItem,
+          category === cat.value && styles.dropdownItemSelected
+        ]}
+        onPress={() => handleCategorySelect(cat.value)}
+      >
+        <Text
+          style={[
+            styles.dropdownItemText,
+            category === cat.value && styles.dropdownItemTextSelected
+          ]}
+        >
+          {cat.label}
+        </Text>
+      </TouchableOpacity>
+      {index < CATEGORIES.length - 1 && <View style={styles.dropdownDivider} />}
+    </View>
+  ))}
+</View>
+
       </Modal>
-
-    
-
       <FlatList
         data={PRODUCTS}
         keyExtractor={(i) => i.id}

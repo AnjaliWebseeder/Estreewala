@@ -13,6 +13,7 @@ import SearchBar from '../../../components/searchBar';
 import {styles} from './styles'
 import appColors from '../../../theme/appColors';
 import { service , service1, service2, service3, service4 } from '../../../utils/images/images';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Laundry Card Component
 const LaundryCard = ({ laundry , navigation }) => {
@@ -120,7 +121,8 @@ const LaundryServiceList = ({ navigation , route  }) => {
   };
 
   return (
-    <View style={styles.container}>
+   <SafeAreaView style={styles.container}>
+     <View style={styles.container}>
       <Header
         title={serviceName ? serviceName : "Dry Wash" } 
         onBackPress={() => navigation.goBack()}
@@ -162,6 +164,7 @@ const LaundryServiceList = ({ navigation , route  }) => {
         onApplyFilters={applyFilters}
       />
     </View>
+   </SafeAreaView>
   );
 };
 

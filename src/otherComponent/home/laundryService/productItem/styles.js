@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: "#F2F4F7",
     backgroundColor: "#fff",
-    paddingVertical: windowHeight(8), // reduced vertical space
+    marginBottom: windowHeight(8), // reduced vertical space
     paddingBottom:windowHeight(12)
   },
   img: {

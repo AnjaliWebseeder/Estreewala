@@ -6,7 +6,7 @@ import { fontSizes, windowHeight } from "../../../theme/appConstant";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: appColors.white,
   },
   searchTitle: {
     fontSize: fontSizes.FONT22,
