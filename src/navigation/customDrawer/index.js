@@ -31,7 +31,8 @@ const handleLogout = async () => {
 };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainerStyle} style={styles.container}>
+   <View style={[styles.container,{elevation:5}]}>
+     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainerStyle} style={[styles.container]}>
 <View style={styles.welcomeSection}>
  <View style={styles.avatar}>
             <Icon name="shirt-outline" size={28} color={appColors.white} />
@@ -145,17 +146,21 @@ const handleLogout = async () => {
         <Text style={styles.signOutText}>Sign Out</Text>
       </TouchableOpacity>
 
-      <View style={styles.serviceStatus}>
+   
+</View>
+     
+    
+    </ScrollView>
+     <View style={{paddingHorizontal:10}}>
+        <View style={styles.serviceStatus}>
         <View style={styles.statusIndicator}>
           <View style={[styles.statusDot, styles.statusOnline]} />
           <Text style={styles.statusText}>Service Available</Text>
         </View>
         <Text style={styles.statusSubText}>Open 24/7 for pickups</Text>
-      </View>  
-</View>
-     
-    
-    </ScrollView>
+      </View> 
+      </View> 
+   </View>
   );
 };
 

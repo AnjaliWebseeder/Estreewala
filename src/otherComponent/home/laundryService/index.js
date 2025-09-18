@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
   FlatList,
   StatusBar,
   TouchableOpacity,
+  Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
 import ProductItem from './productItem'
-import CustomDropdown from "../../../components/dropdown";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../../components/header";
 import {styles} from './styles'
@@ -16,6 +17,7 @@ import fonts from "../../../theme/appFonts";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import appColors from "../../../theme/appColors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { fontSizes, windowHeight } from "../../../theme/appConstant";
 
 const PRODUCT_DATA = {
   men: [
@@ -41,20 +43,28 @@ const PRODUCT_DATA = {
   ],
 };
 
-
 const SERVICES = [
   { label: "Wash & Iron", value: "wash_iron" },
   { label: "Dry Clean", value: "dry_clean" },
   { label: "Iron Only", value: "iron_only" },
 ];
 
+const CATEGORIES = [
+  { label: "Men's Wear", value: "men" },
+  { label: "Women's Wear", value: "women" },
+  { label: "Kids Wear", value: "kids" },
+];
+
 export default function LaundryScreen({ navigation, route }) {
-    const { title } = route.params || {};
+  const { title } = route.params || {};
   const [cart, setCart] = useState({});
   const [category, setCategory] = useState("men");
-    const insets = useSafeAreaInsets();  
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
+  const filterIconRef = useRef(null);
+  const insets = useSafeAreaInsets();  
 
-const PRODUCTS = PRODUCT_DATA[category];
+  const PRODUCTS = PRODUCT_DATA[category];
   const [selectedService, setSelectedService] = useState(() =>
     PRODUCTS.reduce((acc, p) => {
       acc[p.id] = SERVICES[0].value;
@@ -62,11 +72,17 @@ const PRODUCTS = PRODUCT_DATA[category];
     }, {})
   );
 
-  const CATEGORIES = [
-  { label: "Men's Wear", value: "men" },
-  { label: "Women's Wear", value: "women" },
-  { label: "Kids Wear", value: "kids" },
-];
+  const handleFilterPress = () => {
+    if (filterIconRef.current) {
+      filterIconRef.current.measure((x, y, width, height, pageX, pageY) => {
+        setDropdownPosition({
+          top: pageY + height + 8, // 8px below the filter icon
+          right: 18, // Same right padding as the filter button
+        });
+        setShowDropdown(true);
+      });
+    }
+  };
 
   function handleAdd(p) {
     setCart((s) => ({
@@ -100,12 +116,19 @@ const PRODUCTS = PRODUCT_DATA[category];
     });
   }
 
+  function handleCategorySelect(selectedCategory) {
+    setCategory(selectedCategory);
+    setShowDropdown(false);
+  }
+
   const cartItems = Object.keys(cart).map((k) => ({ id: k, ...cart[k] }));
   const totalItems = cartItems.reduce((sum, it) => sum + it.qty, 0);
   const totalPrice = cartItems.reduce((sum, it) => {
     const prod = PRODUCTS.find((p) => p.id === it.id);
     return sum + (prod ? prod.price * it.qty : 0);
   }, 0);
+
+  const selectedCategoryLabel = CATEGORIES.find(cat => cat.value === category)?.label || "Select Category";
 
   return (
     <SafeAreaView style={styles.container}>
@@ -120,15 +143,64 @@ const PRODUCTS = PRODUCT_DATA[category];
         <Text style={styles.meta}>⭐ {" "}4.0</Text>
        <Text style={styles.meta}>🕒 {" "}9 AM - 11 PM</Text>
       </View>
-          <View style={{ paddingHorizontal: 18, marginBottom:0,flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}>
-            <Text style={styles.categoryTitle}>Choose Service</Text>
-  <CustomDropdown
-    options={CATEGORIES}
-    value={category}
-    onChange={setCategory}
-    placeholder="Select Category"
-  />
-</View>
+      
+      <View style={{ paddingHorizontal: 18, marginBottom:0,flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}>
+       <View style={{flexDirection:"row"}}>
+         <Text style={styles.categoryTitle}>Choose Service :</Text>
+          {/* Display selected category */}
+      <View style={styles.selectedCategoryContainer}>
+        <Text style={[styles.categoryTitle,{fontSize:fontSizes.FONT18,marginTop:2}]}>
+        {selectedCategoryLabel}
+        </Text>
+      </View>
+       </View>
+        
+        <TouchableOpacity 
+          ref={filterIconRef}
+          style={styles.filterButton}
+          onPress={handleFilterPress}
+          activeOpacity={0.7}
+        >
+         
+      <Icon name="tune" size={22} color={appColors.primary} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Category Selection Modal/Dropdown */}
+      <Modal
+        visible={showDropdown}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowDropdown(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setShowDropdown(false)}>
+          <View style={styles.modalOverlay} />
+        </TouchableWithoutFeedback>
+        
+        <View style={[styles.dropdownContainer, { top: dropdownPosition.top, right: dropdownPosition.right }]}>
+          {CATEGORIES.map((cat, index) => (
+            <View key={cat.value}>
+              <TouchableOpacity
+                style={[
+                  styles.dropdownItem,
+                  category === cat.value && styles.dropdownItemSelected
+                ]}
+                onPress={() => handleCategorySelect(cat.value)}
+              >
+                <Text style={[
+                  styles.dropdownItemText,
+                  category === cat.value && styles.dropdownItemTextSelected
+                ]}>
+                  {cat.label}
+                </Text>
+              </TouchableOpacity>
+              {index < CATEGORIES.length - 1 && <View style={styles.dropdownDivider} />}
+            </View>
+          ))}
+        </View>
+      </Modal>
+
+    
 
       <FlatList
         data={PRODUCTS}
@@ -145,7 +217,7 @@ const PRODUCTS = PRODUCT_DATA[category];
             onChangeService={handleChangeService}
           />
         )}
-        contentContainerStyle={{ paddingBottom: 120 }}
+        contentContainerStyle={{ paddingBottom: windowHeight(90) }}
       />
 
       {totalItems > 0 && (
@@ -164,9 +236,6 @@ const PRODUCTS = PRODUCT_DATA[category];
           </TouchableOpacity>
         </View>
       )}
-
-  
     </SafeAreaView>
   );
 }
-

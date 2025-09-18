@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20, 
   },
   contentContainerStyle:{
-    paddingBottom:windowHeight(70)
+    paddingBottom:windowHeight(40)
   },
   textStyle:{
     fontSize: 16, color: appColors.font,

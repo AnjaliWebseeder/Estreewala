@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     borderColor: "#ECEFF6",
     width:windowWidth(140)
   },
-  text: { flex: 1, fontSize: 13, color: appColors.font,fontFamily:fonts.InterRegular },
+  text: { flex: 1, fontSize: 11.5, color: appColors.font,fontFamily:fonts.InterRegular },
   modalOverlay: {
     flex: 1,
     backgroundColor: "transparent",

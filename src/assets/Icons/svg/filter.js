@@ -1,7 +1,7 @@
 import React from "react";
 import Svg, { Path, G } from "react-native-svg";
 
-const FilterIcon = ({ size = 30, color = "#000" }) => (
+const FilterIcon = ({ size = size ? size : 30, color = "#000" }) => (
   <Svg
     xmlns="http://www.w3.org/2000/svg"
     width={size}

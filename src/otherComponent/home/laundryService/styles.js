@@ -48,4 +48,62 @@ marginTop:windowHeight(10)
     borderRadius: 12,
   },
   cartBtnText: { color: appColors.font, fontFamily:fonts.InterMedium },
+  // Add these to your styles.js file
+modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+},
+dropdownContainer: {
+  position: 'absolute',
+  backgroundColor: 'white',
+  borderRadius: 8,
+  paddingVertical: 0,
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+  elevation: 5,
+  minWidth: 150,
+  zIndex: 1000,
+},
+dropdownItem: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  paddingHorizontal: 16,
+  paddingVertical: 12,
+},
+dropdownItemSelected: {
+  backgroundColor: appColors.lightPrimary, // Use your light primary color
+},
+dropdownItemText: {
+  fontSize: 14,
+  fontFamily: fonts.InterRegular,
+  color: appColors.textPrimary,
+},
+dropdownItemTextSelected: {
+  color: appColors.primary,
+  fontFamily: fonts.InterSemiBold,
+},
+dropdownDivider: {
+  height: 1,
+  backgroundColor: appColors.lightGray,
+  marginHorizontal: 8,
+},
+filterButton: {
+  padding: 8,
+},
+selectedCategoryContainer: {
+  paddingHorizontal: 5,
+  marginBottom: 12,
+},
+selectedCategoryText: {
+  fontSize: 14,
+  fontFamily: fonts.InterMedium,
+  color: appColors.textSecondary,
+},
+
 });

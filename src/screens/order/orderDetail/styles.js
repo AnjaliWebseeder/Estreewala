@@ -6,7 +6,7 @@ import fonts from "../../../theme/appFonts";
 export const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: appColors.white },
 contentContainerStyle:{
-    paddingBottom:windowHeight(50)
+    paddingBottom:windowHeight(20)
 },
   // Timeline
    timeline: {

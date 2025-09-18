@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
     marginVertical: windowHeight(4),
   },
   contentContainerStyle:{
-     paddingBottom:50
+     paddingBottom:windowHeight(5)
   },
   section: { 
     padding: 6, 

@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor:appColors.white,
-    elevation:5
+  
   },
   contentContainerStyle:{
     paddingBottom:20
@@ -116,9 +116,11 @@ export const styles = StyleSheet.create({
   serviceStatus: {
     backgroundColor: '#f7f7fbff',
     padding: 15,
-    borderRadius: 12,
-    marginBottom: 20,
+     borderRadius: 8,
+    marginBottom: 12,
     alignItems: 'center',
+   
+   
   },
   statusIndicator: {
     flexDirection: 'row',
@@ -126,11 +128,11 @@ export const styles = StyleSheet.create({
     marginBottom: 5,
   },
   statusDot: {
-    width: 10,
-    height: 10,
+    width: 8,
+    height: 8,
     borderRadius: 15,
     marginRight: 8,
-    marginBottom:2,
+    marginBottom:0,
     marginHorizontal:6
   },
   statusOnline: {
