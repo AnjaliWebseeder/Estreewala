@@ -6,7 +6,7 @@ import { windowHeight } from '../../theme/appConstant';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:appColors.white,
+    backgroundColor:appColors.background,
   
   },
   contentContainerStyle:{
@@ -114,7 +114,7 @@ export const styles = StyleSheet.create({
 
   // Service Status
   serviceStatus: {
-    backgroundColor: '#f7f7fbff',
+    backgroundColor: appColors.menuCard,
     padding: 15,
      borderRadius: 8,
     marginBottom: 12,

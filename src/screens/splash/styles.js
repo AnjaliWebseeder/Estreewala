@@ -1,12 +1,13 @@
 import { StyleSheet } from 'react-native';
 import appColors from '../../theme/appColors'
 import fonts from '../../theme/appFonts';
+import { windowHeight } from '../../theme/appConstant';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: appColors.blue, 
+    backgroundColor:"#45466a", 
     overflow: 'hidden',
   },
   iconWrapper: {
@@ -37,7 +38,7 @@ export const styles = StyleSheet.create({
   bubble: {
     position: 'absolute',
     borderRadius: 50,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: '#5d5e86',
   },
   bubble1: {
     width: 100,
@@ -57,4 +58,9 @@ export const styles = StyleSheet.create({
     top: '40%',
     right: '25%',
   },
+  image:{
+    height:windowHeight(120),
+    width:windowHeight(120),
+    resizeMode:"contain"
+  }
 });

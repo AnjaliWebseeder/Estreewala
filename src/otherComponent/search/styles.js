@@ -5,7 +5,7 @@ import fonts from "../../theme/appFonts";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:appColors.white,
+    backgroundColor:appColors.background,
   },
   searchContainer: {
     paddingHorizontal: 16,
@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: appColors.menuCard,
     borderRadius: 12,
     paddingHorizontal: 16,
     height: 50,
@@ -49,7 +49,7 @@ export const styles = StyleSheet.create({
     marginBottom: 3,
   },
   popularTag: {
-    backgroundColor:appColors.lightBlue,
+    backgroundColor:appColors.menuCard,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,

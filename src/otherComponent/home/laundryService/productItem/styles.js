@@ -4,22 +4,28 @@ import appColors from "../../../../theme/appColors";
 import fonts from "../../../../theme/appFonts";
 
 export const styles = StyleSheet.create({
-  wrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderColor: "#F2F4F7",
-    backgroundColor: "#fff",
-    marginBottom: windowHeight(8), // reduced vertical space
-    paddingBottom:windowHeight(12)
-  },
+ wrap: {
+  flexDirection: "row",
+  alignItems: "center",
+  borderBottomWidth: 1,
+  borderBottomColor: appColors.border,   // use specific property instead of borderColor
+  backgroundColor: appColors.card,
+  marginBottom: windowHeight(12),
+  paddingBottom: windowHeight(12),
+  paddingTop: 10,
+  borderWidth:1,
+  borderColor:appColors.border,
+  marginHorizontal:15,
+  borderRadius:10
+},
+
   img: {
     width: 56, // slightly smaller
     height: 56,
     borderRadius: 8,
     marginRight: windowHeight(12), // reduced gap between image and text
     resizeMode: "contain",
+    marginLeft:15
   },
   info: { flex: 1 },
   name: {
@@ -42,10 +48,11 @@ export const styles = StyleSheet.create({
     width: 88,
     alignItems: "center",
     justifyContent: "center",
+
   },
   addButton: {
     borderWidth: 1,
-    borderColor: appColors.blue,
+    borderColor: appColors.border,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: windowHeight(2),
@@ -60,9 +67,10 @@ export const styles = StyleSheet.create({
     backgroundColor: appColors.blue,
     borderRadius: 20,
     paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingVertical: windowHeight(2),
     flexDirection: "row",
     alignItems: "center",
+    right:windowHeight(10)
   },
   qty: {
     color: "#fff",

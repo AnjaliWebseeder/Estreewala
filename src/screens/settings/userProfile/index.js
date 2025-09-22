@@ -11,6 +11,7 @@ import Header from "../../../components/header";
 import { styles } from "./styles";
 import Icon from "react-native-vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import appColors from "../../../theme/appColors";
 
 const LoginSecurityScreen = ({ navigation }) => {
   const [editMode, setEditMode] = useState(null);
@@ -59,8 +60,6 @@ const LoginSecurityScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={[styles.container,{paddingHorizontal:0}]}>
-
-
     <View style={styles.container}>
       <Header title={"Login & Security"} onBackPress={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={styles.content}>
@@ -119,7 +118,7 @@ const LoginSecurityScreen = ({ navigation }) => {
                     {editMode === item.key ? (
                       <Icon name="close-circle-outline" size={22} color="#FF3B30" />
                     ) : (
-                      <Icon name="create-outline" size={22} color="#07A4B8" />
+                      <Icon name="create-outline" size={22} color={appColors.blue} />
                     )}
                   </TouchableOpacity>
                 )}

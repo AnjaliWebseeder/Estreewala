@@ -1,12 +1,11 @@
 import fonts from '../../../theme/appFonts';
 import appColors from '../../../theme/appColors';
 import {  StyleSheet } from 'react-native';
-import { fontSizes, windowHeight } from '../../../theme/appConstant';
+import { fontSizes } from '../../../theme/appConstant';
 
 export const styles = StyleSheet.create({
   container: { 
-    marginBottom: 24,
-    marginTop: windowHeight(18),
+    marginBottom: 24,  
   },
   header: { 
     flexDirection: "row", 
@@ -17,7 +16,7 @@ export const styles = StyleSheet.create({
   },
   title: { 
    fontSize: fontSizes.FONT22,
-    fontFamily:fonts.InterMedium,
+    fontFamily:fonts.InterSemiBold,
    color:appColors.font
   },
   viewAllButton: {
@@ -25,7 +24,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   viewAllText: { 
-    fontSize: 14, 
+    fontSize: 12, 
     color: appColors.blue,
     fontFamily:fonts.InterMedium,
     marginRight: 4,
@@ -36,23 +35,17 @@ export const styles = StyleSheet.create({
     paddingTop:1
   },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor:appColors.card,
     borderRadius: 16,
     marginRight: 16,
     width: 220,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 2,
+   borderColor:appColors.border,
+    borderWidth:1,
     overflow: 'hidden',
   },
   imageContainer: {
     position: 'relative',
-    backgroundColor:appColors.lightGray,
+    backgroundColor:appColors.lightCream,
     margin:10,
     overflow:"hidden",
      borderRadius: 10,

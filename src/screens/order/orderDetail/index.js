@@ -113,20 +113,20 @@ const OrderDetails = ({ navigation, route }) => {
             const IconComponent = getIconComponent(step.icon);
             return (
               <View key={index} style={styles.stepContainer}>
-                {/* Left Icon */}
+              
                 <View style={styles.iconColumn}>
                   <View style={[styles.imageView, {backgroundColor: step.bgColor}]}>
                     <IconComponent/>
                   </View>
                 </View>
 
-                {/* Text */}
+               
                 <View style={styles.stepText}>
                   <Text style={styles.stepTitle}>{step.title}</Text>
                   <Text style={styles.stepDate}>{step.date}</Text>
                 </View>
 
-                {/* Right Side (Check + Dashed Line) */}
+               
                 <View style={styles.rightColumn}>
                   <Ionicons style={{marginTop:-8}}
                     name={step.completed ? "checkmark-circle" : "ellipse-outline"}
@@ -167,7 +167,7 @@ const OrderDetails = ({ navigation, route }) => {
       </View> 
 
       {/* Order Items */}
-       <View style={[styles.card,{paddingTop:0,marginVertical:3}]}>
+       <View style={[styles.card,{marginVertical:3}]}>
         <Text style={styles.sectionTitle}>Ordered item(s)</Text>
         {orderItems.map(item => (
           <View key={item.id} style={styles.itemRow}>

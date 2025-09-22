@@ -5,8 +5,6 @@ import {
   Text, 
   TouchableOpacity, 
   ActivityIndicator,
-  PermissionsAndroid,
-  Platform,
   Alert,
   Linking
 } from 'react-native';
@@ -29,7 +27,8 @@ const ConfirmLocationScreen = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [mapLoading, setMapLoading] = useState(true);
   const webViewRef = useRef(null);
-const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
+
   useEffect(() => {
     if (selectedLocation) {
       setAddress(selectedLocation.formattedAddress || selectedLocation.name);
@@ -42,30 +41,10 @@ const insets = useSafeAreaInsets();
       setLoading(false);
       updateMap(selectedLocation.latitude, selectedLocation.longitude);
     } else {
-      requestLocationPermission();
-    }
-  }, [selectedLocation]);
-
-  const requestLocationPermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          getCurrentLocation();
-        } else {
-          setLoading(false);
-          Alert.alert('Permission Denied', 'Location permission is required.');
-        }
-      } catch (err) {
-        console.warn(err);
-        setLoading(false);
-      }
-    } else {
+      // No need to request permission here anymore - just get the location
       getCurrentLocation();
     }
-  };
+  }, [selectedLocation]);
 
   const getCurrentLocation = () => {
     setLoading(true);
@@ -141,12 +120,14 @@ const insets = useSafeAreaInsets();
           longitude: location.coords.longitude,
           address: address
         });
+
         
         // Navigate to main app
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Main" }],
-        });
+        navigation.navigate('NotificationPermission')
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{ name: "Main" }],
+        // });
       } catch (error) {
         console.error("Error saving location:", error);
         Alert.alert("Error", "Could not save your location.");
@@ -252,7 +233,7 @@ const insets = useSafeAreaInsets();
       </View>
 
       {/* Bottom Card with Address and Confirm Button */}
-    <View style={[styles.bottomCard, { paddingBottom: insets.bottom + 12 }]}>
+      <View style={[styles.bottomCard, { paddingBottom: insets.bottom + 12 }]}>
         <View style={styles.addressSection}>
           <Icon name="location" size={20} color={appColors.blue} style={styles.addressIcon} />
           <View style={styles.addressTextContainer}>

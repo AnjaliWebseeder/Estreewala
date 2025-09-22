@@ -123,11 +123,12 @@ const LaundryServiceList = ({ navigation , route  }) => {
   return (
    <SafeAreaView style={styles.container}>
      <View style={styles.container}>
-      <Header
-        title={serviceName ? serviceName : "Dry Wash" } 
+    <View style={{backgroundColor:appColors.darkBlue,paddingBottom:20}}>
+        <Header
+        iconColor={appColors.white}
+        title={serviceName ? serviceName : "Nearby Laundry" } 
         onBackPress={() => navigation.goBack()}
-        containerStyle={{ justifyContent: "flex-start"}}
-        titleStyle={{marginHorizontal:20}}
+        titleStyle={{marginHorizontal:  20,color:appColors.white}}
       />
       
       <SearchBar
@@ -136,9 +137,12 @@ const LaundryServiceList = ({ navigation , route  }) => {
         placeholder="Search"
         onFilterPress={() => setShowFilters(true)}
         showFilter={true}
+        searchInputContainerStyle={{backgroundColor:appColors.lightBlue, borderWidth: 0}}
+        inputStyle={{color:appColors.white}}
       />
+    </View>
 
-      <Text style={styles.searchTitle}>Laundry near me</Text>
+    <View style={styles.main}/>
      <ScrollView 
   contentContainerStyle={styles.contentContainerStyle} 
   style={styles.listContainer} 

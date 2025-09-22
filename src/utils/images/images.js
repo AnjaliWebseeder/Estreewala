@@ -38,6 +38,9 @@ module.exports = {
                     service19: require('../../assets/images/service19.png'),
                     razorImg: require('../../assets/images/razorImg.png'),
                     cashpayment: require('../../assets/images/cashpayment.png'),
+                    appLogo:require('../../assets/images/appLogo.png'),
+                    loginImage:require('../../assets/images/login.png'),
+                    notification:require('../../assets/images/notification.png')
                
       
         

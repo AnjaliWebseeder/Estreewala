@@ -38,20 +38,20 @@ const styles = StyleSheet.create({
   },
   scroll: { marginVertical: 10 },
   contentContainerStyle:{
-    paddingBottom:20,
+    paddingBottom:14,
     paddingHorizontal:1
   },
   card: {
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.lightBlue,
     paddingHorizontal: 16,
     borderRadius: 12,
-    marginRight: 12,
+    marginRight: 8,
     alignItems: "center",
-    width: windowWidth(120),
-    elevation: 3,
+    width: windowWidth(110),
+   
   },
-  icon: { width: windowHeight(140), height: windowWidth(110), resizeMode: "contain" },
-  name: { fontSize: fontSizes.FONT16,fontFamily:fonts.InterRegular,marginBottom:8 },
+  icon: { width: windowHeight(70), height: windowWidth(85), resizeMode: "contain" },
+  name: { fontSize: fontSizes.FONT14,fontFamily:fonts.InterRegular,marginBottom:8,color:appColors.white },
 });
 
 export default ServiceList;

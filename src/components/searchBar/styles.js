@@ -14,12 +14,12 @@ export const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: appColors.menuCard,
     borderRadius: 12,
     paddingHorizontal: 13,
     height: 47,
     borderWidth: 1,
-    borderColor: '#e9ecef',
+    borderColor: appColors.border,
 
   },
   searchIcon: {
@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
     width: windowHeight(35),
     height: windowHeight(35),
     borderRadius: windowHeight(6),
-    backgroundColor: appColors.blue,
+    backgroundColor: appColors.lightBlue,
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -1,47 +1,72 @@
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import fonts from '../../theme/appFonts';
 import appColors from '../../theme/appColors';
-import { fontSizes } from '../../theme/appConstant';
+import { fontSizes, windowHeight } from '../../theme/appConstant';
+import { loginImage } from '../../utils/images/images';
+
+const { width } = Dimensions.get("window");
 
 const AuthHeader = ({ title, subtitle }) => {
   return (
-    <View style={styles.header}>
-      <Image 
-        tintColor={appColors.blue} 
-        source={require('../../assets/images/logo.png')} 
-        style={styles.logo} 
-        resizeMode="contain" 
-      />
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.subtitle}>{subtitle}</Text>
+    <View>
+      {/* Full width top image */}
+      <View style={styles.bannerContainer}>
+        <Image 
+          source={loginImage} 
+          style={styles.banner} 
+          resizeMode="cover"
+        />
+      </View>
+
+      {/* Title with gray lines */}
+      <View style={styles.titleWrapper}>
+        <View style={styles.line} />
+        <Text style={styles.title}>{title}</Text>
+        <View style={styles.line} />
+      </View>
+
+      {/* Subtitle */}
+      {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  header: {
-    alignItems: 'center',
-    marginBottom: 25,
-    marginTop:20
+  bannerContainer: {
+    width: width,
+    height: windowHeight(300),
   },
-  logo: {
-    width: 80,
-    height: 80,
-    marginBottom: 20,
+  banner: {
+    width: "100%",
+    height: "100%",
+  },
+  titleWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+    marginHorizontal: 20,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#ccc", // light gray line
+    marginHorizontal: 10,
   },
   title: {
-    fontSize: fontSizes.FONT26,
+    fontSize: fontSizes.FONT22,
     fontFamily: fonts.InterSemiBold,
-    color: appColors.font,
-    marginBottom: 4,
-    textAlign: 'center',
+    color: "#000",
+    textAlign: "center",
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: fontSizes.FONT16,
     fontFamily: fonts.InterRegular,
-    color: appColors.subTitle,
-    textAlign: 'center',
-   
+    color: "#666",
+    textAlign: "center",
+    marginTop: 8,
+    paddingHorizontal: 20,
+    marginBottom:windowHeight(15)
   },
 });
 

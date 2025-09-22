@@ -123,7 +123,7 @@ export const styles = StyleSheet.create({
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: appColors.menuCard,
     padding: 12,
     borderTopLeftRadius: 6,
     borderTopRightRadius: 6,
@@ -156,7 +156,7 @@ export const styles = StyleSheet.create({
     color: appColors.subTitle,
   },
   summarySection: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: appColors.menuCard,
     padding: 16,
     borderRadius: 8,
     marginBottom: 20,

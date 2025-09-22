@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   View, 
-  ScrollView, 
   TouchableOpacity, 
   Text, 
   TextInput, 
@@ -17,6 +16,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {styles} from './styles'
 import {countries} from '../../../utils/data/index'
 import {useAuth} from '../../../utils/context/authContext'
+import appColors from '../../../theme/appColors';
+import CheckBox from "react-native-vector-icons/Ionicons"
+
 const PhoneLoginScreen = () => {
   const navigation = useNavigation();
   const [phone, setPhone] = useState('');
@@ -25,6 +27,7 @@ const PhoneLoginScreen = () => {
   const [focusedField, setFocusedField] = useState(null);
   const [resendTimer, setResendTimer] = useState(30);
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
+  const [isChecked, setIsChecked] = useState(false);
   const phoneInputRef = useRef();
   const fadeAnim = useRef(new Animated.Value(0)).current;
     const {  login } = useAuth();
@@ -54,7 +57,12 @@ const PhoneLoginScreen = () => {
 
   const handleVerifyOtp =  async () => {
     console.log('Verify OTP:', otp);
-    navigation.navigate('SignUp')
+     try {
+      // await login('user_token_here'); // Save token
+       navigation.navigate('ConfirmLocation')
+    } catch (error) {
+      console.log('Login error:', error);
+    }
     // Handle OTP verification logic
   };
 
@@ -66,61 +74,99 @@ const PhoneLoginScreen = () => {
     }
   };
 
-  const selectCountry = (country) => {
-    setSelectedCountry(country);
-  };
-
-
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
+   
+       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
-        <ScrollView 
-          style={styles.container}
-          contentContainerStyle={styles.contentContainer}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          <AuthHeader
-            title="Phone Sign In"
+           <View style={styles.centerView}>
+            <AuthHeader
+            title="Log in or Sign up"
             subtitle={isOtpSent ? `Enter the OTP sent to ${selectedCountry.dialCode}${phone}` : "Enter your phone number to continue"}
           />
-
-          {!isOtpSent ? (
+          <View style={styles.mainView}>
+            <View style={styles.mainContainer}/>
+              {!isOtpSent ? (
             <>
-              <View style={styles.phoneInputContainer}>
-                <TouchableOpacity  activeOpacity={0.9}
-                  style={[styles.countryCodeContainer, focusedField === 'country' && styles.focusedInput]}
-                  onFocus={() => setFocusedField('country')}
-                  onBlur={() => setFocusedField(null)}
-                >
-                  <Text style={styles.flag}>{selectedCountry.flag}</Text>
-                  <Text style={styles.countryCodeText}>{selectedCountry.dialCode}</Text>
-                <Ionicons name="chevron-down" size={16} color="#666" />
-                </TouchableOpacity>
-                
-                <TextInput
-                  ref={phoneInputRef}
-                  style={[styles.phoneInput, focusedField === 'phone' && styles.focusedInput]}
-                  placeholder="Phone Number"
-                  placeholderTextColor="#999"
-                  value={phone}
-                  onChangeText={setPhone}
-                  keyboardType="phone-pad"
-                  onFocus={() => setFocusedField('phone')}
-                  onBlur={() => setFocusedField(null)}
-                />
-              </View>
+               <>
+    <View style={styles.phoneInputContainer}>
+      <TouchableOpacity
+        activeOpacity={0.9}
+        style={[
+          styles.countryCodeContainer,
+          focusedField === 'country' && styles.focusedInput,
+        ]}
+        onFocus={() => setFocusedField('country')}
+        onBlur={() => setFocusedField(null)}
+      >
+        <Text style={styles.flag}>{selectedCountry.flag}</Text>
+        <Text style={styles.countryCodeText}>{selectedCountry.dialCode}</Text>
+        <Ionicons name="chevron-down" size={16} color="#666" />
+      </TouchableOpacity>
 
-              <TouchableOpacity 
-                style={[styles.submitButton, phone.length == 10 ? styles.activeButton : styles.inactiveButton]} 
-                onPress={handleSendOtp}
-                disabled={phone.length < 6}
-              >
-                <Text style={styles.submitButtonText}>Send OTP</Text>
-              </TouchableOpacity>
+      <TextInput
+        ref={phoneInputRef}
+        style={[
+          styles.phoneInput,
+          focusedField === 'phone' && styles.focusedInput,
+        ]}
+        placeholder="Phone Number"
+        placeholderTextColor="#999"
+        value={phone}
+        onChangeText={setPhone}
+        keyboardType="phone-pad"
+        onFocus={() => setFocusedField('phone')}
+        onBlur={() => setFocusedField(null)}
+      />
+    </View>
+
+   {/* ✅ Agreement Checkbox with clickable toggle */}
+
+
+ <TouchableOpacity
+  style={[
+    styles.submitButton,
+    phone.length === 10 && isChecked
+      ? styles.activeButton
+      : styles.inactiveButton,
+  ]}
+  onPress={handleSendOtp}
+  disabled={phone.length < 10 || !isChecked}
+>
+  <Text
+    style={[
+      styles.submitButtonText,
+      { color: phone.length === 10 && isChecked ? appColors.white : '#7a7a7a' },
+    ]}
+  >
+    Send OTP
+  </Text>
+</TouchableOpacity>
+
+ <TouchableOpacity 
+  style={styles.checkboxContainer} 
+  activeOpacity={0.8} 
+  onPress={() => setIsChecked(!isChecked)}  // toggle state
+>
+  <Ionicons
+    name={isChecked ? "checkbox" : "square-outline"}
+    size={18}
+    color={isChecked ? appColors.primary : "#999"}
+  />
+  <View style={styles.termsContainer}>
+       <Text style={styles.termsText}>
+        I agree to the{' '}
+        <Text style={styles.highlightText}>Terms of Service</Text> and{' '}
+        <Text style={styles.highlightText}>Privacy Policy</Text>.
+      </Text>
+   
+    
+  </View>
+</TouchableOpacity>
+
+  </>
             </>
           ) : (
             <Animated.View style={{ opacity: fadeAnim }}>
@@ -150,16 +196,10 @@ const PhoneLoginScreen = () => {
             </Animated.View>
           )}
 
-          <View style={styles.termsContainer}>
-            <Text style={styles.termsText}>
-              By continuing, you agree to our{' '}
-              <Text style={styles.highlightText}>Terms of Service</Text>{' '}
-              and acknowledge that you have read our{' '}
-              <Text style={styles.highlightText}>Privacy Policy</Text>.
-            </Text>
+        
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+      </View>
+      </KeyboardAvoidingView> 
     </SafeAreaView>
   );
 };

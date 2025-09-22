@@ -4,7 +4,7 @@ import fonts from '../../../theme/appFonts';
 import appColors from '../../../theme/appColors';
 
 export const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor:  "#F8F9FD" },
+  container: { flex: 1, backgroundColor:  appColors.background},
   content: {
     paddingHorizontal: 20,
   },
@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
     lineHeight:25
   },
   cardBox: {
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.menuCard,
     borderRadius: 12,
     padding: 14,
     shadowColor: '#000',
@@ -65,7 +65,7 @@ fontFamily:fonts.InterRegular,
     borderColor: '#D3D3D3',
     borderWidth: 1,
     borderRadius: 10,
-    backgroundColor: '#fff',
+    backgroundColor: appColors.menuCard,
     padding: 12,
 fontFamily:fonts.InterRegular,
     fontSize: 14,

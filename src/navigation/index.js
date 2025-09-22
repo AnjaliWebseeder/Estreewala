@@ -34,6 +34,8 @@ import OrderConfirmation from '../screens/order/orderConfirm';
 import LaundryScreen from '../otherComponent/home/laundryService';
 import OrderDetails from '../screens/order/orderDetail'
 import OrdersScreen from '../screens/order';
+import NotificationPermission from '../screens/settings/notificationPermission'
+import UserDetailsScreen from '../screens/checkOut/userDetail'
 
 const Stack = createNativeStackNavigator();
 
@@ -99,8 +101,8 @@ export default function AppNavigation() {
               <Stack.Screen name="LaundryCheckoutScreen" component={LaundryCheckoutScreen} />
               <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} />
               <Stack.Screen name="OrderDetails" component={OrderDetails} />
-
-              
+                <Stack.Screen name="NotificationPermission" component={NotificationPermission} />
+              <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen} />
             </>
           ) : (
            
@@ -120,6 +122,7 @@ export default function AppNavigation() {
               <Stack.Screen name="LoginSecurity" component={LoginSecurity} />
               <Stack.Screen name="LaundryServiceList" component={LaundryServiceList} />
               <Stack.Screen name="LaundryService" component={LaundryService} />
+                <Stack.Screen name="NotificationPermission" component={NotificationPermission} />
              
                
             </>
@@ -135,6 +138,7 @@ export default function AppNavigation() {
             <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
             <Stack.Screen name="OtpInput" component={OtpInput} />
              <Stack.Screen name="ChangePassword" component={ChangePassword} />
+            <Stack.Screen name="NotificationPermission" component={NotificationPermission} />
               <Stack.Screen name="SetLocation" component={SetLocation} />
               <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
           </>

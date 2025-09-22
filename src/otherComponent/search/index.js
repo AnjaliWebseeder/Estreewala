@@ -123,10 +123,7 @@ const laundryServices = [
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      
       {/* Header */}
-     
-
          <Header
           title="Search Laundry"
           onBackPress={() => navigation.goBack()}

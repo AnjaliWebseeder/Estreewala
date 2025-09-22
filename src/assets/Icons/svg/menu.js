@@ -1,7 +1,7 @@
 import React from "react";
 import Svg, { Path, G } from "react-native-svg";
 
-export function MenuIcon({ color = "#000"}) {
+export function MenuIcon({ color = "#fff"}) {
   return (
     <Svg
       width={22}

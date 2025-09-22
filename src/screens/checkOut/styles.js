@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
     marginRight:windowHeight(10),
     marginTop:windowHeight(3)
   },
-  sectionTitle: { fontSize: fontSizes.FONT21, color: appColors.font, fontFamily:fonts.InterSemiBold},
+  sectionTitle: { fontSize: fontSizes.FONT19, color: appColors.font, fontFamily:fonts.InterMedium},
   scheduleRow: { flexDirection: 'row', justifyContent: 'space-between' },
   horizontalBorder:{
       width: "100%",       // full width
@@ -150,56 +150,10 @@ deliveryNote: {
   marginTop: 3,
   fontStyle: 'italic',
 },
-paymentOption: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  paddingTop: windowHeight(3),
-  backgroundColor: '#f8f9fa',
-  borderRadius: 12,
-  marginBottom: 4,
-},
-radioContainer: {
-  flexDirection: 'row',
-  alignItems: 'center',
-},
-radioOuter: {
-  width: 14,
-  height: 14,
-  borderRadius: 11,
-  borderWidth: 2,
-  borderColor: appColors.blue,
-  justifyContent: 'center',
-  alignItems: 'center',
-  marginRight: 12,
-},
-radioOuterSelected: {
-  borderColor: appColors.blue,
-},
-radioInner: {
-  width: 6,
-  height: 6,
-  borderRadius: 6,
-  backgroundColor: appColors.blue,
-  marginBottom:1
-},
 image:{
   height:windowHeight(22),
   width:windowHeight(22),
   resizeMode:"contain"
-},
-paymentLabel: {
-  fontSize: fontSizes.FONT16,
-  fontFamily: fonts.InterMedium,
-  color: appColors.font,
-},
-paymentNote: {
-  fontSize: fontSizes.FONT13,
-  fontFamily: fonts.InterRegular,
-  color: "#b5aeaeff",
-  marginLeft: windowHeight(22),
-   fontStyle: 'italic',
-   marginBottom:windowHeight(2)
 },
 deliveryOptions: {
   marginBottom: 10,
@@ -216,6 +170,7 @@ deliveryOption: {
 primaryOption: {
   borderColor: appColors.blue,
   backgroundColor: appColors.blue + '10',
+  borderWidth:0.6
 },
 optionTextContainer: {
   flex: 1,

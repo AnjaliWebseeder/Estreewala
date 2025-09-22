@@ -6,7 +6,7 @@ import { fontSizes, windowHeight } from '../../../theme/appConstant';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: appColors.white
+    backgroundColor: appColors.background
   },
   
   orderNo: {
@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
     borderColor: appColors.blue,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor:appColors.menuCard,
   },
   statusLabel: {
     fontSize: fontSizes.FONT20,
@@ -66,7 +66,7 @@ export const styles = StyleSheet.create({
   },
   timeBox: {
     flex: 1,
-    backgroundColor: '#F9F9F9', // soft light gray
+    backgroundColor:appColors.menuCard, // soft light gray
     borderTopRightRadius:10,
     borderBottomRightRadius:10,
     paddingHorizontal: 16,
@@ -92,7 +92,7 @@ export const styles = StyleSheet.create({
     color: "#666",
   },
   addressBox: {
-    backgroundColor: '#F9F9F9', // soft light gray
+    backgroundColor: appColors.menuCard, // soft light gray
     borderRadius: 12,
     padding: 16,
     marginBottom: windowHeight(13),

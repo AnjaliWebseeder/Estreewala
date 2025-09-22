@@ -6,7 +6,7 @@ import { fontSizes, windowHeight } from "../../../theme/appConstant";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.background,
   },
   searchTitle: {
     fontSize: fontSizes.FONT22,
@@ -14,14 +14,18 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginTop: windowHeight(10),
     fontFamily: fonts.InterMedium,
-    marginBottom:windowHeight(4)
+    marginBottom:windowHeight(8)
   },
   listContainer: {
     flex: 1,
-    paddingHorizontal: 20, 
+    paddingHorizontal: 10, 
+  
+  },
+  main:{
+    marginTop:windowHeight(15)
   },
   contentContainerStyle:{
-    paddingBottom:windowHeight(40)
+    paddingBottom:windowHeight(80)
   },
   textStyle:{
     fontSize: 16, color: appColors.font,
@@ -29,20 +33,24 @@ export const styles = StyleSheet.create({
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.background,
     borderRadius: 16,
     minHeight: 110,
     alignItems: 'center',
-    marginBottom: 8, // 🔹 Reduced distance between cards
+    marginBottom: 10, // 🔹 Reduced distance between cards
+    borderColor:appColors.border,
+    borderWidth:1,
+    paddingBottom:6,
+    elevation:0.5
+
   },
   imageWrapper: {
-  backgroundColor: '#fff',        // white background for shadow
+
   borderRadius: 16,               // must match image radius
   shadowColor: '#000',
   shadowOffset: { width: 0, height: 5 },
   shadowOpacity: 0.15,
-  shadowRadius: 8,
-  elevation: 3,                   // Android shadow
+  shadowRadius: 8,                 // Android shadow
   marginRight: windowHeight(15),  
   paddingVertical:6  ,
   paddingHorizontal:4            // keep spacing

@@ -5,7 +5,7 @@ import fonts from '../../../theme/appFonts';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.background,
   },
   content: {
     paddingHorizontal: 20,

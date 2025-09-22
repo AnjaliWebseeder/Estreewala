@@ -4,9 +4,9 @@ import fonts from "../../../theme/appFonts";
 const { StyleSheet } = require("react-native");
 
 export const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: appColors.white },
+  container: { flex: 1, backgroundColor: appColors.background },
   card: {
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.menuCard,
     borderRadius: 10,
     padding: 12,
     marginBottom: 12,

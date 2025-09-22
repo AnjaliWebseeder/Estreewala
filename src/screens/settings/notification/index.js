@@ -84,7 +84,7 @@ const Notification = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F9FD",
+    backgroundColor:appColors.background,
   },
   listContainer: {
     paddingHorizontal: 16,
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.menuCard,
     padding: 14,
     borderRadius: 12,
     marginBottom: 12,

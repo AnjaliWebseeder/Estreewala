@@ -4,7 +4,7 @@ import { fontSizes, windowHeight } from "../../../theme/appConstant";
 import fonts from "../../../theme/appFonts";
 
 export const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: appColors.white },
+  container: { flex: 1, backgroundColor: appColors.background },
 contentContainerStyle:{
     paddingBottom:windowHeight(20)
 },
@@ -12,7 +12,7 @@ contentContainerStyle:{
    timeline: {
     paddingHorizontal: 15,
     borderRadius: 10,
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.background,
     paddingVertical:windowHeight(2)
   },
   imageView:{
@@ -60,7 +60,10 @@ contentContainerStyle:{
   },
 
   // Customer
-  card: { backgroundColor: appColors.white, paddingTop: 10,paddingHorizontal:15,paddingBottom:10, marginVertical: 10,elevation: 1},
+  card: { backgroundColor: appColors.card, paddingTop: 10,paddingHorizontal:15,paddingBottom:10, marginVertical: 10,elevation: 1,  borderColor:appColors.border,
+    borderWidth:1,
+    marginHorizontal:15,
+     borderRadius: 10,},
   driverRow: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
   horizontalLine: {
   borderBottomColor:appColors.border,
@@ -90,7 +93,7 @@ contentContainerStyle:{
   invoiceStatus: { color: appColors.font, fontFamily:fonts.InterSemiBold, marginBottom: 10 , fontSize:fontSizes.FONT16},
   summaryRow: { flexDirection: "row", justifyContent: "space-between", marginVertical: 4 },
   totalText: {fontFamily:fonts.InterMedium, color: appColors.font,fontFamily:fonts.InterBold,fontSize:fontSizes.FONT19  },
-  invoiceButton: { marginTop:5,margin: 15, borderColor: appColors.blue, borderWidth:1.2 ,  padding: 12, borderRadius: 8,marginBottom:3 , flexDirection:"row",alignItems:"center",justifyContent:"center",height:windowHeight(40),width:"90%" },
+  invoiceButton: { marginTop:5,margin: 15, borderColor: appColors.blue, borderWidth:0.8 ,  padding: 12, borderRadius: 8,marginBottom:3 , flexDirection:"row",alignItems:"center",justifyContent:"center",height:windowHeight(40),width:"90%" },
   invoiceBtnText: { color: appColors.blue, textAlign: "center",fontFamily:fonts.InterMedium , fontSize:fontSizes.FONT18 },
   text:{
     color:appColors.subTitle,
@@ -109,7 +112,7 @@ contentContainerStyle:{
 
 
   summeryStyle:{
-    backgroundColor:"#f1f5f6",
+    backgroundColor:appColors.menuCard,
     marginHorizontal:10,
     borderRadius:6,
     marginVertical:15

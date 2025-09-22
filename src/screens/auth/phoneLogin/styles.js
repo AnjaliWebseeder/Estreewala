@@ -1,11 +1,22 @@
 import fonts from '../../../theme/appFonts';
 import appColors from '../../../theme/appColors';
 import { StyleSheet } from 'react-native';
-import { fontSizes } from '../../../theme/appConstant';
+import { fontSizes, windowHeight } from '../../../theme/appConstant';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: appColors.background,
+  },
+  centerView:{
+    justifyContent:"center",
+    // height:"80%",
+    // width:"100%"
+  },
+  mainView:{
+    marginHorizontal:20,
+  },
+  mainContainer:{
+    //  height:windowHeight(10)
   },
   contentContainer: {
     padding: 24,
@@ -14,7 +25,7 @@ export const styles = StyleSheet.create({
   phoneInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
      height:56
   },
   countryCodeContainer: {
@@ -29,7 +40,7 @@ export const styles = StyleSheet.create({
     borderColor: '#e6e6e6',
     marginRight: -1,
     minWidth: 100,
-    backgroundColor: appColors.white,
+    backgroundColor:  appColors.inputField,
     shadowColor: appColors.blue,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.1,
@@ -50,6 +61,8 @@ export const styles = StyleSheet.create({
   },
 phoneInput: {
   flex: 1,
+  borderColor:"#d2b48c",
+  borderWidth:1,
   paddingHorizontal: 12,
   borderTopRightRadius: 8,
   borderBottomRightRadius: 8,
@@ -57,7 +70,7 @@ phoneInput: {
   fontFamily: fonts.InterMedium,
   fontSize: fontSizes.FONT16,
   color: '#333',
-  backgroundColor: appColors.white,
+  backgroundColor: appColors.inputField,
   shadowColor: appColors.blue,
   shadowOffset: { width: 0, height: 0 },
   shadowOpacity: 0.1,
@@ -76,13 +89,16 @@ phoneInput: {
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
+    marginTop:10
+  
   },
   activeButton: {
     backgroundColor: appColors.blue,
   },
   inactiveButton: {
-    backgroundColor: '#ccc',
+    backgroundColor: appColors.inActive,
+    
   },
   submitButtonText: {
     color: appColors.white,
@@ -103,16 +119,23 @@ phoneInput: {
   },
   termsContainer: {
     marginTop: 0,
+    marginHorizontal:6
+  },
+  checkboxContainer:{
+    flexDirection:"row",
+    alignItems:"center",
+    marginBottom:windowHeight(12),
+    marginHorizontal:windowHeight(4)
   },
   termsText: {
     fontFamily: fonts.InterRegular,
-    fontSize: 12,
+    fontSize: 11,
     color:appColors.font,
     textAlign: 'center',
     lineHeight: 20,
   },
   highlightText: {
-    color: appColors.blue,
+    color: "#947757",
   },
   errorText: {
   color: appColors.error,

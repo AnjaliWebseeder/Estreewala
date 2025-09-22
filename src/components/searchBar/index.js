@@ -19,11 +19,12 @@ const SearchBar = ({
   inputStyle,
   filterButtonStyle,
   placeholderTextColor = "#999",
+  searchInputContainerStyle,
   ...props
 }) => {
   return (
     <View style={[styles.searchContainer, containerStyle]}>
-      <View style={styles.searchInputContainer}>
+      <View style={[styles.searchInputContainer,{...searchInputContainerStyle}]}>
         <Icon name="search" size={24} color="#666" style={styles.searchIcon} />
         <TextInput
           style={[styles.searchInput, inputStyle]}

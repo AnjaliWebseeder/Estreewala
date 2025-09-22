@@ -38,7 +38,7 @@ export const modalStyles = StyleSheet.create({
   dateButton: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: '#f8f9fa', 
+    backgroundColor: appColors.menuCard, 
     paddingHorizontal: 12, 
     borderRadius: windowHeight(4), 
     borderWidth: 1, 
@@ -66,7 +66,7 @@ export const modalStyles = StyleSheet.create({
     flexDirection: 'row', 
     alignItems: 'center', 
     justifyContent: 'space-between', 
-    backgroundColor: '#f8f9fa', 
+    backgroundColor:appColors.menuCard, 
     paddingHorizontal: 10, 
     borderRadius: 12, 
     marginBottom: windowHeight(10),
@@ -77,8 +77,9 @@ export const modalStyles = StyleSheet.create({
     paddingVertical:windowHeight(8)
   },
   timeSlotSelected: { 
-    backgroundColor: '#e6f2ff', 
-    borderColor: appColors.blue 
+    backgroundColor:appColors.lightCream, 
+    borderColor: appColors.blue ,
+    borderWidth:0.8
   },
   timeSlotText: { 
     fontSize: 14, 
@@ -97,7 +98,7 @@ export const modalStyles = StyleSheet.create({
     paddingVertical:windowHeight(8)
   },
   confirmButtonDisabled: { 
-    backgroundColor: '#ccc' 
+    backgroundColor:appColors.inActive 
   },
   confirmButtonText: { 
     color: '#fff', 

@@ -21,8 +21,9 @@ export const styles = StyleSheet.create({
     marginTop:windowHeight(10),
     lineHeight:windowHeight(22),
     fontFamily:fonts.InterMedium,
-    color:appColors.font ,
-     paddingHorizontal: 16,  
+    color:appColors.white ,
+     paddingHorizontal: 16, 
+     opacity:0.9 
   
   },
   actions: {

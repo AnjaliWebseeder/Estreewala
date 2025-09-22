@@ -91,6 +91,7 @@ const CancelOrderModal = ({ visible, onClose, onConfirm, orderId }) => {
                   onChangeText={setOtherReason}
                   multiline={true}
                   numberOfLines={3}
+                  placeholderTextColor={appColors.font}
                 />
               </View>
             )}
@@ -115,7 +116,20 @@ const CancelOrderModal = ({ visible, onClose, onConfirm, orderId }) => {
               onPress={handleConfirm}
               disabled={!selectedReason || (selectedReason === "Other reason" && !otherReason.trim())}
             >
-              <Text style={[styles.confirmButtonText,{color: selectedReason ?  appColors.white : "gray"}]}>Cancel Order</Text>
+              <Text
+  style={[
+    styles.confirmButtonText,
+    {
+      color:
+        selectedReason && (selectedReason !== "Other reason" || otherReason.trim())
+          ? appColors.white   // enabled color
+          : "gray",          // disabled color
+    },
+  ]}
+>
+  Cancel Order
+</Text>
+
             </TouchableOpacity>
           </View>
         </View>

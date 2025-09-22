@@ -3,7 +3,7 @@ import fonts from "../../../theme/appFonts";
 import { fontSizes, windowHeight } from "../../../theme/appConstant";
 import appColors from "../../../theme/appColors";
 export const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: appColors.white },
+  container: { flex: 1, backgroundColor: appColors.background },
   header: { paddingHorizontal: 18,paddingTop:windowHeight(6) },
   title: { fontSize: fontSizes.FONT22, color: appColors.font , fontFamily:fonts.InterSemiBold},
   sub: { marginTop: windowHeight(0), color:appColors.lightFont,fontFamily: fonts.InterRegular,fontSize:fontSizes.FONT16},
@@ -95,6 +95,7 @@ dropdownDivider: {
 },
 filterButton: {
   padding: 8,
+  marginBottom:10
 },
 selectedCategoryContainer: {
   paddingHorizontal: 5,

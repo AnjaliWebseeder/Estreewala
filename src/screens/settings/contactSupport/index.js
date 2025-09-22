@@ -79,6 +79,7 @@ export default function ContactSupport({ navigation }) {
           textAlignVertical="top"
           value={message}
           onChangeText={handleMessageChange}
+          placeholderTextColor={appColors.font}
         />
         <Text style={styles.charCount}>{charCount}/500</Text>
 

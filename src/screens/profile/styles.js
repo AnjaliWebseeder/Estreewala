@@ -1,21 +1,28 @@
 import { StyleSheet, Platform } from "react-native";
 import appColors from "../../theme/appColors";
 import fonts from "../../theme/appFonts";
+import { windowHeight } from "../../theme/appConstant";
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F9FD", // ultra-light bg
+    backgroundColor: appColors.background, // ultra-light bg
   },
-
+main:{
+  backgroundColor:appColors.darkBlue,
+  marginBottom:windowHeight(20)
+},
+profileSection:{
+  paddingTop:windowHeight(10)
+},
   scrollContent: {
     paddingHorizontal: 16,
-    paddingBottom: 30,
+    paddingBottom: windowHeight(80),
   },
 
   // ===== MENU CARD =====
   menuCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: appColors.menuCard,
     borderRadius: 16,
     marginBottom: 14,
     overflow: "hidden",
@@ -38,7 +45,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 12.3,
     paddingHorizontal: 16,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#E5E7EB",
+    borderBottomColor:appColors.border,
   },
   iconBox: {
     width: 28,
@@ -51,7 +58,7 @@ export const styles = StyleSheet.create({
   menuText: {
     fontSize: 14.5,
     color: appColors.font,
-    fontFamily: fonts.InterRegular,
+    fontFamily: fonts.InterMedium,
     flex: 1,
   },
   chevron: {
@@ -63,6 +70,30 @@ export const styles = StyleSheet.create({
     transform: [{ rotate: "45deg" }],
     marginRight:10
   },
+  // ================= PHOTO STYLES =================
+profileImage: {
+  width: 100,
+  height: 100,
+  borderRadius: 50, // circular image
+  borderColor: appColors.border,
+  resizeMode: "cover",
+  alignSelf: "center",
+  marginBottom: 10,
+},
+userName: {
+  fontSize: 18,
+  fontWeight: "600",
+  color: appColors.white,
+  textAlign: "center",
+},
+
+userEmail: {
+  fontSize: 14,
+  color: "#888",
+  textAlign: "center",
+  marginBottom:windowHeight(18)
+},
+
 
   // ===== SIGN OUT =====
 

@@ -7,7 +7,7 @@ import { windowHeight } from '../../../theme/appConstant';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.background,
   },
   content: {
   

@@ -7,7 +7,7 @@ import appColors from '../../../theme/appColors';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.background,
   },
   content: {
     paddingHorizontal: 18,
@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: 8,
     overflow: 'hidden',
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.menuCard,
     elevation: 2,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -54,7 +54,7 @@ export const styles = StyleSheet.create({
     fontFamily:fonts.InterRegular,
   },
   helpSection: {
-    backgroundColor:'#EEF4F7',
+    backgroundColor:appColors.menuCard,
     borderRadius: 12,
     padding: 24,
     alignItems: 'center',

@@ -5,7 +5,7 @@ import { fontSizes } from '../../../theme/appConstant';
 const { width } = Dimensions.get('window');
 export const styles = StyleSheet.create({
   wrapper: {
-    marginTop: 20,
+    marginBottom: 18,
    
   },
   contentContainerStyle:{
@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
   },
   title: {
     fontSize: fontSizes.FONT22,
-    fontFamily:fonts.InterMedium,
+    fontFamily:fonts.InterSemiBold,
     marginBottom: 8,
    color:appColors.font,
     paddingHorizontal: 16,

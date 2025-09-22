@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   bottomModalContainer: {
-    backgroundColor: 'white',
+    backgroundColor: appColors.background,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
@@ -61,7 +61,7 @@ export const styles = StyleSheet.create({
     borderBottomColor: appColors.lightBorder,
   },
   selectedReasonOption: {
-    backgroundColor: appColors.lightBlue,
+    backgroundColor: appColors.menuCard,
     borderRadius: 8,
   },
   radioContainer: {

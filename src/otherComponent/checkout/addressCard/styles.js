@@ -18,7 +18,7 @@ export const addressStyles = StyleSheet.create({
     flex: 1,
   },
   addressText: {
-    fontSize: fontSizes.FONT16HALF,
+    fontSize: fontSizes.FONT15,
     color: '#666',
     lineHeight: 20,
     marginHorizontal:windowHeight(30),

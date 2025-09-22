@@ -4,6 +4,7 @@ import {SearchIcon} from '../../../assets/Icons/svg/search'
 import {BellIcon} from '../../../assets/Icons/svg/bell'
 import {styles} from './styles'
 import { useDrawer } from "../../../navigation/customDrawer/drawerContext";
+import appColors from "../../../theme/appColors";
 
 const Header = (props) => {
     const { openDrawer } = useDrawer();
@@ -21,11 +22,11 @@ const Header = (props) => {
                 </TouchableOpacity>
                 <View style={styles.actions}>
                     <TouchableOpacity onPress={() => props.navigation.navigate('Notification')}>
-                        <BellIcon/>
+                        <BellIcon color={appColors.white}/>
                     </TouchableOpacity>
                     <View style={styles.iconStyle}/>
                     <TouchableOpacity onPress={() => props.navigation.navigate("Search")}>
-  <SearchIcon/>
+  <SearchIcon color={appColors.white}/>
                     </TouchableOpacity>
                   
                 </View>

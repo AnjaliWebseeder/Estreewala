@@ -7,7 +7,7 @@ import { windowHeight , windowWidth} from '../../../theme/appConstant';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.background,
     paddingHorizontal: 10,
   },
   content: {
@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
     marginBottom: windowHeight(10),
   },
   sectionCard: {
-    backgroundColor: '#fff',
+    backgroundColor: appColors.menuCard,
     borderRadius: 8,
     paddingHorizontal: 15,
     paddingVertical: 4,
@@ -35,6 +35,8 @@ export const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 1.8,
     paddingBottom: windowHeight(19),
+    borderColor:appColors.border,
+    borderWidth:1
   },
   fieldContainer: {
     flexDirection: 'row',
@@ -62,7 +64,7 @@ export const styles = StyleSheet.create({
     width: windowWidth(200),
     borderBottomWidth: 1,
     borderBottomColor:appColors.font,
-    backgroundColor: '#fff', // fixes underline issue on Android
+    backgroundColor: appColors.menuCard, // fixes underline issue on Android
   },
   inputFocused: {
     borderBottomColor: appColors.border,

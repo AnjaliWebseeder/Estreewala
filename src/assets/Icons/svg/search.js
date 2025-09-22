@@ -1,7 +1,7 @@
 import React from "react";
 import Svg, { Path } from "react-native-svg";
 
-export function SearchIcon({ color = "#000" }) {
+export function SearchIcon({ color = color ? color : "#000" }) {
   return (
     <Svg
       width={20}

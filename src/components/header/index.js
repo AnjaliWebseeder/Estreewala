@@ -4,12 +4,12 @@ import fonts from "../../theme/appFonts";
 import appColors from "../../theme/appColors";
 import { windowHeight } from "../../theme/appConstant";
 
-const Header = ({ title, onBackPress, onRightPress, showNotificationIcon,containerStyle,titleStyle }) => {
+const Header = ({ title, onBackPress, onRightPress, showNotificationIcon,containerStyle,titleStyle,iconColor}) => {
   return (
     <View style={[styles.header,{...containerStyle}]}>
       {/* Back button */}
     <TouchableOpacity style={styles.arrowView} onPress={onBackPress}>
-        <Icon name="chevron-back" size={16} color={appColors.black} />
+        <Icon name="chevron-back" size={16} color={iconColor ? iconColor : appColors.black} />
       </TouchableOpacity>
 
       {/* Centered title */}

@@ -51,11 +51,11 @@ export default function ProductItem({
         ) : (
           <View style={styles.counter}>
             <TouchableOpacity onPress={() => onDecrement(product.id)}>
-              <Ionicons name="remove" size={20} color="#fff" />
+              <Ionicons name="remove" size={16} color="#fff" />
             </TouchableOpacity>
             <Text style={styles.qty}>{qty}</Text>
             <TouchableOpacity onPress={() => onIncrement(product.id)}>
-              <Ionicons name="add" size={20} color="#fff" />
+              <Ionicons name="add" size={16} color="#fff" />
             </TouchableOpacity>
           </View>
         )}

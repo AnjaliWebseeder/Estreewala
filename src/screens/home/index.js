@@ -4,6 +4,8 @@ import Header from '../home/header'
 import ServiceList from '../home/serviceList'
 import PopularLaundry from '../home/popularLaundry'
 import appColors from "../../theme/appColors";
+import BannerOffers from "../home/offerBanner"
+import { windowHeight } from "../../theme/appConstant";
 
 export const Home = ({navigation}) => {
   return (
@@ -12,6 +14,7 @@ export const Home = ({navigation}) => {
        <Header navigation={navigation}/>
         <ServiceList navigation={navigation} />
      </View>
+     <BannerOffers/>
     <PopularLaundry navigation={navigation} />
     </ScrollView>
   );
@@ -20,12 +23,12 @@ export const Home = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: appColors.white,
+    backgroundColor:appColors.background,
    
   },
   mainView:{
-     backgroundColor:appColors.lightBlue,
-      // paddingHorizontal: 16,
+     backgroundColor:appColors.darkBlue,
+     marginBottom:windowHeight(12),
   },
   contentContainerStyle:{
     paddingBottom:100

@@ -7,10 +7,10 @@ import { windowHeight } from '../../../theme/appConstant';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.background,
   },
   header: {
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.background,
     borderBottomWidth: 1,
     borderBottomColor: appColors.border,
     elevation: 0,
@@ -40,7 +40,7 @@ export const styles = StyleSheet.create({
   
   // Stats Section
   statsSection: {
-    backgroundColor: '#F8F9FA',
+    backgroundColor:appColors.menuCard,
     paddingVertical: 22,
     paddingHorizontal: 16,
     marginBottom: windowHeight(10),
@@ -53,7 +53,7 @@ export const styles = StyleSheet.create({
   },
   statItem: {
     width: '48%',
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.card,
     borderRadius: 12,
     padding: 10,
     alignItems: 'center',
@@ -85,7 +85,7 @@ export const styles = StyleSheet.create({
   },
   valueCard: {
     width: '48%',
-    backgroundColor: appColors.white,
+    backgroundColor: appColors.menuCard,
     borderRadius: 12,
     padding: 16,
     marginBottom: 8,

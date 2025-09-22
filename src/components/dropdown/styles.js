@@ -6,12 +6,12 @@ export const styles = StyleSheet.create({
   input: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F4F6F9",
+    backgroundColor: appColors.card,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: "#ECEFF6",
+    borderColor:appColors.border,
     width:windowWidth(140)
   },
   text: { flex: 1, fontSize: 11.5, color: appColors.font,fontFamily:fonts.InterRegular },

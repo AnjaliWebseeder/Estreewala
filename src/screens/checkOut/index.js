@@ -186,7 +186,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
         return;
       }
 
-      navigation.navigate("OrderConfirmation");
+      navigation.navigate("UserDetailsScreen");
     } else {
       // Show schedule options
       setShowScheduleOptions(true);
@@ -220,7 +220,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
     setSelectedPickupSlot(closestSlot);
     
     // Proceed to confirmation
-    navigation.navigate("OrderConfirmation");
+    navigation.navigate("UserDetailsScreen");
   };
 
   const handleSave = (newAddress) => {
@@ -242,7 +242,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
 
   return (
   
-     <SafeAreaView style={{flex:1,backgroundColor:"#fff"}}> 
+     <SafeAreaView style={{flex:1,backgroundColor:appColors.background}}> 
       <View style={styles.container}>
       {/* Header */}
       <Header 
@@ -362,22 +362,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
 
           <View style={styles.horizontalBorder}/>
 
-          {/* Cash on Delivery Option */}
-          {/* <View style={[styles.section, {marginHorizontal: 10, marginTop: 10}]}>
-            <Text style={styles.sectionTitle}>Payment Method</Text>
-            <View style={styles.paymentOption}>
-              <View style={styles.radioContainer}>
-                <View style={[styles.radioOuter, selectedPayment === 'cod' && styles.radioOuterSelected]}>
-                  {selectedPayment === 'cod' && <View style={styles.radioInner} />}
-                </View>
-                <Text style={styles.paymentLabel}>Cash on Delivery</Text>
-              </View>
-           <FastImage source={cashpayment} style={styles.image}/>
-            </View>
-            <Text style={styles.paymentNote}>
-              Pay cash when your laundry is delivered
-            </Text>
-          </View> */}
+         
 
           <View style={styles.horizontalBorder}/>
 
@@ -434,7 +419,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
             </View>
             <View style={[styles.priceRow, styles.totalRow]}>
               <Text style={styles.totalLabel}>Total</Text>
-              <Text style={styles.totalValue}>${totals.total}</Text>
+              <Text style={styles.totalValue}>₹{totals.total}</Text>
             </View>
           </View>
             {items.length > 0 && (
@@ -447,8 +432,8 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
               <Text style={{marginBottom: 10}}>
                 {showScheduleOptions ? "Schedule Pickup" : "Continue to Schedule"}
               </Text> 
-              <Text style={[styles.footerValue, {color: appColors.blue, fontFamily: fonts.InterSemiBold}]}>
-                {" "} ${totals.total}
+              <Text style={[styles.footerValue, {color: appColors.menuCard, fontFamily: fonts.InterSemiBold}]}>
+                {" "} ₹{totals.total}
               </Text>
             </Text>
           </TouchableOpacity>
