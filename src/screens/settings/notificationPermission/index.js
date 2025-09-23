@@ -36,8 +36,11 @@ const onNotificationClick = async () => {
           routes: [{ name: "Main" }],
         });
       } else {
-        navigation.goBack();
-      }
+          navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
+      } 
     } else {
       Alert.alert(
         "Permission Denied",
@@ -68,7 +71,10 @@ const onNotificationClick = async () => {
         });
       } else {
         // Not first launch - normal navigation
-        navigation.goBack(); // or navigate to previous screen
+       navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
       }
 
     } catch (error) {

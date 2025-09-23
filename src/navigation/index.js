@@ -73,83 +73,6 @@ export default function AppNavigation() {
     return 'Splash';
   };
 
-  // Function to determine which screens to show for authenticated users
-  const renderAuthenticatedScreens = () => {
-    // If it's the first launch, show the onboarding screens
-    if (isFirstLaunch) {
-      return (
-        <>
-          {/* First launch flow */}
-          
-   
-            <>
-              <Stack.Screen name="SetLocation" component={SetLocation} />
-              <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
-            </>
-        
-           
-            <>
-              <Stack.Screen name="NotificationPermission" component={NotificationPermission} />
-              <Stack.Screen name="Main" component={BottomTab} />
-            </>
-          
-          
-          {/* Common authenticated screens */}
-          <Stack.Screen name="AboutUs" component={AboutUs} />
-          <Stack.Screen name="ContactSupport" component={ContactSupport} />
-          <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
-          <Stack.Screen name="Faqs" component={Faqs} />
-          <Stack.Screen name="ManageAddress" component={ManageAddress} />
-          <Stack.Screen name="Settings" component={Settings} />
-          <Stack.Screen name="Search" component={Search} />
-          <Stack.Screen name="ChangePassword" component={ChangePassword} />
-          <Stack.Screen name="LoginSecurity" component={LoginSecurity} />
-          <Stack.Screen name="LaundryServiceList" component={LaundryServiceList} />
-          <Stack.Screen name="LaundryScreen" component={LaundryScreen} />
-          <Stack.Screen name="LaundryService" component={LaundryService} />
-          <Stack.Screen name="LaundryCheckoutScreen" component={LaundryCheckoutScreen} />
-          <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} />
-          <Stack.Screen name="OrderDetails" component={OrderDetails} />
-          <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen} />
-        </>
-      );
-    } else {
-      // Not first launch - normal authenticated flow
-      return (
-        <>
-          <Stack.Screen name="Main" component={BottomTab} />
-          
-          {/* Only show location screens if user doesn't have location */}
-          {!userLocation && (
-            <>
-              <Stack.Screen name="SetLocation" component={SetLocation} />
-              <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
-            </>
-          )}
-          
-          {/* Common authenticated screens */}
-          <Stack.Screen name="AboutUs" component={AboutUs} />
-          <Stack.Screen name="ContactSupport" component={ContactSupport} />
-          <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
-          <Stack.Screen name="Faqs" component={Faqs} />
-          <Stack.Screen name="ManageAddress" component={ManageAddress} />
-          <Stack.Screen name="Settings" component={Settings} />
-          <Stack.Screen name="Search" component={Search} />
-           <Stack.Screen name="Notification" component={Notification} />
-          <Stack.Screen name="ChangePassword" component={ChangePassword} />
-          <Stack.Screen name="LoginSecurity" component={LoginSecurity} />
-          <Stack.Screen name="LaundryServiceList" component={LaundryServiceList} />
-          <Stack.Screen name="LaundryScreen" component={LaundryScreen} />
-          <Stack.Screen name="LaundryService" component={LaundryService} />
-          <Stack.Screen name="LaundryCheckoutScreen" component={LaundryCheckoutScreen} />
-          <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} />
-          <Stack.Screen name="OrderDetails" component={OrderDetails} />
-          <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen} />
-        </>
-      );
-    }
-  };
-
   return (
     <>
       <Stack.Navigator
@@ -159,9 +82,36 @@ export default function AppNavigation() {
         }}
       >
         {userToken ? ( 
-          renderAuthenticatedScreens()
+          // AUTHENTICATED USER FLOW
+          <>
+            {/* Always include all authenticated screens - conditionally set initialRoute instead */}
+            <Stack.Screen name="SetLocation" component={SetLocation} />
+            <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
+            <Stack.Screen name="NotificationPermission" component={NotificationPermission} />
+            <Stack.Screen name="Main" component={BottomTab} />
+            
+            {/* Common authenticated screens */}
+            <Stack.Screen name="AboutUs" component={AboutUs} />
+            <Stack.Screen name="ContactSupport" component={ContactSupport} />
+            <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+            <Stack.Screen name="Faqs" component={Faqs} />
+            <Stack.Screen name="ManageAddress" component={ManageAddress} />
+            <Stack.Screen name="Settings" component={Settings} />
+            <Stack.Screen name="Search" component={Search} />
+            <Stack.Screen name="Notification" component={Notification} />
+            <Stack.Screen name="ChangePassword" component={ChangePassword} />
+            <Stack.Screen name="LoginSecurity" component={LoginSecurity} />
+            <Stack.Screen name="LaundryServiceList" component={LaundryServiceList} />
+            <Stack.Screen name="LaundryScreen" component={LaundryScreen} />
+            <Stack.Screen name="LaundryService" component={LaundryService} />
+            <Stack.Screen name="LaundryCheckoutScreen" component={LaundryCheckoutScreen} />
+            <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} />
+            <Stack.Screen name="OrderDetails" component={OrderDetails} />
+            <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen} />
+            <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
+          </>
         ) : (
-          // Unauthenticated screens
+          // UNAUTHENTICATED USER FLOW
           <>
             <Stack.Screen name="Splash" component={Splash} />
             <Stack.Screen name="OnBoarding" component={OnBoarding} />

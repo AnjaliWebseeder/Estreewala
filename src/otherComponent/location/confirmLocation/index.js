@@ -113,26 +113,28 @@ const ConfirmLocationScreen = ({ route }) => {
   };
 
  const handleConfirmLocation = async () => {
-  if (location) {
+ if (location) {
     try {
-      // Save the location to context and storage
       await saveLocation({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        address: address,
+        address: address
       });
 
-      await markAppAsLaunched();
+      // Mark app as launched after location confirmation
+      if (isFirstLaunch) {
+        await markAppAsLaunched();
+      }
 
-      // Delay navigation (e.g., 2 seconds)
-      setTimeout(() => {
-        if (isFirstLaunch) {
-          navigation.navigate('NotificationPermission');
-        } else {
-          navigation.navigate('Main');
-        }
-      }, 2000); // 2000ms = 2 seconds
-
+      // Navigate based on first launch status
+      if (isFirstLaunch) {
+        navigation.navigate('NotificationPermission');
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
+      }
     } catch (error) {
       console.error("Error saving location:", error);
       Alert.alert("Error", "Could not save your location.");

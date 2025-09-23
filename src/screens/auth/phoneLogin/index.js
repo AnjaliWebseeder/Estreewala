@@ -56,32 +56,33 @@ const PhoneLoginScreen = () => {
     }).start();
   };
 
-  const handleVerifyOtp = async () => {
+// In OtpInput.js
+const handleVerifyOtp = async () => {
   console.log('Verify OTP:', otp);
   try {
-    await login('user_token_here'); // Save token
+    await login('user_token_here');
     
-    // 3. Navigate based on first launch status
+    // Navigate based on first launch status
     if (isFirstLaunch) {
-      // First time user - go through onboarding flow
-       navigation.navigate('ConfirmLocation')
-    } else {
-      // Returning user - check if they have location saved
       if (userLocation) {
-        // Has location - go directly to main app
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Main' }],
+          routes: [{ name: 'NotificationPermission' }],
         });
       } else {
-        // No location saved - set location first
-        navigation.navigate('ConfirmLocation')
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'SetLocation' }],
+        });
       }
+    } else {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Main' }],
+      });
     }
   } catch (error) {
     console.log('Login error:', error);
-    // Handle OTP verification errors (invalid OTP, etc.)
-    Alert.alert('Error', 'Invalid OTP. Please try again.');
   }
 };
 
