@@ -5,7 +5,7 @@ import appColors from "../../../theme/appColors";
 export const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: appColors.background },
   header: { paddingHorizontal: 18,paddingTop:windowHeight(6) },
-  title: { fontSize: fontSizes.FONT22, color: appColors.font , fontFamily:fonts.InterSemiBold},
+  title: { fontSize: fontSizes.FONT22, color: appColors.white , fontFamily:fonts.InterSemiBold},
   sub: { marginTop: windowHeight(0), color:appColors.lightFont,fontFamily: fonts.InterRegular,fontSize:fontSizes.FONT16},
   metaRow: {
     flexDirection: "row",
@@ -20,11 +20,11 @@ export const styles = StyleSheet.create({
   dashedLine: {
 borderBottomWidth: 1,
 borderStyle: "dashed",
-borderColor: "#ccc",
+borderColor: appColors.border,
 marginVertical: 3,
 marginTop:windowHeight(10)
 },
-  meta: { paddingVertical: 12, color:appColors.subTitle,fontFamily:fonts.InterSemiBold,fontSize:fontSizes.FONT16 },
+  meta: { paddingVertical: 12, color:appColors.white,fontFamily:fonts.InterSemiBold,fontSize:fontSizes.FONT16 },
   cartBar: {
     position: "absolute",
     left: 12,
@@ -95,7 +95,14 @@ dropdownDivider: {
 },
 filterButton: {
   padding: 8,
-  marginBottom:10
+  marginBottom:10,
+  marginHorizontal:10,
+  width: windowHeight(30),
+    height: windowHeight(30),
+    borderRadius: windowHeight(6),
+    backgroundColor: appColors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
 },
 selectedCategoryContainer: {
   paddingHorizontal: 5,

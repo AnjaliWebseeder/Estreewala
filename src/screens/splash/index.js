@@ -106,7 +106,7 @@ export default function Splash({ navigation }) {
         console.error(error);
         navigateToApp();
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 10000 }
     );
   };
 
@@ -160,6 +160,8 @@ export default function Splash({ navigation }) {
       if (isFirstLaunch === null) {
         AsyncStorage.setItem("alreadyLaunched", "true");
         navigation.replace("OnBoarding");
+        
+
       } else if (userToken) {
         navigation.replace("Main");
       } else {

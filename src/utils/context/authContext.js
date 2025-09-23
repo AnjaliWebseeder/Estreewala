@@ -1,6 +1,7 @@
 // context/AuthContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAppLaunchStatus, setAppLaunched } from './appLaunchStatus';
 
 const AuthContext = createContext();
 
@@ -9,11 +10,14 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [userToken, setUserToken] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+   const [isLoading, setIsLoading] = useState(true);
+  const [isFirstLaunch, setIsFirstLaunch] = useState(null);
 
   useEffect(() => {
     const loadStorageData = async () => {
       try {
+          const firstLaunch = !(await getAppLaunchStatus());
+          setIsFirstLaunch(firstLaunch);
         const [token, location] = await Promise.all([
           AsyncStorage.getItem('userToken'),
           AsyncStorage.getItem('userLocation')
@@ -42,6 +46,11 @@ export const AuthProvider = ({ children }) => {
       console.log('Login error:', error);
       throw error;
     }
+  };
+
+    const markAppAsLaunched = async () => {
+    await setAppLaunched();
+    setIsFirstLaunch(false);
   };
 
   const saveLocation = async (location) => {
@@ -76,7 +85,9 @@ export const AuthProvider = ({ children }) => {
       login, 
       logout, 
       saveLocation, 
-      isLoading 
+      isLoading,
+      markAppAsLaunched,
+      isFirstLaunch,
     }}>
       {children}
     </AuthContext.Provider>

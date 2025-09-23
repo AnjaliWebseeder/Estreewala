@@ -42,7 +42,7 @@ export const modalStyles = StyleSheet.create({
     paddingHorizontal: 12, 
     borderRadius: windowHeight(4), 
     borderWidth: 1, 
-    borderColor: '#e9ecef' ,
+    borderColor:appColors.darkBlue ,
     paddingVertical:windowHeight(8),
     marginBottom:windowHeight(10)
   },

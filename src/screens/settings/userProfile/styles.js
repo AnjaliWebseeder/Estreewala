@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 1.8,
     paddingBottom: windowHeight(19),
-    borderColor:appColors.border,
+    borderColor:appColors.darkBlue,
     borderWidth:1
   },
   fieldContainer: {
@@ -43,7 +43,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 14,
-    borderBottomColor:appColors.border,
+    borderBottomColor:appColors.darkBlue,
     borderBottomWidth:1
   },
   fieldLabel: {
@@ -63,11 +63,11 @@ export const styles = StyleSheet.create({
     paddingVertical: 4,
     width: windowWidth(200),
     borderBottomWidth: 1,
-    borderBottomColor:appColors.font,
+    borderBottomColor:appColors.darkBlue,
     backgroundColor: appColors.menuCard, // fixes underline issue on Android
   },
   inputFocused: {
-    borderBottomColor: appColors.border,
+    borderBottomColor: appColors.darkBlue,
   },
   editButton: {
     padding: 6,

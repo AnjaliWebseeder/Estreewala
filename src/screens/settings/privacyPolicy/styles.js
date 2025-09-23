@@ -41,7 +41,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: appColors.border,
+    borderBottomColor: appColors.darkBlue,
     paddingHorizontal:24
   },
   policyIcon: {

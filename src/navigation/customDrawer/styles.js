@@ -82,7 +82,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor:appColors.lightGray,
+    borderBottomColor:"#ced5dfff",
   },
   menuText: {
     fontSize: 14,

@@ -145,7 +145,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: appColors.blueLight,
     borderBottomWidth: 1,
-    borderBottomColor: appColors.border,
+    borderBottomColor: appColors.darkBlue,
     paddingBottom:16,
     paddingTop:2
   },

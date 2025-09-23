@@ -7,6 +7,7 @@ export const addressStyles = StyleSheet.create({
   cardContent: {
     flexDirection: 'row',
     paddingHorizontal: windowHeight(1),
+  
   },
   titleStyle:{
      fontFamily:fonts.InterRegular,

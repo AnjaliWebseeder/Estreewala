@@ -245,7 +245,8 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
      <SafeAreaView style={{flex:1,backgroundColor:appColors.background}}> 
       <View style={styles.container}>
       {/* Header */}
-      <Header 
+     <View style={{backgroundColor:appColors.darkBlue,paddingBottom:10}}>
+       <Header 
         onBackPress={() => {
           if (showScheduleOptions) {
             setShowScheduleOptions(false);
@@ -253,10 +254,12 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
             navigation.goBack();
           }
         }} 
+        iconColor={appColors.white}
         title={ laundryName ? laundryName :"QuickClean Laundry"} 
         titleStyle={styles.titleStyle} 
         containerStyle={{ justifyContent: "flex-start" }}
       />
+     </View>
       <View style={styles.border}/>
       
       {items.length === 0 ? (
@@ -268,17 +271,19 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
               <Icon name="home" size={20} color={appColors.blue} style={styles.iconStyle} />
               <Text style={[styles.sectionTitle, {marginTop: 1}]}>Pick up and Drop to Home</Text>
             </View>
+           
             <AddressCard 
               address={selectedAddress}
               onPress={() => setAddressModalVisible(true)}
               showEdit={true}
             /> 
           </View>
+           <View style={styles.horizontalBorder}/>
 
           {showScheduleOptions ? (
             <>
               <View style={[styles.section, {paddingBottom: 7,paddingHorizontal:0}]}>
-                <View style={styles.horizontalBorder}/>
+                
                 <View style={styles.scheduleRow}>
                   <TouchableOpacity 
                     style={styles.scheduleCard}

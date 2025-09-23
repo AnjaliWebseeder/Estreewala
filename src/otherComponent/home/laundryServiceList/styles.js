@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
     marginTop:windowHeight(15)
   },
   contentContainerStyle:{
-    paddingBottom:windowHeight(80)
+    paddingBottom:windowHeight(60)
   },
   textStyle:{
     fontSize: 16, color: appColors.font,
@@ -38,10 +38,11 @@ export const styles = StyleSheet.create({
     minHeight: 110,
     alignItems: 'center',
     marginBottom: 10, // 🔹 Reduced distance between cards
-    borderColor:appColors.border,
+    borderColor:"#07172cff",
     borderWidth:1,
     paddingBottom:6,
-    elevation:0.5
+    elevation:0.5,
+    paddingTop:5
 
   },
   imageWrapper: {
@@ -51,13 +52,14 @@ export const styles = StyleSheet.create({
   shadowOffset: { width: 0, height: 5 },
   shadowOpacity: 0.15,
   shadowRadius: 8,                 // Android shadow
-  marginRight: windowHeight(15),  
+  marginRight: windowHeight(7),  
   paddingVertical:6  ,
-  paddingHorizontal:4            // keep spacing
+  paddingHorizontal:4,         // keep spacing,
+  marginLeft:6
 },
   cardImage: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     borderRadius: 14,
     //  marginRight: 14,
     
@@ -69,13 +71,13 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: 14,
    fontFamily:fonts.InterMedium,
    color:appColors.font,
     marginBottom: 2,
   },
   cardLocation: {
-    fontSize: 14,
+    fontSize: 11,
     color: '#888',
     marginBottom: 2,
      fontFamily:fonts.InterRegular,
@@ -90,7 +92,7 @@ export const styles = StyleSheet.create({
     marginBottom: 4,
   },
   deliveryText: {
-    fontSize: fontSizes.FONT15,
+    fontSize: 11,
     color: appColors.font,
       fontFamily:fonts.InterSemiBold,
     marginLeft: 6,
@@ -104,7 +106,7 @@ export const styles = StyleSheet.create({
   dashedLine: {
     borderBottomWidth: 1,
     borderStyle: 'dashed',
-    borderColor: '#ccc',
+    borderColor: appColors.darkBlue,
     marginVertical: 6,
     marginBottom:3
   },
@@ -112,7 +114,7 @@ export const styles = StyleSheet.create({
   ratingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 6,
+   
   },
   ratingBadge: {
     borderRadius: 20,
@@ -125,14 +127,14 @@ export const styles = StyleSheet.create({
   ratingBadgeText: {
     color: appColors.font,
      fontFamily:fonts.InterSemiBold,
-    fontSize: fontSizes.FONT14,
+    fontSize: fontSizes.FONT12,
     marginHorizontal:4,
     marginRight:5,
    
   },
   ratingsCount: {
     color: '#baacacff',
-    fontSize: fontSizes.FONT14,
+    fontSize: fontSizes.FONT12,
     marginLeft: 8,
       fontFamily:fonts.InterRegular,
   },

@@ -75,7 +75,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color:appColors.font,
     fontFamily:fonts.InterSemiBold,
-    marginBottom: windowHeight(8)
+    marginBottom: 10
   },
   savedAddressesToggle: {
     color: appColors.blue,
@@ -121,7 +121,7 @@ export const styles = StyleSheet.create({
     marginTop: 2,
   },
   fieldContainer: { 
-    marginBottom: 16,
+    marginBottom: 10,
     position: 'relative',
   },
   label: { 
@@ -194,7 +194,7 @@ export const styles = StyleSheet.create({
     color: '#333',
   },
   button: {
-    backgroundColor: appColors.blue, 
+    backgroundColor: appColors.darkBlue, 
     padding: 16, 
     borderRadius: 8, 
     marginTop: 20, 

@@ -8,18 +8,20 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingHorizontal:windowHeight(13)
+    paddingHorizontal:windowHeight(13),
+    
   },
   searchInputContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: appColors.menuCard,
-    borderRadius: 12,
+    borderRadius: 10,
     paddingHorizontal: 13,
     height: 47,
     borderWidth: 1,
     borderColor: appColors.border,
+    height:windowHeight(34)
 
   },
   searchIcon: {
@@ -33,10 +35,10 @@ export const styles = StyleSheet.create({
      fontFamily:fonts.InterRegular
   },
   filterButton: {
-    width: windowHeight(35),
-    height: windowHeight(35),
+    width: windowHeight(32),
+    height: windowHeight(32),
     borderRadius: windowHeight(6),
-    backgroundColor: appColors.lightBlue,
+    backgroundColor: appColors.white,
     justifyContent: 'center',
     alignItems: 'center',
   },

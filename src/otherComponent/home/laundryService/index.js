@@ -19,6 +19,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import appColors from "../../../theme/appColors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fontSizes, windowHeight } from "../../../theme/appConstant";
+import FilterIcon from "../../../assets/Icons/svg/filter";
 
 const PRODUCT_DATA = {
   men: [
@@ -146,38 +147,34 @@ const handleFilterPress = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <Header title={"My Cart"} containerStyle={{ paddingVertical: 10}}  onBackPress={() => navigation.goBack() } />
-      <View style={styles.header}>
+      <View style={{backgroundColor:appColors.darkBlue,paddingBottom:5,marginBottom:20}}>
+             <Header iconColor={appColors.white} titleStyle={{color:appColors.white}} title={"My Cart"} containerStyle={{ paddingVertical: 10}}  onBackPress={() => navigation.goBack() } />
+        <View style={{flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
+        <View style={styles.header}>
         <Text style={styles.title}>{title ? title : "QuickClean Laundry"} </Text>
         <Text style={styles.sub}>Central Park | 1.5 km</Text>
       </View>
-     <View style={styles.dashedLine}/>
-      <View style={styles.metaRow}>
-        <Text style={styles.meta}>⭐ {" "}4.0</Text>
-       <Text style={styles.meta}>🕒 {" "}9 AM - 11 PM</Text>
-      </View>
-      
-      <View style={{ paddingHorizontal: 18, marginBottom:0,flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}>
-       <View style={{flexDirection:"row", marginBottom:5}}>
-         <Text style={styles.categoryTitle}>Choose Service :</Text>
-          {/* Display selected category */}
-      <View style={styles.selectedCategoryContainer}>
-        <Text style={[styles.categoryTitle,{fontSize:fontSizes.FONT18,marginTop:2}]}>
-        {selectedCategoryLabel}
-        </Text>
-      </View>
-       </View>
-        
-        <TouchableOpacity 
+       <TouchableOpacity 
           ref={filterIconRef}
           style={styles.filterButton}
           onPress={handleFilterPress}
           activeOpacity={0.7}
         >
          
-      <Icon name="tune" size={22} color={appColors.primary} />
-        </TouchableOpacity>
+       <FilterIcon size={20} color={appColors.darkBlue} />
+        </TouchableOpacity> 
+    </View>
+     <View style={styles.dashedLine}/>
+      <View style={styles.metaRow}>
+        <Text style={styles.meta}>⭐ {" "}4.0</Text>
+       <Text style={styles.meta}>🕒 {" "}9 AM - 11 PM</Text>
       </View>
+      </View>
+  
+      
+   
+
+
 
       {/* Category Selection Modal/Dropdown */}
       <Modal
@@ -235,11 +232,11 @@ const handleFilterPress = () => {
             onChangeService={handleChangeService}
           />
         )}
-        contentContainerStyle={{ paddingBottom: windowHeight(90) }}
+        contentContainerStyle={{ paddingBottom: windowHeight(70) }}
       />
 
       {totalItems > 0 && (
-         <View style={[styles.cartBar, { marginBottom: insets.bottom || 12 }]}>
+         <View style={[styles.cartBar, { marginBottom: insets.bottom || -4 }]}>
           <View>
             <Text style={styles.cartTitle}>
               {totalItems} Item{totalItems > 1 ? "s" : ""} • <Text style={{fontFamily:fonts.InterRegular}}>

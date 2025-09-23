@@ -10,9 +10,10 @@ export const styles = StyleSheet.create({
     alignItems: 'center', 
     paddingBottom: 5, 
     borderBottomWidth: 1, 
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor:appColors.darkBlue,
     paddingTop: 7,
-    paddingLeft:10
+    paddingLeft:10,
+    paddingBottom:10
   },
   itemImage: { width: 45, height: 45, borderRadius: 8, marginRight: 12 },
   itemInfo: { flex: 1 },

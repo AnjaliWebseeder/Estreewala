@@ -12,7 +12,7 @@ const services = [
   { id: 1, name: "Dry Wash", icon: dryWash },
   { id: 2, name: "Wash", icon: wash },
   { id: 3, name: "Ironing", icon:ironing },
-{ id: 4, name: "WashIron", icon: tShirtWashIron },
+{ id: 4, name: "Wash Iron", icon: tShirtWashIron },
 // { id: 5, name: "SocksClean", icon: socksClean },
 ];
 
@@ -39,10 +39,11 @@ const styles = StyleSheet.create({
   scroll: { marginVertical: 10 },
   contentContainerStyle:{
     paddingBottom:14,
-    paddingHorizontal:1
+    paddingHorizontal:1,
+    paddingRight:windowHeight(10)
   },
   card: {
-    backgroundColor: appColors.lightBlue,
+    backgroundColor: appColors.white,
     paddingHorizontal: 16,
     borderRadius: 12,
     marginRight: 8,
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
    
   },
   icon: { width: windowHeight(70), height: windowWidth(85), resizeMode: "contain" },
-  name: { fontSize: fontSizes.FONT14,fontFamily:fonts.InterRegular,marginBottom:8,color:appColors.white },
+  name: { fontSize: fontSizes.FONT14,fontFamily:fonts.InterRegular,marginBottom:8,color:appColors.black },
 });
 
 export default ServiceList;

@@ -98,7 +98,7 @@ const laundryServices = [
         <View style={styles.serviceHeader}>
           <Text style={styles.serviceName}>{item.name}</Text>
           <View style={styles.ratingContainer}>
-            <Icon name="star" size={10} color={appColors.blue} />
+            <Icon name="star" size={10} color={appColors.white} />
             <Text style={styles.ratingText}>{item.rating}</Text>
           </View>
         </View>
@@ -123,11 +123,14 @@ const laundryServices = [
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      {/* Header */}
+      <View style={styles.main}>
+          {/* Header */}
          <Header
           title="Search Laundry"
           onBackPress={() => navigation.goBack()}
           onRightPress={() => navigation.navigate("Settings")}
+          titleStyle={{color:appColors.white}}
+          iconColor={appColors.white}
         />
 
       {/* Search Bar */}
@@ -141,14 +144,17 @@ const laundryServices = [
             value={searchQuery}
             onChangeText={handleSearch}
             autoFocus={true}
+            
           />
           {searchQuery !== '' && (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Icon name="close-circle" size={20} color="#999" />
+              <Icon name="close-circle" size={20} color={appColors.darkBlue} />
             </TouchableOpacity>
           )}
         </View>
       </View>
+      </View>
+     
 
       {searchQuery === '' ? (
         /* Popular Searches */

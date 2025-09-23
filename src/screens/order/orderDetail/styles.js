@@ -60,17 +60,18 @@ contentContainerStyle:{
   },
 
   // Customer
-  card: { backgroundColor: appColors.card, paddingTop: 10,paddingHorizontal:15,paddingBottom:10, marginVertical: 10,elevation: 1,  borderColor:appColors.border,
+  card: { backgroundColor: appColors.card, paddingTop: 10,paddingHorizontal:15,paddingBottom:10, marginVertical: 10,elevation: 1,  borderColor:appColors.darkBlue,
     borderWidth:1,
     marginHorizontal:15,
      borderRadius: 10,},
   driverRow: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
   horizontalLine: {
-  borderBottomColor:appColors.border,
+  borderBottomColor:appColors.darkBlue,
   borderBottomWidth: 1,
   borderStyle: "dashed",
   width: "100%",   // full width, or set fixed px
   marginBottom: 8,
+
 },
 
   driverName: {fontFamily:fonts.InterMedium, fontSize: fontSizes.FONT16 , color:appColors.font  },

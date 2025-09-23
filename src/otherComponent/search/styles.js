@@ -7,6 +7,9 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor:appColors.background,
   },
+  main:{
+   backgroundColor:appColors.darkBlue
+  },
   searchContainer: {
     paddingHorizontal: 16,
     borderBottomWidth: 1,
@@ -19,7 +22,7 @@ export const styles = StyleSheet.create({
     backgroundColor: appColors.menuCard,
     borderRadius: 12,
     paddingHorizontal: 16,
-    height: 50,
+    height: 45,
   },
   searchIcon: {
     marginRight: 12,
@@ -125,9 +128,9 @@ export const styles = StyleSheet.create({
     borderRadius: 6,
   },
   ratingText: {
-    fontSize: 12,
+    fontSize: 10,
   fontFamily:fonts.InterMedium,
-    color: appColors.font,
+    color: appColors.white,
    marginTop:2,
     marginLeft: 4,
   },

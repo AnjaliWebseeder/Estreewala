@@ -23,6 +23,7 @@ export const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: appColors.border,
+    paddingBottom:10
   },
   modalTitle: {
     fontSize: fontSizes.FONT20,

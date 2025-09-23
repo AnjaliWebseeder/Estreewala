@@ -14,6 +14,7 @@ import {styles} from './styles'
 import appColors from '../../../theme/appColors';
 import { service , service1, service2, service3, service4 } from '../../../utils/images/images';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Ionicons from "react-native-vector-icons/Ionicons"; 
 
 // Laundry Card Component
 const LaundryCard = ({ laundry , navigation }) => {
@@ -33,33 +34,37 @@ const LaundryCard = ({ laundry , navigation }) => {
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>{laundry.name}</Text>
         <View style={styles.deliveryInfo}>
-          <Icon style={styles.locationIcon} name="location-on" size={16} color={"#878787ff"} />
+          <Ionicons name="location-outline" size={14} color="#07172cff" />
           <Text style={styles.cardLocation}>{laundry.location}</Text>
         </View>
         
         {/* Delivery Info */}
         <View style={styles.deliveryInfo}>
-          <Icon name="access-time" size={14} color={appColors.font} />
+         <View style={{flexDirection:"row"}}>
+           <Icon name="access-time" size={12} color={appColors.darkBlue} />
           <Text style={styles.deliveryText}>
             {laundry.time}{" "}
             <Text style={styles.dash}> | </Text>{" "}
             {laundry.distance}
           </Text>
+            <View style={styles.ratingRow}>
+          <View style={styles.ratingBadge}>
+            <Icon style={styles.iconStyle} name="star" size={12} color="#FFD700" />
+            <Text style={styles.ratingBadgeText}>
+              {laundry.rating.toFixed(1)}
+            </Text>
+          </View>
+         
+        </View>
+         </View>
+       
         </View>
 
         {/* Dashed line below delivery info */}
         <View style={styles.dashedLine} />
 
         {/* Rating Section */}
-        <View style={styles.ratingRow}>
-          <View style={styles.ratingBadge}>
-            <Icon style={styles.iconStyle} name="star" size={14} color="#FFD700" />
-            <Text style={styles.ratingBadgeText}>
-              {laundry.rating.toFixed(1)}
-            </Text>
-          </View>
-          <Text style={styles.ratingsCount}>{laundry.ratingsCount} Rated</Text>
-        </View>
+       
       </View>
     </TouchableOpacity>
   );
@@ -123,22 +128,24 @@ const LaundryServiceList = ({ navigation , route  }) => {
   return (
    <SafeAreaView style={styles.container}>
      <View style={styles.container}>
-    <View style={{backgroundColor:appColors.darkBlue,paddingBottom:20}}>
+    <View style={{backgroundColor:"#07172cff",paddingBottom:20}}>
         <Header
+        containerStyle={{marginBottom:5}}
         iconColor={appColors.white}
         title={serviceName ? serviceName : "Nearby Laundry" } 
         onBackPress={() => navigation.goBack()}
         titleStyle={{marginHorizontal:  20,color:appColors.white}}
       />
-      
+        
       <SearchBar
         value={searchQuery}
         onChangeText={setSearchQuery}
         placeholder="Search"
         onFilterPress={() => setShowFilters(true)}
         showFilter={true}
-        searchInputContainerStyle={{backgroundColor:appColors.lightBlue, borderWidth: 0}}
-        inputStyle={{color:appColors.white}}
+        searchInputContainerStyle={{backgroundColor:appColors.white, borderWidth: 0}}
+        inputStyle={{color:appColors.black}}
+        placeholderTextColor={appColors.black}
       />
     </View>
 

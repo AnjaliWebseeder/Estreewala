@@ -54,7 +54,7 @@ export default function ContactSupport({ navigation }) {
             <Ionicons name="mail" size={20} color={appColors.black} />
             <Text style={styles.cardTitle}> Email Us</Text>
           </View>
-          <Text style={styles.cardValue}>support@supercanteen.in</Text>
+          <Text style={styles.cardValue}>support@estreewala.in</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.cardBox} onPress={openDialer}>
@@ -62,7 +62,7 @@ export default function ContactSupport({ navigation }) {
             <Ionicons name="call" size={20} color={appColors.black} />
             <Text style={styles.cardTitle}> Call Us</Text>
           </View>
-          <Text style={styles.cardValue}>+91 9557919140</Text>
+          <Text style={styles.cardValue}>+91 12356</Text>
         </TouchableOpacity>
 
         <View style={styles.messageRow}>

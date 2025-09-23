@@ -7,6 +7,7 @@ import {
   Animated, 
   KeyboardAvoidingView, 
   Platform,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -30,7 +31,7 @@ const PhoneLoginScreen = () => {
   const [isChecked, setIsChecked] = useState(false);
   const phoneInputRef = useRef();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-    const {  login } = useAuth();
+    const {  login , isFirstLaunch , userLocation } = useAuth();
 
   // Countdown timer for resend OTP
   useEffect(() => {
@@ -55,16 +56,36 @@ const PhoneLoginScreen = () => {
     }).start();
   };
 
-  const handleVerifyOtp =  async () => {
-    console.log('Verify OTP:', otp);
-     try {
-      // await login('user_token_here'); // Save token
+  const handleVerifyOtp = async () => {
+  console.log('Verify OTP:', otp);
+  try {
+    await login('user_token_here'); // Save token
+    
+    // 3. Navigate based on first launch status
+    if (isFirstLaunch) {
+      // First time user - go through onboarding flow
        navigation.navigate('ConfirmLocation')
-    } catch (error) {
-      console.log('Login error:', error);
+    } else {
+      // Returning user - check if they have location saved
+      if (userLocation) {
+        // Has location - go directly to main app
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
+      } else {
+        // No location saved - set location first
+        navigation.navigate('ConfirmLocation')
+      }
     }
-    // Handle OTP verification logic
-  };
+  } catch (error) {
+    console.log('Login error:', error);
+    // Handle OTP verification errors (invalid OTP, etc.)
+    Alert.alert('Error', 'Invalid OTP. Please try again.');
+  }
+};
+
+
 
   const handleResendOtp = () => {
     if (resendTimer === 0) {

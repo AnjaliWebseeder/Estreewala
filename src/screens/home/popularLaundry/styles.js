@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
     marginRight: 16,
     width: 220,
-   borderColor:appColors.border,
+   borderColor:"#07172cff",
     borderWidth:1,
     overflow: 'hidden',
   },
@@ -49,6 +49,8 @@ export const styles = StyleSheet.create({
     margin:10,
     overflow:"hidden",
      borderRadius: 10,
+     borderColor:"#07172cff",
+    borderWidth:1,
   },
   image: { 
     width: "100%", 
@@ -74,9 +76,10 @@ export const styles = StyleSheet.create({
   },
   location: { 
     fontSize: 12, 
-    color: appColors.font,
+    color: appColors.black,
     marginLeft: 6,
-    fontFamily:fonts.InterRegular
+    fontFamily:fonts.InterRegular,
+    opacity:0.7
   },
   timeContainer: {
     flexDirection: 'row',
@@ -85,8 +88,9 @@ export const styles = StyleSheet.create({
   },
   time: { 
     fontSize: 12, 
-    color: appColors.font,
+    color: appColors.black,
     marginLeft: 6,
-    fontFamily:fonts.InterRegular
+    fontFamily:fonts.InterRegular,
+       opacity:0.7
   }
 });

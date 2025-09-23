@@ -13,35 +13,39 @@ import {styles} from './styles'
 import appColors from "../../theme/appColors";
 import fonts from '../../theme/appFonts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {TabBackground} from '../../otherComponent/tabBackground'
 import LaundryServiceList from '../../otherComponent/home/laundryServiceList';
 
 const Tab = createBottomTabNavigator();
-
-const MinimalTabButton = ({ focused, icon: IconComponent, label }) => {
+const MinimalTabButton = ({ focused, icon: IconComponent, label, labelWidth,iconStyle,labelStyle }) => {
   return (
     <View style={styles.minimalTabButton}>
       <View style={[
         styles.minimalIconContainer,
-        focused && styles.minimalIconContainerActive
+        focused && styles.minimalIconContainerActive,
+        iconStyle
       ]}>
         <IconComponent
-          size={20}
-          color={focused ? appColors.white : appColors.subTitle}
+          size={18}
+          color={focused ? appColors.white : appColors.darkBlue}
         />
       </View>
-     <Text style={[
+      <Text style={[
         styles.minimalTabLabel,
         { 
           color: focused ? appColors.blue : appColors.subTitle,
-          fontFamily: focused ? fonts.PoppinsMedium : fonts.PoppinsRegular
-        }
+          fontFamily: focused ? fonts.PoppinsMedium : fonts.PoppinsRegular,
+          width: labelWidth || 'auto',  // <-- set width if provided
+          textAlign: 'center',          // center text if width is fixed
+          bottom: focused ? -1 : 3
+        },
+        
       ]}>
         {label}
       </Text>
     </View>
   );
 };
+
 
 export default function BottomTab() {
     const insets = useSafeAreaInsets();
@@ -52,7 +56,7 @@ export default function BottomTab() {
           tabBarShowLabel: false,
           headerShown: false,
           tabBarStyle: [styles.minimalTabBar,{
-             height: 72+ insets.bottom, 
+             height: 65+ insets.bottom, 
           }],
         }}
       >
@@ -60,12 +64,13 @@ export default function BottomTab() {
           name="Home" 
           component={Home}
           options={{
-            tabBarBackground: () => <TabBackground height={80} />,
+           
             tabBarIcon: ({ focused }) => (
               <MinimalTabButton 
                 focused={focused} 
                 icon={HomeIcon} 
                 label="Home" 
+               
               />
             ),
           }}
@@ -76,12 +81,14 @@ export default function BottomTab() {
   component={LaundryServiceList}
 
     options={{
-             tabBarBackground: () => <TabBackground height={80} />,
+           
             tabBarIcon: ({ focused }) => (
               <MinimalTabButton 
                 focused={focused} 
                 icon={LaundryIcon} 
                 label="Laundry" 
+                labelWidth={53}
+                iconStyle={{marginLeft:5}}
               />
             ),
           }}
@@ -92,7 +99,7 @@ export default function BottomTab() {
           name="Orders" 
           component={Order}
           options={{
-             tabBarBackground: () => <TabBackground height={80} />,
+          
             tabBarIcon: ({ focused }) => (
               <MinimalTabButton 
                 focused={focused} 
@@ -111,7 +118,7 @@ export default function BottomTab() {
           name="Profile" 
           component={Profile}
           options={{
-             tabBarBackground: () => <TabBackground height={80} />,
+           
             tabBarIcon: ({ focused }) => (
               <MinimalTabButton 
                 focused={focused} 

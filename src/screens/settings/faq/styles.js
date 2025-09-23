@@ -44,14 +44,20 @@ export const styles = StyleSheet.create({
   faqAnswer: {
     padding: 13,
     paddingTop: 7,
-    borderTopWidth: 1,
-    borderTopColor: appColors.border,
+  
+
+     borderTopWidth: 1,
+    borderStyle: 'dashed',
+    borderTopColor: appColors.darkBlue,
+    marginHorizontal:10
+ 
   },
   faqAnswerText: {
     fontSize: fontSizes.FONT15,
     lineHeight: 22,
     color:appColors.font,
     fontFamily:fonts.InterRegular,
+    marginHorizontal:windowHeight(-10)
   },
   helpSection: {
     backgroundColor:appColors.menuCard,

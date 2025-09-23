@@ -18,10 +18,11 @@ import appColors from '../../../theme/appColors';
 import { useAuth } from '../../../utils/context/authContext';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+
 const ConfirmLocationScreen = ({ route }) => {
   const { selectedLocation } = route.params || {};
   const navigation = useNavigation();
-  const { saveLocation } = useAuth();
+  const { saveLocation , markAppAsLaunched , isFirstLaunch } = useAuth();
   const [location, setLocation] = useState(null);
   const [address, setAddress] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -111,29 +112,34 @@ const ConfirmLocationScreen = ({ route }) => {
     }
   };
 
-  const handleConfirmLocation = async () => {
-    if (location) {
-      try {
-        // Save the location to context and storage
-        await saveLocation({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          address: address
-        });
+ const handleConfirmLocation = async () => {
+  if (location) {
+    try {
+      // Save the location to context and storage
+      await saveLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        address: address,
+      });
 
-        
-        // Navigate to main app
-        navigation.navigate('NotificationPermission')
-        // navigation.reset({
-        //   index: 0,
-        //   routes: [{ name: "Main" }],
-        // });
-      } catch (error) {
-        console.error("Error saving location:", error);
-        Alert.alert("Error", "Could not save your location.");
-      }
+      await markAppAsLaunched();
+
+      // Delay navigation (e.g., 2 seconds)
+      setTimeout(() => {
+        if (isFirstLaunch) {
+          navigation.navigate('NotificationPermission');
+        } else {
+          navigation.navigate('Main');
+        }
+      }, 2000); // 2000ms = 2 seconds
+
+    } catch (error) {
+      console.error("Error saving location:", error);
+      Alert.alert("Error", "Could not save your location.");
     }
-  };
+  }
+};
+
 
   const openInMapsApp = () => {
     if (location) {

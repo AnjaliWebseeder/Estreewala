@@ -4,8 +4,8 @@ import Svg, { Path, G } from "react-native-svg";
 export function HomeIcon({ color = "#000" }) {
   return (
     <Svg
-      width={21.5}
-      height={21.5}
+      width={19}
+      height={19}
      viewBox="0 0 512 512"
       fill="none"
     >

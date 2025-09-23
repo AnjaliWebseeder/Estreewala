@@ -18,7 +18,7 @@ const appColors = {
   lightCream:"#F4EFE7",
   background:"#FCFBFA",
   menuCard:"#F8F5F1",
-  darkBlue:"#2C2F4E",
+  darkBlue:"#07172cff",
   lightBlue:"#3D4163"
 }
 

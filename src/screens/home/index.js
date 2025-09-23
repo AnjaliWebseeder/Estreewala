@@ -27,11 +27,11 @@ const styles = StyleSheet.create({
    
   },
   mainView:{
-     backgroundColor:appColors.darkBlue,
+     backgroundColor:"#07172cff",
      marginBottom:windowHeight(12),
   },
   contentContainerStyle:{
-    paddingBottom:100
+    paddingBottom:120
   }
 });
 

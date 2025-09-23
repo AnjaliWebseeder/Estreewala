@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
     backgroundColor: appColors.white,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#ECEFF6",
+    borderColor:appColors.border,
     elevation: 5,
     shadowColor: "#000",
     shadowOpacity: 0.12,

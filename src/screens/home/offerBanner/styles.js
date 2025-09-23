@@ -74,7 +74,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   activeDot: {
-    backgroundColor: appColors.blue,
+    backgroundColor: "#07172cff",
     width: 12,
   },
   inactiveDot: {

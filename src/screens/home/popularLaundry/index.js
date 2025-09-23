@@ -60,12 +60,12 @@ const PopularLaundry = (props) => {
               <Text style={styles.name}>{item.name}</Text>
               
               <View style={styles.locationContainer}>
-                <Ionicons name="location-outline" size={14} color="#666" />
+                <Ionicons name="location-outline" size={14} color="#07172cff" />
                 <Text style={styles.location}>{item.location}</Text>
               </View>
               
               <View style={styles.timeContainer}>
-                <Ionicons name="time-outline" size={14} color="#666" />
+                <Ionicons name="time-outline" size={14} color="#07172cff"/>
                 <Text style={styles.time}>{item.time}</Text>
               </View>
             </View>

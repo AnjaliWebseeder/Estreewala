@@ -50,7 +50,7 @@ const FAQS = ({ navigation }) => {
    <SafeAreaView style={styles.container}>
      <View style={styles.container}>
        <Header
-        title="FAQs"
+        title="FAQ"
         onBackPress={() => navigation.goBack()}
         onRightPress={() => console.log("Settings pressed")}
       />

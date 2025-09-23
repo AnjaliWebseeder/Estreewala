@@ -25,7 +25,7 @@ const SearchBar = ({
   return (
     <View style={[styles.searchContainer, containerStyle]}>
       <View style={[styles.searchInputContainer,{...searchInputContainerStyle}]}>
-        <Icon name="search" size={24} color="#666" style={styles.searchIcon} />
+        <Icon name="search" size={24} color="#07172cff" style={styles.searchIcon} />
         <TextInput
           style={[styles.searchInput, inputStyle]}
           placeholder={placeholder}
@@ -40,7 +40,7 @@ const SearchBar = ({
           style={[styles.filterButton, filterButtonStyle]}
           onPress={onFilterPress}
         >
-     <FilterIcon size={24} color={appColors.white} />
+     <FilterIcon size={20} color={appColors.darkBlue} />
         
         </TouchableOpacity>
       )} 

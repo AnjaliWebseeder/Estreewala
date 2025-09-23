@@ -32,6 +32,8 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
     marginBottom: 16,
+    borderColor:appColors.darkBlue,
+    borderWidth:1
   },
   row: {
     flexDirection: 'row',
@@ -54,6 +56,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
+    
   },
   messageLabel: {
     fontSize: 14,
@@ -62,7 +65,7 @@ fontFamily:fonts.InterRegular,
     color: '#000',
   },
   textInput: {
-    borderColor: '#D3D3D3',
+    borderColor:appColors.darkBlue,
     borderWidth: 1,
     borderRadius: 10,
     backgroundColor: appColors.menuCard,

@@ -2,7 +2,7 @@ import React from "react";
 import Svg, { Path, G } from "react-native-svg";
 import appColors from "../../../theme/appColors";
 
-export function ProfileIcon({ color = "#000", size= size? size : 23 }) {
+export function ProfileIcon({ color = "#000", size= size? size : 20 }) {
   return (
     <Svg width={size}
       height={size} viewBox="0 0 512 512" fill="none">

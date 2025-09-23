@@ -157,26 +157,35 @@ const UserDetailsScreen = ({ navigation, route }) => {
     }
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!mobile.trim()) {
-      newErrors.mobile = "Mobile number is required";
-    } else if (!/^\d{10}$/.test(mobile.trim())) {
-      newErrors.mobile = "Please enter a valid 10-digit mobile number";
-    }
-    
-    if (!address.trim()) {
-      newErrors.address = "Address is required";
-    }
-    
-    if (email.trim() && !/^\S+@\S+\.\S+$/.test(email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+ const validateForm = () => {
+  const newErrors = {};
+
+  // Name validation
+  if (!name.trim()) {
+    newErrors.name = "Full Name is required";
+  }
+
+  // Mobile validation
+  if (!mobile.trim()) {
+    newErrors.mobile = "Mobile number is required";
+  } else if (!/^\d{10}$/.test(mobile.trim())) {
+    newErrors.mobile = "Please enter a valid 10-digit mobile number";
+  }
+
+  // Address validation
+  if (!address.trim()) {
+    newErrors.address = "Address is required";
+  }
+
+  // Email validation
+  if (email.trim() && !/^\S+@\S+\.\S+$/.test(email)) {
+    newErrors.email = "Please enter a valid email address";
+  }
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
 
   const handleSave = async () => {
     if (!validateForm()) return;
@@ -224,21 +233,6 @@ const UserDetailsScreen = ({ navigation, route }) => {
     }
   };
 
-  const selectSuggestion = (suggestion) => {
-    setAddress(suggestion);
-    setShowSuggestions(false);
-  };
-
-  const selectSavedAddress = (address) => {
-    setAddress(address.address);
-    setSaveAddressAs(address.type);
-    setCoords({
-      latitude: address.latitude,
-      longitude: address.longitude
-    });
-    updateMap(address.latitude, address.longitude);
-    setShowAddressList(false);
-  };
 
   // Radio button component
   const RadioButton = ({ selected, onPress, label, value }) => (
@@ -389,6 +383,7 @@ const UserDetailsScreen = ({ navigation, route }) => {
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>Landmark (Optional)</Text>
               <TextInput
+                 placeholderTextColor={appColors.border}
                 style={styles.input}
                 placeholder="E.g. Near Central Mall"
                 value={landmark}
@@ -425,19 +420,24 @@ const UserDetailsScreen = ({ navigation, route }) => {
             
             {/* Name */}
             <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Name (Optional)</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Your name"
-                value={name}
-                onChangeText={setName}
-              />
+              <Text style={styles.label}>Full Name *</Text>
+             <TextInput
+            placeholderTextColor={appColors.border}
+    style={[styles.input, errors.name && styles.inputError]}
+    placeholder="Your name"
+    value={name}
+    onChangeText={(text) => {
+      setName(text);
+      setErrors({ ...errors, name: null });
+    }}
+  />
             </View>
 
             {/* Mobile */}
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>Mobile Number *</Text>
               <TextInput
+               placeholderTextColor={appColors.border}
                 style={[styles.input, errors.mobile && styles.inputError]}
                 placeholder="10-digit mobile number"
                 value={mobile}
@@ -455,6 +455,7 @@ const UserDetailsScreen = ({ navigation, route }) => {
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>Email (Optional)</Text>
               <TextInput
+               placeholderTextColor={appColors.border}
                 style={[styles.input, errors.email && styles.inputError]}
                 placeholder="Your email address"
                 value={email}
@@ -485,7 +486,7 @@ const UserDetailsScreen = ({ navigation, route }) => {
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setMapModalVisible(false)}>
-              <Icon name="close" size={24} color="#000" />
+              <Icon name="close" size={24} color={appColors.darkBlue} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Select Location</Text>
             <View style={styles.placeholder} />

@@ -7,13 +7,13 @@ export const styles = StyleSheet.create({
    container: { flex: 1, backgroundColor: '#f8f9fa' },
   titleStyle:{
     marginHorizontal:20,
-    fontFamily:fonts.InterSemiBold
+    fontFamily:fonts.InterSemiBold,
+    color:appColors.white
   },
    border:{
     width: "100%",
     height: 1,
-    backgroundColor: appColors.border, 
-    marginVertical: windowHeight(4),
+    marginTop:windowHeight(6)
   },
   contentContainerStyle:{
      paddingBottom:windowHeight(5)
@@ -26,7 +26,8 @@ export const styles = StyleSheet.create({
     padding: 6, 
     borderRadius: 16, 
     paddingHorizontal:windowHeight(10),
-    marginHorizontal:windowHeight(3)
+    marginHorizontal:windowHeight(3),
+    paddingBottom:10
   },
   row:{
     flexDirection:"row",
@@ -63,7 +64,7 @@ export const styles = StyleSheet.create({
      marginTop:windowHeight(12)
   },
   priceRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  totalRow: { borderTopWidth: 1, borderTopColor: '#f0f0f0', paddingTop: 12, marginTop: 8 },
+  totalRow: { borderTopWidth: 1, borderTopColor:appColors.darkBlue, paddingTop: 12, marginTop: 8 },
   priceLabel: { fontSize: 14, color: appColors.font,fontFamily:fonts.InterMedium},
   priceValue: { fontSize: 14, color: appColors.font,fontFamily:fonts.InterMedium },
    ruppes:{
@@ -78,13 +79,14 @@ export const styles = StyleSheet.create({
     alignItems: 'center', 
     justifyContent:"center",
      paddingHorizontal: 16,
-     paddingBottom:16,
-     marginVertical:windowHeight(20)
+     paddingBottom:6,
+     marginVertical:windowHeight(0),
+     paddingTop:windowHeight(40)
    
   },
  
   payButton: { 
-    backgroundColor: appColors.font, 
+    backgroundColor: appColors.darkBlue, 
     paddingHorizontal: 20, 
     paddingVertical: windowHeight(12), 
     borderRadius: 10 ,

@@ -158,27 +158,13 @@ const OrdersScreen = ({ navigation }) => {
         <View style={[styles.row, { paddingHorizontal: 16 }]}>
           <View style={styles.row}>
             <Text style={styles.subText}>{item.items}</Text>
-            <View style={styles.dot} />
+          </View>
+
+         
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <FontAwesome name="rupee" style={{ marginTop: 3 }} size={14} color="#8E8E93" />
               <Text style={[styles.subText, { marginLeft: 4 }]}>{item.price}</Text>
             </View>
-          </View>
-
-          <View style={[styles.statusBadge, { backgroundColor: item.statusColor }]}>
-            {isRating ? (
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <MaterialIcons name="star" size={14} color={"#8E8E93"} style={{ marginBottom: 2 }} />
-                <Text style={[styles.statusText, { color: item.textColor, marginLeft: 4 }]}>
-                  {item.rating}
-                </Text>
-              </View>
-            ) : (
-              <Text style={[styles.statusText, { color: item.textColor }]}>
-                {item.status}
-              </Text>
-            )}
-          </View>
         </View>
       </TouchableOpacity>
     );

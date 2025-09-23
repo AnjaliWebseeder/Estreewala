@@ -1,49 +1,81 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StatusBar, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StatusBar, ActivityIndicator, Alert ,PermissionsAndroid,Platform} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { notification } from '../../../utils/images/images';
 import { styles } from './styles';
 import { useAuth } from '../../../utils/context/authContext';
 
 export default function NotificationPromptScreen({ navigation }) {
-  const { login } = useAuth();
+  const { login, markAppAsLaunched, isFirstLaunch } = useAuth();
   const [loading, setLoading] = useState(false);
+  
+const onNotificationClick = async () => {
+  setLoading(true);
+  try {
+    let granted = false;
 
-  // Enable Notifications
-  const onNotificationClick = async () => {
-    setLoading(true);
-    try {
-      await login('user_token_here');
+    if (Platform.OS === "android") {
+      if (Platform.Version >= 33) {
+        // Android 13+ requires explicit permission
+        const result = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+        );
+        granted = result === PermissionsAndroid.RESULTS.GRANTED;
+      } else {
+        // Android 12 and below auto-grant
+        granted = true;
+      }
+    }
 
-      // small delay to ensure navigator updates
-      setTimeout(() => {
-        setLoading(false);
+    if (granted) {
+      if (isFirstLaunch) {
+        await markAppAsLaunched();
+
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Main' }],
+          routes: [{ name: "Main" }],
         });
-      }, 100);
-    } catch (error) {
-      setLoading(false);
-      console.log('Login error:', error);
+      } else {
+        navigation.goBack();
+      }
+    } else {
+      Alert.alert(
+        "Permission Denied",
+        "You can enable notifications later in settings."
+      );
     }
-  };
+  } catch (error) {
+    console.log("Notification setup error:", error);
+    Alert.alert("Error", "Failed to set up notifications. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Skip notifications
   const skipClick = async () => {
    try {
-      await login('user_token_here');
+      if (isFirstLaunch) {
+        await markAppAsLaunched();
+      }
 
-      // small delay to ensure navigator updates
-      setTimeout(() => {
-       
+      // Navigate to appropriate screen based on context
+      if (isFirstLaunch) {
+        // First launch flow completed - go to main app
         navigation.reset({
           index: 0,
           routes: [{ name: 'Main' }],
         });
-      }, 100);
+      } else {
+        // Not first launch - normal navigation
+        navigation.goBack(); // or navigate to previous screen
+      }
+
     } catch (error) {
-      console.log('Login error:', error);
+      console.log('Notification setup error:', error);
+      Alert.alert('Error', 'Failed to set up notifications. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 

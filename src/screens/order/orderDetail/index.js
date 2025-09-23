@@ -152,16 +152,16 @@ const OrderDetails = ({ navigation, route }) => {
             <Text style={styles.driverPhone}>{customerPhone}</Text>
           </View>
           <TouchableOpacity onPress={handleCall}>
-            <Ionicons name="call" size={20} color={appColors.blue} />
+            <Ionicons name="call" size={20} color={appColors.darkBlue} />
           </TouchableOpacity>
         </View>
         <View style={styles.horizontalLine}/>
         <View style={styles.addressBlock}>
-          <MaterialIcons name="local-laundry-service" size={20} color={appColors.font} />
+          <MaterialIcons name="local-laundry-service" size={20} color={appColors.darkBlue} />
           <Text style={styles.addressText}>QuickClean Laundry, 1141 Central Park, Hemilton</Text>
         </View>
         <View style={styles.addressBlock}>
-          <Ionicons name="location-outline" size={20} color={appColors.font} />
+          <Ionicons name="location-outline" size={20} color={appColors.darkBlue} />
           <Text style={styles.addressText}>B101, Nirvana Point, Hemilton</Text>
         </View>
       </View> 
@@ -192,7 +192,7 @@ const OrderDetails = ({ navigation, route }) => {
         <View style={styles.summaryRow}><Text  style={styles.text}>Status</Text>
          <View style={{flexDirection: 'row', alignItems: 'center'}}>
               {currentOrder.status === 'DELIVERY' && (
-                <MaterialIcons name="local-shipping" size={16} color={appColors.blue} style={{marginRight: 5}} />
+                <MaterialIcons name="local-shipping" size={16} color={appColors.darkBlue} style={{marginRight: 5}} />
               )}
               {currentOrder.status === 'CANCELLED' && (
                 <MaterialIcons name="cancel" size={16} color="#e53935" style={{marginRight: 5}} />
@@ -216,7 +216,7 @@ const OrderDetails = ({ navigation, route }) => {
       </View> 
        <TouchableOpacity onPress={handleDownloadInvoice} style={styles.invoiceButton}>
           <Text style={styles.invoiceBtnText}>View Invoice</Text>
-          <MaterialIcons  name="description"  size={20} color={appColors.blue} style={{ marginLeft: 8 }} />
+          <MaterialIcons  name="description"  size={20} color={appColors.darkBlue} style={{ marginLeft: 8 }} />
         </TouchableOpacity>
 
       

@@ -11,6 +11,7 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
  paddingHorizontal: 16,
+ paddingTop:windowHeight(6)
   },
   iconStyle:{
    marginHorizontal:8

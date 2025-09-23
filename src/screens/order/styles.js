@@ -10,7 +10,9 @@ export const styles = StyleSheet.create({
   
   },
   main:{
-    backgroundColor:appColors.darkBlue
+    backgroundColor:appColors.darkBlue,
+    marginBottom:windowHeight(15),
+    
   },
   contentContainerStyle:{
     paddingBottom:windowHeight(100)
@@ -19,11 +21,11 @@ export const styles = StyleSheet.create({
     backgroundColor:appColors.card,
     paddingBottom: 12,
     paddingTop:10,
-    borderColor:appColors.border,
+    borderColor:appColors.darkBlue,
     borderWidth:1,
     marginHorizontal:13,
      borderRadius: 10,
-     marginTop:windowHeight(15)
+ 
 
   },
   separator: {
@@ -41,11 +43,16 @@ export const styles = StyleSheet.create({
     marginRight:6
   },
    border: {
-    borderBottomWidth: 2,
-  borderColor: appColors.border,
-  borderStyle: "dotted",
-  marginTop:windowHeight(8),
-  marginBottom:windowHeight(2)
+    borderBottomWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: appColors.darkBlue,
+    marginVertical: 6,
+    margin:8,
+    marginTop:10
+
+
+
+    
   },
   image: {
     width: 55,
@@ -93,8 +100,8 @@ export const styles = StyleSheet.create({
     tabContainer: {
   flexDirection: "row",
   borderBottomWidth: 1,
-  borderColor: appColors.lightBlue,
-  marginBottom: windowHeight(20),
+  borderColor: "#dcd6d6ff",
+  marginBottom: windowHeight(10),
 },
 
 tab: {
@@ -121,7 +128,7 @@ tabIndicator: {
   bottom: 0,
   height: 2,
   width: "100%",
-  backgroundColor: "#4c528dff",
+  backgroundColor: appColors.border,
   borderRadius: 2,
 },
   

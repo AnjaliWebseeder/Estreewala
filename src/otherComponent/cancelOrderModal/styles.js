@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
     paddingBottom: 15,
     borderBottomWidth: 1,
-    borderBottomColor: appColors.lightBorder,
+    borderBottomColor: appColors.darkBlue,
   },
   modalTitle: {
     fontSize: fontSizes.FONT18,

@@ -44,7 +44,8 @@ export const styles = StyleSheet.create({
     paddingVertical: 22,
     paddingHorizontal: 16,
     marginBottom: windowHeight(10),
-    paddingBottom:14
+    paddingBottom:14,
+  
   },
   statsRow: {
     flexDirection: 'row',
@@ -61,6 +62,8 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
+      borderColor:appColors.darkBlue,
+    borderWidth:1
   },
   statNumber: {
     fontSize: fontSizes.FONT19,
@@ -93,6 +96,9 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
+      borderColor:appColors.darkBlue,
+    borderWidth:1,
+    marginBottom:15
   },
   valueIcon: {
     width: 48,
