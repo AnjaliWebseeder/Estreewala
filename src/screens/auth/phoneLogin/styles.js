@@ -124,7 +124,7 @@ phoneInput: {
   checkboxContainer:{
     flexDirection:"row",
     alignItems:"center",
-    marginBottom:windowHeight(12),
+    marginBottom:windowHeight(32),
     marginHorizontal:windowHeight(4)
   },
   termsText: {

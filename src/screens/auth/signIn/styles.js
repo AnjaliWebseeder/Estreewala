@@ -2,7 +2,7 @@
 import fonts from '../../../theme/appFonts';
 import appColors from '../../../theme/appColors';
 import { StyleSheet } from 'react-native';
-import { fontSizes } from '../../../theme/appConstant';
+import { fontSizes, windowHeight } from '../../../theme/appConstant';
 
 export const styles = StyleSheet.create({
   container: {
@@ -15,14 +15,15 @@ export const styles = StyleSheet.create({
   contentContainer: {
     flexGrow: 1,
     justifyContent: 'space-between',
-    padding: 24,
+   
   },
   formContainer: {
-    marginBottom: 24,
+    marginHorizontal:15,
+    marginBottom:60
   },
   forgotPassword: {
     alignSelf: 'flex-end',
-    marginBottom: 24,
+    marginBottom: 6,
     top:-10
   
   },
@@ -34,11 +35,9 @@ export const styles = StyleSheet.create({
   submitButton: {
     backgroundColor: appColors.blue,
     borderRadius: 12,
-    height: 56,
+    height: 50,
     justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-   
+    alignItems: 'center',   
   },
   disabledButton: {
     backgroundColor: '#D3D3D3',
@@ -51,7 +50,7 @@ export const styles = StyleSheet.create({
   dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 17,
     marginTop:20
   },
   divider: {
@@ -69,10 +68,10 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: appColors.border,
     borderRadius: 12,
-    height: 56,
+    height: 45,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom:18
   },
   phoneLoginButtonText: {
     color: appColors.font,

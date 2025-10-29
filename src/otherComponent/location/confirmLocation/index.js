@@ -6,7 +6,9 @@ import {
   TouchableOpacity, 
   ActivityIndicator,
   Alert,
-  Linking
+  Linking,
+  Platform,
+  PermissionsAndroid
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -18,34 +20,107 @@ import appColors from '../../../theme/appColors';
 import { useAuth } from '../../../utils/context/authContext';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-
 const ConfirmLocationScreen = ({ route }) => {
   const { selectedLocation } = route.params || {};
   const navigation = useNavigation();
-  const { saveLocation , markAppAsLaunched , isFirstLaunch } = useAuth();
+  const { saveLocation, markAppAsLaunched, isFirstLaunch } = useAuth();
   const [location, setLocation] = useState(null);
   const [address, setAddress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mapLoading, setMapLoading] = useState(true);
+  const [hasPermission, setHasPermission] = useState(false);
   const webViewRef = useRef(null);
   const insets = useSafeAreaInsets();
 
-  useEffect(() => {
-    if (selectedLocation) {
-      setAddress(selectedLocation.formattedAddress || selectedLocation.name);
-      setLocation({
-        coords: {
-          latitude: selectedLocation.latitude,
-          longitude: selectedLocation.longitude
+  // Request location permission
+  const requestLocationPermission = async () => {
+    try {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: "Location Permission",
+            message: "This app needs access to your location to show your position on the map.",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK"
+          }
+        );
+        
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          setHasPermission(true);
+          return true;
+        } else {
+          setHasPermission(false);
+          return false;
         }
-      });
-      setLoading(false);
-      updateMap(selectedLocation.latitude, selectedLocation.longitude);
-    } else {
-      // No need to request permission here anymore - just get the location
-      getCurrentLocation();
+      } else {
+        // For iOS, we'll rely on Geolocation's built-in permission handling
+        setHasPermission(true);
+        return true;
+      }
+    } catch (err) {
+      console.warn("Permission error:", err);
+      setHasPermission(false);
+      return false;
     }
+  };
+
+  useEffect(() => {
+    initializeLocation();
   }, [selectedLocation]);
+
+  const initializeLocation = async () => {
+    setLoading(true);
+    
+    // Request permission first
+    const permissionGranted = await requestLocationPermission();
+    
+    if (permissionGranted) {
+      if (selectedLocation) {
+        // Use selected location
+        setAddress(selectedLocation.formattedAddress || selectedLocation.name);
+        setLocation({
+          coords: {
+            latitude: selectedLocation.latitude,
+            longitude: selectedLocation.longitude
+          }
+        });
+        setLoading(false);
+        updateMap(selectedLocation.latitude, selectedLocation.longitude);
+      } else {
+        // Get current location
+        getCurrentLocation();
+      }
+    } else {
+      // Permission denied
+      setLoading(false);
+      Alert.alert(
+        "Permission Required",
+        "Location permission is required to show your position on the map.",
+        [
+          {
+            text: "Try Again",
+            onPress: initializeLocation
+          },
+          {
+            text: "Use Default",
+            onPress: () => {
+              const defaultLocation = {
+                coords: {
+                  latitude: 28.6139,
+                  longitude: 77.2090
+                }
+              };
+              setLocation(defaultLocation);
+              setAddress("Delhi, India");
+              updateMap(28.6139, 77.2090);
+            }
+          }
+        ]
+      );
+    }
+  };
 
   const getCurrentLocation = () => {
     setLoading(true);
@@ -54,13 +129,68 @@ const ConfirmLocationScreen = ({ route }) => {
         setLocation(position);
         reverseGeocode(position.coords.latitude, position.coords.longitude);
         updateMap(position.coords.latitude, position.coords.longitude);
+        setHasPermission(true);
       },
       (error) => {
-        console.error(error);
+        console.error('Location error:', error);
         setLoading(false);
-        Alert.alert('Error', 'Could not get your location.');
+        
+        // Handle different error types
+        if (error.code === error.PERMISSION_DENIED) {
+          Alert.alert(
+            "Permission Denied",
+            "Please enable location permissions in your device settings.",
+            [
+              {
+                text: "Open Settings",
+                onPress: () => Linking.openSettings()
+              },
+              {
+                text: "Use Default Location",
+                onPress: () => {
+                  const defaultLocation = {
+                    coords: {
+                      latitude: 28.6139,
+                      longitude: 77.2090
+                    }
+                  };
+                  setLocation(defaultLocation);
+                  setAddress("Delhi, India");
+                  updateMap(28.6139, 77.2090);
+                }
+              }
+            ]
+          );
+        } else {
+          Alert.alert(
+            "Location Error",
+            "Could not get your location. Please try again.",
+            [
+              { text: "Retry", onPress: getCurrentLocation },
+              { 
+                text: "Use Default", 
+                onPress: () => {
+                  const defaultLocation = {
+                    coords: {
+                      latitude: 28.6139,
+                      longitude: 77.2090
+                    }
+                  };
+                  setLocation(defaultLocation);
+                  setAddress("Delhi, India");
+                  updateMap(28.6139, 77.2090);
+                }
+              }
+            ]
+          );
+        }
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      { 
+        enableHighAccuracy: true, 
+        timeout: 15000, 
+        maximumAge: 10000,
+        distanceFilter: 10 
+      }
     );
   };
 
@@ -76,20 +206,24 @@ const ConfirmLocationScreen = ({ route }) => {
         }
       );
 
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
       const text = await res.text();
       let data;
       try {
         data = JSON.parse(text);
       } catch (e) {
         console.error("Non-JSON response:", text);
-        setAddress("Location found");
+        setAddress(`Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
         return;
       }
 
-      setAddress(data.display_name || "Location found");
+      setAddress(data.display_name || `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
     } catch (err) {
       console.error("Reverse geocoding error:", err);
-      setAddress("Location found");
+      setAddress(`Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
     } finally {
       setLoading(false);
     }
@@ -97,51 +231,70 @@ const ConfirmLocationScreen = ({ route }) => {
 
   const updateMap = (lat, lng) => {
     if (webViewRef.current) {
-      const jsCode = `
-        updateMap(${lat}, ${lng});
-        true;
-      `;
-      webViewRef.current.injectJavaScript(jsCode);
+      // Wait a bit for the WebView to be ready
+      setTimeout(() => {
+        const jsCode = `
+          if (typeof updateMap === 'function') {
+            updateMap(${lat}, ${lng});
+          } else {
+            // If updateMap is not available yet, initialize the map
+            initMap();
+            setTimeout(() => updateMap(${lat}, ${lng}), 100);
+          }
+          true;
+        `;
+        webViewRef.current.injectJavaScript(jsCode);
+      }, 500);
     }
   };
 
   const handleMapLoad = () => {
     setMapLoading(false);
+    console.log('Map loaded successfully');
+    
+    // If we have location data, update the map
     if (location) {
       updateMap(location.coords.latitude, location.coords.longitude);
+    } else if (selectedLocation) {
+      updateMap(selectedLocation.latitude, selectedLocation.longitude);
     }
   };
 
- const handleConfirmLocation = async () => {
- if (location) {
-    try {
-      await saveLocation({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        address: address
-      });
+  const handleMapError = (syntheticEvent) => {
+    const { nativeEvent } = syntheticEvent;
+    console.error('WebView error:', nativeEvent);
+    setMapLoading(false);
+  };
 
-      // Mark app as launched after location confirmation
-      if (isFirstLaunch) {
-        await markAppAsLaunched();
-      }
-
-      // Navigate based on first launch status
-      if (isFirstLaunch) {
-        navigation.navigate('NotificationPermission');
-      } else {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Main' }],
+  const handleConfirmLocation = async () => {
+    if (location) {
+      try {
+        await saveLocation({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          address: address
         });
-      }
-    } catch (error) {
-      console.error("Error saving location:", error);
-      Alert.alert("Error", "Could not save your location.");
-    }
-  }
-};
 
+        // Mark app as launched after location confirmation
+        if (isFirstLaunch) {
+          await markAppAsLaunched();
+        }
+
+        // Navigate based on first launch status
+        if (isFirstLaunch) {
+          navigation.navigate('NotificationPermission');
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
+          });
+        }
+      } catch (error) {
+        console.error("Error saving location:", error);
+        Alert.alert("Error", "Could not save your location.");
+      }
+    }
+  };
 
   const openInMapsApp = () => {
     if (location) {
@@ -150,11 +303,11 @@ const ConfirmLocationScreen = ({ route }) => {
         ios: `maps:0,0?q=${latitude},${longitude}`,
         android: `geo:0,0?q=${latitude},${longitude}`
       });
-      Linking.openURL(url);
+      Linking.openURL(url).catch(err => console.error('Error opening maps:', err));
     }
   };
 
-  // HTML template for OpenStreetMap with Leaflet
+  // Improved HTML template for OpenStreetMap with better error handling
   const mapHtml = `
     <!DOCTYPE html>
     <html>
@@ -162,42 +315,136 @@ const ConfirmLocationScreen = ({ route }) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
       <style>
-        body { margin: 0; padding: 0; }
-        #map { height: 100vh; width: 100vw; }
-        .leaflet-container { background: #f8f9fa; }
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        body, html { 
+          width: 100%; 
+          height: 100%; 
+          overflow: hidden;
+        }
+        #map { 
+          width: 100%; 
+          height: 100%; 
+        }
+        .leaflet-container { 
+          background: #f8f9fa;
+          font-family: system-ui, -apple-system, sans-serif;
+        }
+        .custom-marker {
+          background: #ff7e00;
+          border: 3px solid #fff;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .loading {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+          font-family: system-ui;
+          color: #666;
+        }
       </style>
     </head>
     <body>
       <div id="map"></div>
+      <div id="loading" class="loading">Loading map...</div>
+      
       <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
       <script>
         let map, marker;
+        let mapInitialized = false;
         
         function initMap() {
-          map = L.map('map').setView([0, 0], 2);
+          if (mapInitialized) return;
           
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors',
-            maxZoom: 19
-          }).addTo(map);
+          try {
+            // Remove loading indicator
+            const loadingEl = document.getElementById('loading');
+            if (loadingEl) loadingEl.style.display = 'none';
+            
+            // Create map with default center (will be updated later)
+            map = L.map('map').setView([28.6139, 77.2090], 13);
+            
+            // Add tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '© OpenStreetMap contributors',
+              maxZoom: 19,
+              minZoom: 2
+            }).addTo(map);
+            
+            // Custom icon
+            const customIcon = L.divIcon({
+              className: 'custom-marker',
+              html: '<div style="width: 100%; height: 100%; border-radius: 50%; background: #ff7e00;"></div>',
+              iconSize: [20, 20],
+              iconAnchor: [10, 10]
+            });
+            
+            // Create initial marker
+            marker = L.marker([28.6139, 77.2090], { icon: customIcon })
+              .addTo(map)
+              .bindPopup('Your Location')
+              .openPopup();
+            
+            mapInitialized = true;
+            console.log('Map initialized successfully');
+            
+          } catch (error) {
+            console.error('Map initialization error:', error);
+            const loadingEl = document.getElementById('loading');
+            if (loadingEl) loadingEl.innerHTML = 'Error loading map';
+          }
         }
         
         function updateMap(lat, lng) {
-          if (map) {
+          if (!mapInitialized) {
+            initMap();
+            // Retry after a short delay
+            setTimeout(() => updateMap(lat, lng), 100);
+            return;
+          }
+          
+          try {
+            // Update map view
             map.setView([lat, lng], 15);
             
+            // Update or create marker
             if (marker) {
-              map.removeLayer(marker);
+              marker.setLatLng([lat, lng]);
+            } else {
+              const customIcon = L.divIcon({
+                className: 'custom-marker',
+                html: '<div style="width: 100%; height: 100%; border-radius: 50%; background: #ff7e00;"></div>',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+              });
+              
+              marker = L.marker([lat, lng], { icon: customIcon })
+                .addTo(map)
+                .bindPopup('Your Location')
+                .openPopup();
             }
             
-            marker = L.marker([lat, lng]).addTo(map)
-              .bindPopup('Your Location')
-              .openPopup();
+            console.log('Map updated to:', lat, lng);
+          } catch (error) {
+            console.error('Map update error:', error);
           }
         }
         
         // Initialize map when page loads
-        document.addEventListener('DOMContentLoaded', initMap);
+        document.addEventListener('DOMContentLoaded', function() {
+          console.log('DOM loaded, initializing map...');
+          initMap();
+        });
+        
+        // Fallback initialization
+        setTimeout(initMap, 1000);
       </script>
     </body>
     </html>
@@ -205,6 +452,8 @@ const ConfirmLocationScreen = ({ route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
+
       {/* Map View with WebView */}
       <View style={styles.mapContainer}>
         <WebView
@@ -212,9 +461,14 @@ const ConfirmLocationScreen = ({ route }) => {
           style={styles.map}
           source={{ html: mapHtml }}
           onLoad={handleMapLoad}
+          onError={handleMapError}
+          onHttpError={handleMapError}
           javaScriptEnabled={true}
           domStorageEnabled={true}
           startInLoadingState={true}
+          allowsFullscreenVideo={false}
+          setBuiltInZoomControls={false}
+          setDisplayZoomControls={false}
           renderLoading={() => (
             <View style={styles.mapLoadingContainer}>
               <ActivityIndicator size="large" color={appColors.blue} />
@@ -250,18 +504,22 @@ const ConfirmLocationScreen = ({ route }) => {
               <ActivityIndicator size="small" color={appColors.blue} style={styles.loadingIndicator} />
             ) : (
               <Text style={styles.addressText} numberOfLines={2}>
-                {address || 'Getting your location...'}
+                {address || 'Location not available'}
               </Text>
             )}
           </View>
         </View>
 
         <TouchableOpacity 
-          style={[styles.confirmButton, loading && styles.disabled]}
+          style={[styles.confirmButton, (!location || loading) && styles.disabled]}
           onPress={handleConfirmLocation}
-          disabled={loading}
+          disabled={!location || loading}
         >
-          <Text style={styles.confirmText}>Confirm Location</Text>
+          {loading ? (
+            <ActivityIndicator size="small" color={appColors.white} />
+          ) : (
+            <Text style={styles.confirmText}>Confirm Location</Text>
+          )}
         </TouchableOpacity>
       </View>
 

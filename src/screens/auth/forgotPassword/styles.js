@@ -15,15 +15,15 @@ export const styles = StyleSheet.create({
   },
   contentContainer: {
     justifyContent: 'space-between',
-    padding: 24,
   },
   formContainer: {
     marginBottom: 24,
+    marginHorizontal:15
   },
   submitButton: {
     backgroundColor: appColors.blue,
     borderRadius: 12,
-    height: 56,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,

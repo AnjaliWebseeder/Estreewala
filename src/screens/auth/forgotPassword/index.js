@@ -26,8 +26,10 @@ const ForgotPasswordScreen = () => {
         keyboardShouldPersistTaps="handled"
       >
         <AuthHeader
-          title="Reset Password"
+          title="Forgot Password"
           subtitle="Enter your email to receive reset instructions"
+           showBackButton={true}
+             onBackPress={() => navigation.goBack()}
         />
         
         <View style={styles.formContainer}>
@@ -44,7 +46,7 @@ const ForgotPasswordScreen = () => {
             onPress={handleResetPassword}
             disabled={!email}
           >
-            <Text style={styles.submitButtonText}>Send Reset Link</Text>
+            <Text style={styles.submitButtonText}>Change Password</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 

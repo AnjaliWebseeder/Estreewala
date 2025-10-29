@@ -159,8 +159,7 @@ export default function Splash({ navigation }) {
 
       if (isFirstLaunch === null) {
         AsyncStorage.setItem("alreadyLaunched", "true");
-        navigation.replace("OnBoarding");
-        
+        navigation.replace("OnBoarding");        
 
       } else if (userToken) {
         navigation.replace("Main");

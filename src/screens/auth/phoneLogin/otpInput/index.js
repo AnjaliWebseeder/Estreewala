@@ -6,7 +6,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard 
 } from 'react-native';
-import {styles} from './styles'
+import { styles } from './styles';
+
 const OtpInput = ({ code, setCode, maxLength }) => {
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef();
@@ -25,7 +26,6 @@ const OtpInput = ({ code, setCode, maxLength }) => {
     setCode(text.replace(/[^0-9]/g, ''));
   };
 
-  // Render the boxes for each digit
   const renderBoxes = () => {
     return boxArray.map((_, index) => {
       const digit = code[index] || '';
@@ -69,7 +69,5 @@ const OtpInput = ({ code, setCode, maxLength }) => {
     </TouchableWithoutFeedback>
   );
 };
-
-
 
 export default OtpInput;

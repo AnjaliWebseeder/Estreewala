@@ -8,13 +8,12 @@ export const styles = StyleSheet.create({
     backgroundColor: appColors.background,
   },
   contentContainer: {
-    padding: 24,
-    paddingTop: 40,
+    paddingTop: 0,
   },
   submitButton: {
     backgroundColor: appColors.blue,
     borderRadius: 12,
-    height: 56,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,

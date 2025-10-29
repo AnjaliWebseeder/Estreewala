@@ -1,14 +1,64 @@
+// utils/data/index.js
+
 export const countries = [
-  { code: 'IN', name: 'India', dialCode: '+91', flag: '🇮🇳' },
-  { code: 'US', name: 'United States', dialCode: '+1', flag: '🇺🇸' },
-  { code: 'GB', name: 'United Kingdom', dialCode: '+44', flag: '🇬🇧' },
-  { code: 'CA', name: 'Canada', dialCode: '+1', flag: '🇨🇦' },
-  { code: 'AU', name: 'Australia', dialCode: '+61', flag: '🇦🇺' },
-  { code: 'DE', name: 'Germany', dialCode: '+49', flag: '🇩🇪' },
-  { code: 'FR', name: 'France', dialCode: '+33', flag: '🇫🇷' },
-  { code: 'BR', name: 'Brazil', dialCode: '+55', flag: '🇧🇷' },
-  { code: 'JP', name: 'Japan', dialCode: '+81', flag: '🇯🇵' },
-  { code: 'CN', name: 'China', dialCode: '+86', flag: '🇨🇳' },
-  { code: 'RU', name: 'Russia', dialCode: '+7', flag: '🇷🇺' },
-  { code: 'MX', name: 'Mexico', dialCode: '+52', flag: '🇲🇽' },
+  {
+    name: "India",
+    dialCode: "+91",
+    code: "IN",
+    flag: "🇮🇳",
+  },
+  {
+    name: "United States",
+    dialCode: "+1",
+    code: "US",
+    flag: "🇺🇸",
+  },
+  {
+    name: "United Kingdom",
+    dialCode: "+44",
+    code: "GB",
+    flag: "🇬🇧",
+  },
+  {
+    name: "Canada",
+    dialCode: "+1",
+    code: "CA",
+    flag: "🇨🇦",
+  },
+  {
+    name: "Australia",
+    dialCode: "+61",
+    code: "AU",
+    flag: "🇦🇺",
+  },
+  {
+    name: "Germany",
+    dialCode: "+49",
+    code: "DE",
+    flag: "🇩🇪",
+  },
+  {
+    name: "France",
+    dialCode: "+33",
+    code: "FR",
+    flag: "🇫🇷",
+  },
+  {
+    name: "Japan",
+    dialCode: "+81",
+    code: "JP",
+    flag: "🇯🇵",
+  },
+  {
+    name: "Singapore",
+    dialCode: "+65",
+    code: "SG",
+    flag: "🇸🇬",
+  },
+  {
+    name: "United Arab Emirates",
+    dialCode: "+971",
+    code: "AE",
+    flag: "🇦🇪",
+  },
 ];

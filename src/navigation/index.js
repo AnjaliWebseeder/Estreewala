@@ -1,7 +1,6 @@
-// navigation/AppNavigation.js
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useAuth } from '../utils/context/authContext';
+import { useAuth } from "../hooks/useAuth"
 
 // Import all your screens
 import Splash from '../screens/splash';
@@ -37,16 +36,26 @@ import OrdersScreen from '../screens/order';
 import NotificationPermission from '../screens/settings/notificationPermission'
 import UserDetailsScreen from '../screens/checkOut/userDetail'
 
+
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigation() {
   const { isOpen, closeDrawer } = useDrawer();
-  const { userToken, userLocation, isLoading, isFirstLaunch } = useAuth();
+  
+  // Using Redux useAuth hook instead of context
+  const { 
+    isAuthenticated, 
+    token, 
+    user, 
+    clearErrors 
+  } = useAuth();
+  
   const navigationRef = useRef();
 
-  if (isLoading || isFirstLaunch === null) {
-    return <Splash />;
-  }
+  // Clear errors when component mounts
+  useEffect(() => {
+    clearErrors();
+  }, [clearErrors]);
 
   // Function to handle navigation from drawer
   const navigateFromDrawer = (screenName) => {
@@ -54,23 +63,18 @@ export default function AppNavigation() {
     navigationRef.current?.navigate(screenName);
   };
 
-  // Determine the initial route based on authentication, location status, and first launch
+  // Determine the initial route based on authentication
   const getInitialRoute = () => {
-    if (!userToken) return 'Splash';
+    if (!isAuthenticated || !token) return 'Splash';
     
-    // If it's first launch and user doesn't have location, show location flow
-    if (isFirstLaunch && !userLocation) return 'SetLocation';
+    // If user exists but doesn't have location, show location flow
+    if (user && !user.location) return 'SetLocation';
     
-    // If it's first launch and user has location but needs notification permission
-    if (isFirstLaunch && userLocation) return 'NotificationPermission';
+    // If user has location but needs notification permission
+    if (user && user.location && !user.notificationEnabled) return 'NotificationPermission';
     
-    // If not first launch and user has location, go to main app
-    if (!isFirstLaunch && userLocation) return 'Main';
-    
-    // If not first launch but user doesn't have location (edge case)
-    if (!isFirstLaunch && !userLocation) return 'SetLocation';
-    
-    return 'Splash';
+    // User is authenticated and has everything setup
+    return 'Main';
   };
 
   return (
@@ -81,13 +85,14 @@ export default function AppNavigation() {
           headerShown: false,
         }}
       >
-        {userToken ? ( 
+        {isAuthenticated && token ? ( 
           // AUTHENTICATED USER FLOW
           <>
-            {/* Always include all authenticated screens - conditionally set initialRoute instead */}
+            {/* Always include all authenticated screens */}
             <Stack.Screen name="SetLocation" component={SetLocation} />
             <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
             <Stack.Screen name="NotificationPermission" component={NotificationPermission} />
+             <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
             <Stack.Screen name="Main" component={BottomTab} />
             
             {/* Common authenticated screens */}

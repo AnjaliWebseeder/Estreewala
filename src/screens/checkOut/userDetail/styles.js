@@ -241,4 +241,76 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+  // Add these to your existing styles
+modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: 20,
+},
+customModalContainer: {
+  backgroundColor: appColors.white,
+  borderRadius: 16,
+  padding: 24,
+  width: '100%',
+  maxWidth: 400,
+  alignItems: 'center',
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+  elevation: 5,
+},
+modalIconContainer: {
+  marginBottom: 16,
+},
+modalTitle: {
+  fontSize: 20,
+  fontWeight: 'bold',
+  color: appColors.darkBlue,
+  textAlign: 'center',
+  marginBottom: 12,
+},
+modalMessage: {
+  fontSize: 16,
+  color: appColors.font,
+  textAlign: 'center',
+  lineHeight: 22,
+  marginBottom: 24,
+},
+modalButtonContainer: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  width: '100%',
+  gap: 12,
+},
+modalButton: {
+  flex: 1,
+  paddingVertical: 14,
+  borderRadius: 8,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+primaryButton: {
+  backgroundColor: appColors.blue,
+},
+secondaryButton: {
+  backgroundColor: appColors.white,
+  borderWidth: 1,
+  borderColor: appColors.blue,
+},
+primaryButtonText: {
+  color: appColors.white,
+  fontSize: 16,
+  fontWeight: '600',
+},
+secondaryButtonText: {
+  color: appColors.blue,
+  fontSize: 16,
+  fontWeight: '600',
+},
 });

@@ -73,7 +73,7 @@ const ChangePasswordScreen = ({ navigation }) => {
     // Navigate back after successful password change
    navigation.reset({
   index: 0,
-  routes: [{ name: "SignIn" }],
+  routes: [{ name: "PhoneLogin" }],
 });
   };
 

@@ -156,6 +156,11 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  locationUnavailableText: {
+  fontSize: 12,
+  color: '#FF3B30',
+  marginTop: 4,
+},
   currentLocationText: {
     marginLeft: 12,
     fontSize: 16,
@@ -184,4 +189,28 @@ export const styles = StyleSheet.create({
     fontFamily: fonts.InterRegular,
     lineHeight: 27
   },
+  addNewButton: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  backgroundColor: appColors.white,
+  paddingHorizontal: 16,
+  paddingVertical:14,
+  marginBottom:20,
+  marginHorizontal: 16,
+  marginTop: 8,
+  borderRadius: 8,
+  borderWidth: 1,
+  borderColor: appColors.primary,
+  borderStyle: 'dashed',
+},
+addNewButtonText: {
+  marginLeft: 8,
+  fontSize: 16,
+  color: appColors.primary,
+  fontWeight: '500',
+},
+actionButtons: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
 });

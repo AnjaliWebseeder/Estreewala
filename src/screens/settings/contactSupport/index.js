@@ -18,7 +18,7 @@ export default function ContactSupport({ navigation }) {
   const [charCount, setCharCount] = useState(0);
 
   const openEmail = () => {
-    Linking.openURL('mailto:support@supercanteen.in');
+    Linking.openURL('mailto:support@estreewala.in');
   };
 
   const openDialer = () => {

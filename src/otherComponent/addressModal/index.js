@@ -6,9 +6,8 @@ import {
   TextInput,
   Modal,
 } from "react-native";
-import {styles} from './styles'
+import { styles } from './styles';
 import appColors from "../../theme/appColors";
-
 
 const AddressModal = ({ visible, onClose, onSave, editingAddress }) => {
   const [addressType, setAddressType] = useState("home");
@@ -23,14 +22,14 @@ const AddressModal = ({ visible, onClose, onSave, editingAddress }) => {
 
   useEffect(() => {
     if (editingAddress) {
-      // Determine if editing address type is one of our predefined types
-      const editingType = editingAddress.title.toLowerCase();
+      // Handle API response structure
+      const editingType = editingAddress.type?.toLowerCase() || "home";
       if (editingType === "home" || editingType === "office" || editingType === "other") {
         setAddressType(editingType);
       } else {
         setAddressType("other");
       }
-      setDetails(editingAddress.details);
+      setDetails(editingAddress.location?.address || "");
     } else {
       setAddressType("home");
       setDetails("");
@@ -63,7 +62,10 @@ const AddressModal = ({ visible, onClose, onSave, editingAddress }) => {
         finalTitle = "Other";
       }
       
-      onSave({ title: finalTitle, details: details.trim() });
+      onSave({ 
+        title: finalTitle, 
+        details: details.trim() 
+      });
     }
   };
 
@@ -73,7 +75,7 @@ const AddressModal = ({ visible, onClose, onSave, editingAddress }) => {
 
   return (
     <Modal
-      animationType={"none"}
+      animationType="slide"
       transparent
       visible={visible}
       onRequestClose={onClose}
@@ -84,7 +86,8 @@ const AddressModal = ({ visible, onClose, onSave, editingAddress }) => {
             {editingAddress ? "Edit Address" : "Add New Address"}
           </Text>
           
-          {/* Address Type Selection with Radio Buttons */}
+          {/* Address Type Selection */}
+          <Text style={styles.sectionLabel}>Address Type</Text>
           <View style={styles.addressTypeRow}>
             {addressTypes.map((type) => (
               <TouchableOpacity
@@ -128,9 +131,9 @@ const AddressModal = ({ visible, onClose, onSave, editingAddress }) => {
             numberOfLines={4}
             textAlignVertical="top"
           />
-          {errors.details ? (
+          {errors.details && (
             <Text style={styles.errorText}>{errors.details}</Text>
-          ) : null}
+          )}
           
           <View style={styles.modalActions}>
             <TouchableOpacity

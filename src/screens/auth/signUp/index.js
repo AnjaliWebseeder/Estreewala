@@ -1,45 +1,77 @@
 import React, { useState } from 'react';
-import { ScrollView, TouchableOpacity, Text, Alert } from 'react-native';
+import { ScrollView, TouchableOpacity, Text, Alert, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerCustomer, resetRegisterState } from "../../../redux/slices/authSlice"
 import AuthHeader from '../../../components/auth/authHeader';
 import InputField from '../../../components/auth/inputField';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
-import { useAuth } from '../../../utils/context/authContext';
+import {useToast} from "../../../utils/context/toastContext"
 
-const SignUpScreen = ({}) => {
+const SignUpScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const { registerLoading, registerError, registerSuccess } = useSelector(state => state.auth);
+  
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const { login } = useAuth();
+  const { showToast } = useToast();
 
-  const validatePhone = () => {
+  // Clear errors when component unmounts
+  React.useEffect(() => {
+    return () => {
+      dispatch(resetRegisterState());
+    };
+  }, [dispatch]);
+
+  const validateForm = () => {
+    if (!name.trim()) {
+      Alert.alert('Error', 'Please enter your full name');
+      return false;
+    }
+    if (!email.trim()) {
+      Alert.alert('Error', 'Please enter your email address');
+      return false;
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      Alert.alert('Error', 'Please enter a valid email address');
+      return false;
+    }
+    if (!phone.trim()) {
+      Alert.alert('Error', 'Please enter your phone number');
+      return false;
+    }
     if (!/^\d{10}$/.test(phone)) {
-      Alert.alert('Invalid Phone', 'Phone number must be exactly 10 digits');
+      Alert.alert('Error', 'Phone number must be exactly 10 digits');
       return false;
     }
     return true;
   };
 
   const handleSignUp = async () => {
-    if (!validatePhone()) return;
-
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
-      return;
-    }
-
+    if (!validateForm()) return;
     try {
-      await login('user_token_here'); // Save token
-      console.log('Sign up with:', { name, email, phone, password, confirmPassword });
-      navigation.navigate('SetLocation');
+      await dispatch(registerCustomer({
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim()
+      })).unwrap();
+      
+ // Success is handled in useEffect
+      navigation.navigate('PhoneLogin');
+     
     } catch (error) {
-      console.log('Login error:', error);
+      showToast(error, "error");
+      // Error is handled in useEffect via registerError
+      console.log('Registration error:', error);
     }
   };
+
+  const isEmailValid = /^\S+@\S+\.\S+$/.test(email.trim());
+const isPhoneValid = /^\d{10}$/.test(phone.trim());
+const isFormValid = name.trim() && isEmailValid && isPhoneValid;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -49,63 +81,52 @@ const SignUpScreen = ({}) => {
         showsVerticalScrollIndicator={false}
       >
         <AuthHeader
-          title="Create Account"
+          title="Sign Up"
           subtitle="Join us to get started"
+          showBackButton={true}
+          onBackPress={() => navigation.goBack()}
         />
 
-        <InputField
-          icon="person-outline"
-          placeholder="Full Name"
-          value={name}
-          onChangeText={setName}
-          autoCapitalize="words"
-        />
+        <View style={{marginHorizontal:15}}>
+          <InputField
+            icon="person-outline"
+            placeholder="Full Name"
+            value={name}
+            onChangeText={setName}
+            autoCapitalize="words"
+          />
 
-        <InputField
-          icon="mail-outline"
-          placeholder="Email address"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-        />
+          <InputField
+            icon="mail-outline"
+            placeholder="Email address"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
 
-        {/* 📱 Phone Number Input */}
-        <InputField
-          icon="call-outline"
-          placeholder="Phone Number"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-          maxLength={10} // restrict input to 10 digits
-        />
+          <InputField
+            icon="call-outline"
+            placeholder="Phone Number"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+            maxLength={10}
+          />
 
-        <InputField
-          icon="lock-closed-outline"
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={true}
-        />
-
-        <InputField
-          icon="lock-closed-outline"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry={true}
-        />
-
-        <TouchableOpacity
-          style={[
-            styles.submitButton,
-            (!name || !email || !phone || !password || !confirmPassword) &&
-              styles.disabledButton,
-          ]}
-          onPress={handleSignUp}
-          disabled={!name || !email || !phone || !password || !confirmPassword}
-        >
-          <Text style={styles.submitButtonText}>Create Account</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.submitButton,
+              (!isFormValid || registerLoading) && styles.disabledButton,
+            ]}
+            onPress={handleSignUp}
+            disabled={!isFormValid || registerLoading}
+          >
+            <Text style={styles.submitButtonText}>
+              {registerLoading ? 'Creating Account...' : 'Sign Up'}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

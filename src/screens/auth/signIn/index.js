@@ -1,19 +1,18 @@
 import { useState } from 'react';
-import { ScrollView, TouchableOpacity, Text, View, KeyboardAvoidingView, Platform } from 'react-native';
+import { ScrollView, TouchableOpacity, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AuthHeader from '../../../components/auth/authHeader';
 import InputField from '../../../components/auth/inputField';
 import AuthFooter from '../../../components/auth/authFooter';
 import { styles } from './styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {useAuth} from '../../../utils/context/authContext'
+import { windowHeight } from '../../../theme/appConstant';
 
 
 const SignInScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const {  login } = useAuth();
 
  const handleSignIn = async () => {
      try {
@@ -36,8 +35,8 @@ const SignInScreen = () => {
             <AuthHeader
               title="Welcome Back"
               subtitle="Sign in to your account"
+              bannerStyle={{height:windowHeight(240)}}
             />
-            
             <View style={styles.formContainer}>
               <InputField
                 icon="mail-outline"
@@ -81,16 +80,14 @@ const SignInScreen = () => {
               >
                 <Text style={styles.phoneLoginButtonText}>Sign in with Phone</Text>
               </TouchableOpacity>
-            </View>
 
-            <AuthFooter
+               <AuthFooter
               text="Don't have an account?"
               buttonText="Sign Up"
               onPress={() => navigation.navigate('SignUp')}
-            />
+            /> 
+            </View>
           </ScrollView>
-       
-      
     </SafeAreaView>
   );
 };
