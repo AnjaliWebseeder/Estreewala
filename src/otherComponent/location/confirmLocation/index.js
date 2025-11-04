@@ -11,6 +11,7 @@ import {
   PermissionsAndroid
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Geolocation from 'react-native-geolocation-service';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,11 +20,17 @@ import { styles } from './styles';
 import appColors from '../../../theme/appColors';
 import { useAuth } from '../../../utils/context/authContext';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { addAddress } from '../../../redux/slices/addressSlice'; // Import the addAddress action
 
 const ConfirmLocationScreen = ({ route }) => {
   const { selectedLocation } = route.params || {};
   const navigation = useNavigation();
-  const { saveLocation, markAppAsLaunched, isFirstLaunch } = useAuth();
+  const dispatch = useDispatch();
+  const { saveLocation, markAppAsLaunched, isFirstLaunch,userToken } = useAuth();
+  
+  // Get address state from Redux
+  const { addLoading, addSuccess, addError } = useSelector(state => state.address);
+  
   const [location, setLocation] = useState(null);
   const [address, setAddress] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,6 +38,8 @@ const ConfirmLocationScreen = ({ route }) => {
   const [hasPermission, setHasPermission] = useState(false);
   const webViewRef = useRef(null);
   const insets = useSafeAreaInsets();
+
+  
 
   // Request location permission
   const requestLocationPermission = async () => {
@@ -69,6 +78,24 @@ const ConfirmLocationScreen = ({ route }) => {
   useEffect(() => {
     initializeLocation();
   }, [selectedLocation]);
+
+  // Handle add address success
+  useEffect(() => {
+    if (addSuccess) {
+      console.log("✅ Address added successfully");
+      // Continue with navigation after address is saved
+      handleNavigation();
+    }
+  }, [addSuccess]);
+
+  // Handle add address error
+  useEffect(() => {
+    if (addError) {
+      console.error("❌ Error adding address:", addError);
+      Alert.alert("Error", "Failed to save your address. Please try again.");
+      setLoading(false);
+    }
+  }, [addError]);
 
   const initializeLocation = async () => {
     setLoading(true);
@@ -266,35 +293,69 @@ const ConfirmLocationScreen = ({ route }) => {
     setMapLoading(false);
   };
 
-  const handleConfirmLocation = async () => {
-    if (location) {
-      try {
-        await saveLocation({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          address: address
-        });
-
-        // Mark app as launched after location confirmation
-        if (isFirstLaunch) {
-          await markAppAsLaunched();
-        }
-
-        // Navigate based on first launch status
-        if (isFirstLaunch) {
-          navigation.navigate('NotificationPermission');
-        } else {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Main' }],
-          });
-        }
-      } catch (error) {
-        console.error("Error saving location:", error);
-        Alert.alert("Error", "Could not save your location.");
+  const handleNavigation = async () => {
+    try {
+      // Mark app as launched after location confirmation
+      if (isFirstLaunch) {
+        await markAppAsLaunched();
       }
+
+      // Navigate based on first launch status
+      if (isFirstLaunch) {
+        navigation.navigate('NotificationPermission');
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
+      }
+    } catch (error) {
+      console.error("Navigation error:", error);
+      Alert.alert("Error", "Could not proceed. Please try again.");
     }
   };
+
+const handleConfirmLocation = async () => {
+  if (location && address) {
+    try {
+      setLoading(true);
+
+      // Prepare address data according to API structure
+      const addressData = {
+        type: "Home",
+        location: {
+          address: address,
+          coordinates: [location.coords.longitude, location.coords.latitude]
+        },
+        isDefault: true,
+      };
+
+      console.log("📍 Saving address:", addressData);
+
+      // Save to local storage for re-use
+   await saveLocation({
+  latitude: location.coords.latitude,
+  longitude: location.coords.longitude,
+  address: address,
+});
+
+      // Then call your API (uncomment this when ready)
+      // await dispatch(addAddress(addressData)).unwrap();
+
+      setLoading(false);
+      console.log("✅ Location confirmed and saved successfully");
+        handleNavigation();
+
+    } catch (error) {
+      console.error("Error confirming location:", error);
+      setLoading(false);
+      Alert.alert("Error", "Could not save your location. Please try again.");
+    }
+  } else {
+    Alert.alert("Error", "Please wait for location to load.");
+  }
+};
+
 
   const openInMapsApp = () => {
     if (location) {
@@ -511,14 +572,16 @@ const ConfirmLocationScreen = ({ route }) => {
         </View>
 
         <TouchableOpacity 
-          style={[styles.confirmButton, (!location || loading) && styles.disabled]}
+          style={[styles.confirmButton, (!location || loading || addLoading) && styles.disabled]}
           onPress={handleConfirmLocation}
-          disabled={!location || loading}
+          disabled={!location || loading || addLoading}
         >
-          {loading ? (
+          {(loading || addLoading) ? (
             <ActivityIndicator size="small" color={appColors.white} />
           ) : (
-            <Text style={styles.confirmText}>Confirm Location</Text>
+            <Text style={styles.confirmText}>
+              {addLoading ? 'Saving Address...' : 'Confirm Location'}
+            </Text>
           )}
         </TouchableOpacity>
       </View>

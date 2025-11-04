@@ -6,12 +6,11 @@ import appColors from "../../theme/appColors";
 import { useNavigation } from '@react-navigation/native';
 import { BellIcon } from '../../assets/Icons/svg/bell'
 import HelpSupportIcon from '../../assets/Icons/svg/helpSupport'
-import { useAuth } from "../../hooks/useAuth"
+import { useAuth } from "../../utils/context/authContext"
 
 const CustomDrawerContent = (props) => {
-  const { user, logout, isAuthenticated } = useAuth(); // Using Redux hook
+  const { user, logout, userToken ,token} = useAuth(); // Using Redux hook
   const navigation = useNavigation();
-
   const handleRateApp = () => {
     Linking.openURL('market://details?id=your.package.name');
   };
@@ -19,8 +18,8 @@ const CustomDrawerContent = (props) => {
   const handleLogout = async () => {
     try {
      props.navigation.closeDrawer();
-              await logout(); // Using Redux logout action
-              
+     await logout(); // Using Redux logout action
+     console.log("HANDLE LOGOUT CALL")         
     } catch (error) {
       console.log("Logout error:", error);
     }
@@ -151,12 +150,12 @@ const CustomDrawerContent = (props) => {
           </View>
 
           {/* Logout Button - Only show if authenticated */}
-          {isAuthenticated && (
+       
             <TouchableOpacity onPress={handleLogout} style={styles.signOut}>
               <Icon name="log-out-outline" size={20} color="#E74C3C" />
               <Text style={styles.signOutText}>Sign Out</Text>
             </TouchableOpacity>
-          )}
+        
         </View>
       </ScrollView>
       

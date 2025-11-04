@@ -84,45 +84,49 @@ export default function ManageAddress({ navigation, route }) {
   }, [dispatch]);
 
   // Handle current location
- const getCurrentLocation = async () => {
+const getCurrentLocation = async () => {
   if (!userLocation) {
-      showToast( "Location Not Available", "Please enable location services to use this feature", error);
+    showToast("Location Not Available", "Please enable location services to use this feature", "error");
     return;
   }
 
   setIsLocating(true);
-  
-  try {
-    const currentAddressData = {
-      type: "Current Location",
-      location: {
-        address: removeDuplicateParts(userLocation.address),
-        coordinates: [userLocation.longitude, userLocation.latitude] // [lng, lat] format
-      },
-      isDefault: addresses.length === 0 // Set as default if no addresses exist
-    };
 
-    console.log("Adding current location:", currentAddressData);
-    
-    const result = await dispatch(addAddress(currentAddressData)).unwrap();
-    
-    // Handle different response structures
-    const newAddressId = result._id || result.id || (result.addresses && result.addresses[0]?._id);
-    
+  try {
+    // Prepare address object exactly like your console output
+   const addressData = {
+  type: "Home",
+  address: removeDuplicateParts(userLocation.address),
+  coordinates: [userLocation.longitude, userLocation.latitude],
+  isDefault: addresses.length === 0 ? true : false,
+};
+
+
+    console.log("📍 Adding current location:", addressData);
+
+    const result = await dispatch(addAddress(addressData)).unwrap();
+
+    // Handle the different possible response shapes
+    const newAddressId =
+      result?._id ||
+      result?.id ||
+      (result?.addresses && result?.addresses[0]?._id);
+
     if (newAddressId) {
       setLocalSelectedAddress(newAddressId);
+      console.log("✅ Address saved successfully:", newAddressId);
     } else {
-      // If we can't get the ID, refresh the addresses list
+      console.log("⚠️ Address saved but ID missing, refetching list...");
       dispatch(getAddresses());
     }
-    
   } catch (error) {
-    console.log("Error adding current location:", error);
-        showToast( error ||"Failed to add current location. Please try again.", "error");
+    console.error("❌ Error adding current location:", error);
+    showToast(error?.message || "Failed to add current location. Please try again.", "error");
   } finally {
     setIsLocating(false);
   }
 };
+
   const setAsDefault = async (id) => {
     try {
       const address = addresses.find(addr => addr._id === id);
@@ -154,13 +158,11 @@ export default function ManageAddress({ navigation, route }) {
   const handleSave = async (addressData) => {
   try {
     const apiAddressData = {
-      type: addressData.title,
-      location: {
-        address: addressData.details,
-        coordinates: [userLocation.longitude, userLocation.latitude]
-      },
-      isDefault: false
-    };
+  type: addressData.title,
+  address: addressData.details,
+  coordinates: [userLocation.longitude, userLocation.latitude],
+  isDefault: false
+};
 
     if (editingAddress) {
       await dispatch(updateAddress({ 
@@ -324,14 +326,14 @@ export default function ManageAddress({ navigation, route }) {
 
       
       {/* Add New Address Button */}
-      <TouchableOpacity 
+      {/* <TouchableOpacity 
         style={styles.addNewButton}
         onPress={() => openModal()}
       >
         <Icon name="add-circle-outline" size={20} color={appColors.primary} />
         <Text style={styles.addNewButtonText}>Add New Address</Text>
       </TouchableOpacity>
-      
+       */}
       {/* Apply Button */}
       {addresses.length > 0 && (
         <TouchableOpacity 

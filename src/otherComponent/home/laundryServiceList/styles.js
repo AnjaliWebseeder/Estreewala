@@ -81,6 +81,7 @@ export const styles = StyleSheet.create({
     color: '#888',
     marginBottom: 2,
      fontFamily:fonts.InterRegular,
+     flex:1
   },
   locationIcon:{
   marginRight:3,

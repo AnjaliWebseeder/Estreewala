@@ -11,3 +11,5 @@ export const GET_ADDRESSES = `${BASE_URL}/customer-auth/addresses`
 export const ADD_ADDRESS = `${BASE_URL}/customer-auth/addresses`
 export const UPDATE_ADDRESS = (id) => `${BASE_URL}/customer-auth/addresses/${id}`
 export const DELETE_ADDRESS = (id) => `${BASE_URL}/customer-auth/addresses/${id}`
+
+export const GET_NEARBY_VENDORS = `${BASE_URL}/customers/nearby-vendors`;

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect,useContext } from 'react';
 import { 
   View, 
   TouchableOpacity, 
@@ -20,6 +20,7 @@ import { countries } from '../../../utils/data';
 import appColors from '../../../theme/appColors';
 import AuthFooter from '../../../components/auth/authFooter';
 import {useToast} from "../../../utils/context/toastContext"
+import { useAuth } from '../../../utils/context/authContext';
 
 const PhoneLoginScreen = () => {
   const navigation = useNavigation();
@@ -28,9 +29,6 @@ const PhoneLoginScreen = () => {
     otpLoading, 
     otpSent, 
     verifyLoading, 
-    verifySuccess, 
-    isAuthenticated,
-    token 
   } = useSelector(state => state.auth);
   
   const [phone, setPhone] = useState('');
@@ -43,6 +41,7 @@ const PhoneLoginScreen = () => {
   const phoneInputRef = useRef();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const { showToast } = useToast();
+const { login,userToken } = useAuth();
   // Clear states when component unmounts
   useEffect(() => {
     return () => {
@@ -64,20 +63,7 @@ const PhoneLoginScreen = () => {
     }
   }, [otpSent, fadeAnim]);
 
-  // Handle successful verification
-  useEffect(() => {
-    if (verifySuccess && isAuthenticated && token) {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'SetLocation' }],
-      });
-    }
-  }, [verifySuccess, isAuthenticated, token, navigation]);
 
-  // Handle errors
-  useEffect(() => {
-    // You can add error handling here if needed
-  }, []);
 
   // Countdown timer for resend OTP
   useEffect(() => {
@@ -98,15 +84,70 @@ const PhoneLoginScreen = () => {
     }
   };
 
-  const handleVerifyOtp = async () => {
-    try {
+//   const handleVerifyOtp = async () => {
+//    try {
+//       const result = await dispatch(verifyOtp({ phone: phone, otp })).unwrap();
+// if (verifyOtp.fulfilled.match(result)) {
+//   const { token, customer } = result.payload;
+//   if (token && customer) {
+//   console.log("TOKEN IS",token,customer)  
+//    await login(token,customer);
+  
+
+//      navigation.replace('SetLocation');
+//   } else {
+//     console.warn("⚠️ Missing token or user in OTP verify response");
+//   }
+
+// } else if (verifyOtp.rejected.match(result)) {
+//   showToast(result?.payload || 'Wrong OTP, please try again!', "error");
+// }
+
+//       } catch (err) {
+//         console.error('Error dispatching OTP:', err);
+//            showToast(err || 'Wrong Otp, pls try again!', "error");
+//       }
+//   };
+
+
+
+// PhoneLoginScreen.js - Fix the verifyOtp function
+const handleVerifyOtp = async () => {
+  try {
+    const result = await dispatch(verifyOtp({ phone: phone, otp })).unwrap();
     
-      await dispatch(verifyOtp({ phone: phone, otp })).unwrap();
-    } catch (error) {
-      showToast( error || 'Invalid OTP', "error");
-   
+    if (result.token && result.customer) {
+      console.log("TOKEN IS", result.token, result.customer);
+      
+      // Login and wait for it to complete
+      await login(result.token, result.customer);
+      
+      // Check if user has location after login
+      // const userHasLocation = result.customer.location || result.customer.addresses?.length > 0;
+      
+      if (userToken) {
+        // User has location - go directly to main screen
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
+      } else {
+        console.log("ELSE ART ")
+        // User needs to set location
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'SetLocation' }],
+        });
+      }
+    } else {
+      console.warn("⚠️ Missing token or user in OTP verify response");
+      showToast('Login failed. Please try again.', "error");
     }
-  };
+  } catch (err) {
+    console.error('Error verifying OTP:', err);
+    showToast(err || 'Wrong OTP, please try again!', "error");
+  }
+};
 
   const handleResendOtp = () => {
     if (resendTimer === 0) {
