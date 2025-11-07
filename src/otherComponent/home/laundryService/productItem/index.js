@@ -1,13 +1,9 @@
-import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-} from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import CustomDropdown from '../../../../components/dropdown'
-import {styles} from './styles'
-import FastImage from "react-native-fast-image";
+import React from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import CustomDropdown from '../../../../components/dropdown';
+import { styles } from './styles';
+import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default function ProductItem({
@@ -22,19 +18,34 @@ export default function ProductItem({
 }) {
   const inCart = qty > 0;
 
+  console.log('find service value in ProductItem ===>>>', service);
+  console.log('find services value in ProductItem ===>>>', services);
+  console.log(
+    'find onChangeService value in ProductItem ===>>>',
+    onChangeService,
+  );
+
   return (
     <View style={styles.wrap}>
-      <FastImage source={ product.image } style={styles.img} />
+      <FastImage source={product.image} style={styles.img} />
 
       <View style={styles.info}>
         <Text style={styles.name}>{product.name}</Text>
-        <Text style={styles.price}>  <Icon name="currency-rupee" size={12} color={"#7B7F86"} />{product.price.toFixed(2)}</Text>
+        <Text style={styles.price}>
+          {' '}
+          <Icon name="currency-rupee" size={12} color={'#7B7F86'} />
+          {product.price.toFixed(2)}
+        </Text>
 
         <View style={{ marginTop: 8 }}>
           <CustomDropdown
             options={services}
             value={service}
-            onChange={(v) => onChangeService(product.id, v)}
+            // onChange={(v) => onChangeService(product.id, v)}
+            onChange={(option) => {
+              console.log('👉 dropdown selected option ===>>>', option);
+              onChangeService(product.id, option?.value || option);
+            }}
           />
         </View>
       </View>
@@ -63,5 +74,3 @@ export default function ProductItem({
     </View>
   );
 }
-
-

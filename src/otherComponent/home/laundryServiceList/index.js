@@ -4,20 +4,20 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
 import FilterModal from '../filterModal';
 import Header from '../../../components/header';
 import SearchBar from '../../../components/searchBar';
-import {styles} from './styles'
+import { styles } from './styles';
 import appColors from '../../../theme/appColors';
-import { service  } from '../../../utils/images/images';
+import { service } from '../../../utils/images/images';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Ionicons from "react-native-vector-icons/Ionicons"; 
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
-import { getNearbyVendors } from "../../../redux/slices/nearByVendor"
+import { getNearbyVendors } from '../../../redux/slices/nearByVendor';
 
 // Default placeholder image - add this to your images
 const defaultVendorImage = service; // or any default image you prefer
@@ -25,21 +25,27 @@ const defaultVendorImage = service; // or any default image you prefer
 // Laundry Card Component
 const LaundryCard = ({ vendor, navigation }) => {
   return (
-    <TouchableOpacity 
-      activeOpacity={0.9} 
-      onPress={() => navigation.navigate('LaundryService', { 
-        title: vendor.businessName,
-        vendorId: vendor.id 
-      })} 
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPress={() =>
+        navigation.navigate('LaundryService', {
+          title: vendor.businessName,
+          vendorId: vendor.id,
+        })
+      }
       style={styles.card}
     >
       <View style={styles.imageWrapper}>
         <FastImage
-          source={vendor.profileImage ? { uri: vendor.profileImage } : defaultVendorImage}
+          source={
+            vendor.profileImage
+              ? { uri: vendor.profileImage }
+              : defaultVendorImage
+          }
           style={styles.cardImage}
           resizeMode="cover"
           defaultSource={defaultVendorImage} // Fallback image
-        /> 
+        />
       </View>
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>{vendor.businessName}</Text>
@@ -49,13 +55,13 @@ const LaundryCard = ({ vendor, navigation }) => {
             {vendor.address}
           </Text>
         </View>
-        
+
         {/* Delivery Info - You can customize this based on your vendor data */}
         <View style={styles.deliveryInfo}>
-          <View style={{flexDirection:"row", alignItems: 'center'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Icon name="access-time" size={12} color={appColors.darkBlue} />
             <Text style={styles.deliveryText}>
-              {"9AM - 11 PM"}{" "}
+              {'9AM - 11 PM'}{' '}
               {/* <Text style={styles.dash}> | </Text>{" "}
               {"1.5 km"}  */}
             </Text>
@@ -80,8 +86,10 @@ const LaundryCard = ({ vendor, navigation }) => {
 // Main Component
 const LaundryServiceList = ({ navigation, route }) => {
   const dispatch = useDispatch();
-  const { vendors, vendorsLoading, vendorsError } = useSelector(state => state.nearByVendor);
-  
+  const { vendors, vendorsLoading, vendorsError } = useSelector(
+    state => state.nearByVendor,
+  );
+
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filteredVendors, setFilteredVendors] = useState([]);
@@ -97,19 +105,20 @@ const LaundryServiceList = ({ navigation, route }) => {
     handleSearch(searchQuery);
   }, [searchQuery, vendors]);
 
-  const handleSearch = (query) => {
+  const handleSearch = query => {
     if (query.trim() === '') {
       setFilteredVendors(vendors);
     } else {
-      const filtered = vendors.filter(vendor =>
-        vendor.businessName?.toLowerCase().includes(query.toLowerCase()) ||
-        vendor.address?.toLowerCase().includes(query.toLowerCase())
+      const filtered = vendors.filter(
+        vendor =>
+          vendor.businessName?.toLowerCase().includes(query.toLowerCase()) ||
+          vendor.address?.toLowerCase().includes(query.toLowerCase()),
       );
       setFilteredVendors(filtered);
     }
   };
 
-  const applyFilters = (filters) => {
+  const applyFilters = filters => {
     let filtered = vendors;
     // Apply your filter logic here based on vendor data
     // For example, if you have rating/distance in vendor data
@@ -126,17 +135,22 @@ const LaundryServiceList = ({ navigation, route }) => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.container}>
-          <View style={{backgroundColor:"#07172cff",paddingBottom:20}}>
+          <View style={{ backgroundColor: '#07172cff', paddingBottom: 20 }}>
             <Header
-              containerStyle={{marginBottom:5}}
+              containerStyle={{ marginBottom: 5 }}
               iconColor={appColors.white}
-              title={serviceName ? serviceName : "Nearby Laundry"} 
+              title={serviceName ? serviceName : 'Nearby Laundry'}
               onBackPress={() => navigation.goBack()}
-              titleStyle={{marginHorizontal: 20,color:appColors.white}}
+              titleStyle={{ marginHorizontal: 20, color: appColors.white }}
             />
           </View>
-          <View style={[styles.container, {justifyContent: 'center', alignItems: 'center'}]}>
-           <ActivityIndicator color={appColors.darkBlue} size={"small"}/>
+          <View
+            style={[
+              styles.container,
+              { justifyContent: 'center', alignItems: 'center' },
+            ]}
+          >
+            <ActivityIndicator color={appColors.darkBlue} size={'small'} />
           </View>
         </View>
       </SafeAreaView>
@@ -147,22 +161,34 @@ const LaundryServiceList = ({ navigation, route }) => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.container}>
-          <View style={{backgroundColor:"#07172cff",paddingBottom:20}}>
+          <View style={{ backgroundColor: '#07172cff', paddingBottom: 20 }}>
             <Header
-              containerStyle={{marginBottom:5}}
+              containerStyle={{ marginBottom: 5 }}
               iconColor={appColors.white}
-              title={serviceName ? serviceName : "Nearby Laundry"} 
+              title={serviceName ? serviceName : 'Nearby Laundry'}
               onBackPress={() => navigation.goBack()}
-              titleStyle={{marginHorizontal: 20,color:appColors.white}}
+              titleStyle={{ marginHorizontal: 20, color: appColors.white }}
             />
           </View>
-          <View style={[styles.container, {justifyContent: 'center', alignItems: 'center'}]}>
-            <Text style={[styles.textStyle, {color: 'red'}]}>Error: {vendorsError}</Text>
-            <TouchableOpacity 
-              style={{marginTop: 10, padding: 10, backgroundColor: appColors.darkBlue, borderRadius: 5}}
+          <View
+            style={[
+              styles.container,
+              { justifyContent: 'center', alignItems: 'center' },
+            ]}
+          >
+            <Text style={[styles.textStyle, { color: 'red' }]}>
+              Error: {vendorsError}
+            </Text>
+            <TouchableOpacity
+              style={{
+                marginTop: 10,
+                padding: 10,
+                backgroundColor: appColors.darkBlue,
+                borderRadius: 5,
+              }}
               onPress={() => dispatch(getNearbyVendors())}
             >
-              <Text style={{color: appColors.white}}>Retry</Text>
+              <Text style={{ color: appColors.white }}>Retry</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -173,41 +199,50 @@ const LaundryServiceList = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.container}>
-        <View style={{backgroundColor:"#07172cff",paddingBottom:20}}>
+        <View style={{ backgroundColor: '#07172cff', paddingBottom: 20 }}>
           <Header
-            containerStyle={{marginBottom:5}}
+            containerStyle={{ marginBottom: 5 }}
             iconColor={appColors.white}
-            title={serviceName ? serviceName : "Nearby Laundry"} 
+            title={serviceName ? serviceName : 'Nearby Laundry'}
             onBackPress={() => navigation.goBack()}
-            titleStyle={{marginHorizontal: 20,color:appColors.white}}
+            titleStyle={{ marginHorizontal: 20, color: appColors.white }}
           />
-          
+
           <SearchBar
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Search"
             onFilterPress={() => setShowFilters(true)}
             showFilter={true}
-            searchInputContainerStyle={{backgroundColor:appColors.white, borderWidth: 0}}
-            inputStyle={{color:appColors.black}}
+            searchInputContainerStyle={{
+              backgroundColor: appColors.white,
+              borderWidth: 0,
+            }}
+            inputStyle={{ color: appColors.black }}
             placeholderTextColor={appColors.black}
           />
         </View>
 
-        <View style={styles.main}/>
-        <ScrollView 
-          contentContainerStyle={styles.contentContainerStyle} 
-          style={styles.listContainer} 
+        <View style={styles.main} />
+        <ScrollView
+          contentContainerStyle={styles.contentContainerStyle}
+          style={styles.listContainer}
           showsVerticalScrollIndicator={false}
         >
           {filteredVendors.length > 0 ? (
-            filteredVendors.map((vendor) => (
-              <LaundryCard key={vendor.id} vendor={vendor} navigation={navigation} />
+            filteredVendors.map(vendor => (
+              <LaundryCard
+                key={vendor.id}
+                vendor={vendor}
+                navigation={navigation}
+              />
             ))
           ) : (
             <View style={{ alignItems: 'center', marginTop: 40 }}>
               <Text style={styles.textStyle}>
-                {vendors.length === 0 ? "No vendors available" : "No vendors found"}
+                {vendors.length === 0
+                  ? 'No vendors available'
+                  : 'No vendors found'}
               </Text>
             </View>
           )}
