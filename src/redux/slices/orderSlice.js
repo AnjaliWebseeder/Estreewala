@@ -46,14 +46,68 @@ export const placeOrder = createAsyncThunk(
   },
 );
 
+// ✅ Cancel Order API Thunk
+export const cancelOrder = createAsyncThunk(
+  'order/cancelOrder',
+  async ({ orderId, reason }, { getState, rejectWithValue }) => {
+    try {
+      console.log('❌ Cancelling order:', orderId, 'with reason:', reason);
+
+      const token = getState()?.auth?.token;
+      if (!token) throw new Error('No token found. Please log in again.');
+
+      const response = await axiosInstance.patch(
+        `https://api.estreewalla.com/api/v1/customers/orders/${orderId}/cancel`,
+        { reason },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: 10000,
+        }
+      );
+
+      console.log('✅ Order cancelled successfully:', response.data);
+      return {
+        orderId,
+        data: response.data.data || response.data
+      };
+    } catch (error) {
+      console.log('❌ Cancel Order Error:', error);
+
+      let errorMessage = 'Failed to cancel order';
+
+      if (error.response) {
+        errorMessage =
+          error.response.data?.message ||
+          error.response.data?.error ||
+          errorMessage;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = error.message || errorMessage;
+      }
+
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 // ✅ Slice Definition
 const orderSlice = createSlice({
   name: 'order',
   initialState: {
     orderData: null, // latest placed order details
-    orderLoading: false, // loading state
-    orderError: null, // error message
-    orderSuccess: false, // success flag
+    orderLoading: false, // loading state for placing order
+    orderError: null, // error message for placing order
+    orderSuccess: false, // success flag for placing order
+    
+    // Cancel order states
+    cancellingOrder: false, // loading state for cancelling order
+    cancelError: null, // error message for cancelling order
+    cancelSuccess: false, // success flag for cancelling order
+    cancelledOrderId: null, // ID of the cancelled order
   },
   reducers: {
     resetOrderState: state => {
@@ -62,9 +116,24 @@ const orderSlice = createSlice({
       state.orderSuccess = false;
       state.orderData = null;
     },
+    resetCancelState: state => {
+      state.cancellingOrder = false;
+      state.cancelError = null;
+      state.cancelSuccess = false;
+      state.cancelledOrderId = null;
+    },
+    clearOrderErrors: state => {
+      state.orderError = null;
+      state.cancelError = null;
+    },
+    clearCancelSuccess: state => {
+      state.cancelSuccess = false;
+      state.cancelledOrderId = null;
+    },
   },
   extraReducers: builder => {
     builder
+      // Place Order cases
       .addCase(placeOrder.pending, state => {
         state.orderLoading = true;
         state.orderError = null;
@@ -81,9 +150,36 @@ const orderSlice = createSlice({
         state.orderError = action.payload;
         state.orderSuccess = false;
         console.log('🔴 ORDER FAILED:', action.payload);
+      })
+      
+      // Cancel Order cases
+      .addCase(cancelOrder.pending, state => {
+        state.cancellingOrder = true;
+        state.cancelError = null;
+        state.cancelSuccess = false;
+        state.cancelledOrderId = null;
+      })
+      .addCase(cancelOrder.fulfilled, (state, action) => {
+        state.cancellingOrder = false;
+        state.cancelError = null;
+        state.cancelSuccess = true;
+        state.cancelledOrderId = action.payload.orderId;
+        console.log('🟢 ORDER CANCELLED SUCCESSFULLY:', action.payload);
+      })
+      .addCase(cancelOrder.rejected, (state, action) => {
+        state.cancellingOrder = false;
+        state.cancelError = action.payload;
+        state.cancelSuccess = false;
+        state.cancelledOrderId = null;
+        console.log('🔴 ORDER CANCELLATION FAILED:', action.payload);
       });
   },
 });
 
-export const { resetOrderState } = orderSlice.actions;
+export const { 
+  resetOrderState, 
+  resetCancelState, 
+  clearOrderErrors, 
+  clearCancelSuccess 
+} = orderSlice.actions;
 export default orderSlice.reducer;

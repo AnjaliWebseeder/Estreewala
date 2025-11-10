@@ -44,24 +44,26 @@ export default function ManageAddress({ navigation, route }) {
   );
   
   const { userLocation } = useAuth();
-   const { showToast } = useToast();
+  const { showToast } = useToast();
 
+  // Check if user has any addresses
+  const hasAddresses = addresses && addresses.length > 0;
 
-   const removeDuplicateParts = (address) => {
-  if (!address) return '';
-  
-  const parts = address.split(',').map(p => p.trim());
-  const uniqueParts = [];
-  
-  parts.forEach((part, index) => {
-    // avoid consecutive duplicates
-    if (part && part !== parts[index - 1] && !uniqueParts.includes(part)) {
-      uniqueParts.push(part);
-    }
-  });
+  const removeDuplicateParts = (address) => {
+    if (!address) return '';
+    
+    const parts = address.split(',').map(p => p.trim());
+    const uniqueParts = [];
+    
+    parts.forEach((part, index) => {
+      // avoid consecutive duplicates
+      if (part && part !== parts[index - 1] && !uniqueParts.includes(part)) {
+        uniqueParts.push(part);
+      }
+    });
 
-  return uniqueParts.join(', ');
-};
+    return uniqueParts.join(', ');
+  };
 
   // Fetch addresses on component mount
   useEffect(() => {
@@ -84,48 +86,49 @@ export default function ManageAddress({ navigation, route }) {
   }, [dispatch]);
 
   // Handle current location
-const getCurrentLocation = async () => {
-  if (!userLocation) {
-    showToast("Location Not Available", "Please enable location services to use this feature", "error");
-    return;
-  }
-
-  setIsLocating(true);
-
-  try {
-    // Prepare address object exactly like your console output
-   const addressData = {
-  type: "Home",
-  address: removeDuplicateParts(userLocation.address),
-  coordinates: [userLocation.longitude, userLocation.latitude],
-  isDefault: addresses.length === 0 ? true : false,
-};
-
-
-    console.log("📍 Adding current location:", addressData);
-
-    const result = await dispatch(addAddress(addressData)).unwrap();
-
-    // Handle the different possible response shapes
-    const newAddressId =
-      result?._id ||
-      result?.id ||
-      (result?.addresses && result?.addresses[0]?._id);
-
-    if (newAddressId) {
-      setLocalSelectedAddress(newAddressId);
-      console.log("✅ Address saved successfully:", newAddressId);
-    } else {
-      console.log("⚠️ Address saved but ID missing, refetching list...");
-      dispatch(getAddresses());
+  const getCurrentLocation = async () => {
+    if (!userLocation) {
+      showToast("Location Not Available", "Please enable location services to use this feature", "error");
+      return;
     }
-  } catch (error) {
-    console.error("❌ Error adding current location:", error);
-    showToast(error?.message || "Failed to add current location. Please try again.", "error");
-  } finally {
-    setIsLocating(false);
-  }
-};
+
+    setIsLocating(true);
+
+    try {
+      // Prepare address object exactly like your console output
+      const addressData = {
+        type: "Home",
+        location: {
+          address: removeDuplicateParts(userLocation.address),
+          coordinates: [userLocation.longitude, userLocation.latitude],
+        },
+        isDefault: addresses.length === 0 ? true : false,
+      };
+
+      console.log("📍 Adding current location:", addressData);
+
+      const result = await dispatch(addAddress(addressData)).unwrap();
+
+      // Handle the different possible response shapes
+      const newAddressId =
+        result?._id ||
+        result?.id ||
+        (result?.addresses && result?.addresses[0]?._id);
+
+      if (newAddressId) {
+        setLocalSelectedAddress(newAddressId);
+        console.log("✅ Address saved successfully:", newAddressId);
+      } else {
+        console.log("⚠️ Address saved but ID missing, refetching list...");
+        dispatch(getAddresses());
+      }
+    } catch (error) {
+      console.error("❌ Error adding current location:", error);
+      showToast(error?.message || "Failed to add current location. Please try again.", "error");
+    } finally {
+      setIsLocating(false);
+    }
+  };
 
   const setAsDefault = async (id) => {
     try {
@@ -156,32 +159,32 @@ const getCurrentLocation = async () => {
   };
 
   const handleSave = async (addressData) => {
-  try {
-    const apiAddressData = {
-  type: addressData.title,
-  address: addressData.details,
-  coordinates: [userLocation.longitude, userLocation.latitude],
-  isDefault: false
-};
+    try {
+      const apiAddressData = {
+        type: addressData.title,
+        location: {
+          address: addressData.details,
+          coordinates: [userLocation.longitude, userLocation.latitude],
+        },
+        isDefault: false
+      };
 
-    if (editingAddress) {
-      await dispatch(updateAddress({ 
-        id: editingAddress._id, 
-        addressData: { ...apiAddressData, isDefault: editingAddress.isDefault }
-      })).unwrap();
+      if (editingAddress) {
+        await dispatch(updateAddress({ 
+          id: editingAddress._id, 
+          addressData: { ...apiAddressData, isDefault: editingAddress.isDefault }
+        })).unwrap();
+      } else {
+        await dispatch(addAddress(apiAddressData)).unwrap();
+      }
       
-    } else {
-      await dispatch(addAddress(apiAddressData)).unwrap();
+      setModalVisible(false);
+      setEditingAddress(null);
       
+    } catch (error) {
+      showToast("Error", error || "Failed to save address. Please try again.", "error");
     }
-    
-    setModalVisible(false);
-    setEditingAddress(null);
-    
-  } catch (error) {
-    showToast("Error", error || "Failed to save address. Please try again.", "error");
-  }
-};
+  };
 
   const confirmDelete = (id) => {
     const addressToDelete = addresses.find(addr => addr._id === id);
@@ -281,36 +284,41 @@ const getCurrentLocation = async () => {
         onBackPress={() => navigation.goBack()}
       />
       
-      {/* Current Location Button */}
-      <TouchableOpacity 
-        style={[styles.currentLocationBtn, (isLocating || !userLocation) && styles.currentLocationBtnDisabled]}
-        onPress={getCurrentLocation}
-        disabled={isLocating || !userLocation}
-      >
-        <View style={styles.currentLocationContent}>
-          {isLocating ? (
-            <ActivityIndicator size="small" color={appColors.blue} />
-          ) : (
-            <Icon name="navigate" size={20} color={appColors.blue} />
+      {/* Current Location Button - Only show if user has NO addresses */}
+      {!hasAddresses && (
+        <TouchableOpacity 
+          style={[styles.currentLocationBtn, (isLocating || !userLocation) && styles.currentLocationBtnDisabled]}
+          onPress={getCurrentLocation}
+          disabled={isLocating || !userLocation}
+        >
+          <View style={styles.currentLocationContent}>
+            {isLocating ? (
+              <ActivityIndicator size="small" color={appColors.blue} />
+            ) : (
+              <Icon name="navigate" size={20} color={appColors.blue} />
+            )}
+            <Text style={styles.currentLocationText}>
+              {isLocating ? "Adding Location..." : "Use Current Location"}
+            </Text>
+          </View>
+          {!userLocation && (
+            <Text style={styles.locationUnavailableText}>
+              Location unavailable
+            </Text>
           )}
-          <Text style={styles.currentLocationText}>
-            {isLocating ? "Adding Location..." : "Use Current Location"}
-          </Text>
-        </View>
-        {!userLocation && (
-          <Text style={styles.locationUnavailableText}>
-            Location unavailable
-          </Text>
-        )}
-      </TouchableOpacity>
-
+        </TouchableOpacity>
+      )}
 
       {/* Address List */}
       <FlatList
         data={addresses}
         keyExtractor={(item) => item._id || Math.random().toString()}
         renderItem={renderItem}
-        contentContainerStyle={{ padding: 16 }}
+        contentContainerStyle={{ 
+          padding: 16,
+          // Add some extra padding at top when "Use Current Location" is hidden
+          paddingTop: hasAddresses ? 16 : 0
+        }}
         refreshing={addressesLoading}
         onRefresh={() => dispatch(getAddresses())}
         ListEmptyComponent={
@@ -324,18 +332,17 @@ const getCurrentLocation = async () => {
         }
       />
 
-      
-      {/* Add New Address Button */}
+      {/* Add New Address Button - Always show this */}
       {/* <TouchableOpacity 
         style={styles.addNewButton}
         onPress={() => openModal()}
       >
         <Icon name="add-circle-outline" size={20} color={appColors.primary} />
         <Text style={styles.addNewButtonText}>Add New Address</Text>
-      </TouchableOpacity>
-       */}
+      </TouchableOpacity> */}
+
       {/* Apply Button */}
-      {addresses.length > 0 && (
+      {hasAddresses && (
         <TouchableOpacity 
           style={[styles.applyBtn, !localSelectedAddress && styles.applyBtnDisabled]} 
           onPress={applySelectedAddress}

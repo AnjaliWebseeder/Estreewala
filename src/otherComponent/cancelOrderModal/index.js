@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
-import { View, Text, Modal, TouchableOpacity, ScrollView , TextInput } from 'react-native';
+import React from 'react';
+import { View, Text, Modal, TouchableOpacity, ScrollView , TextInput, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 import appColors from '../../theme/appColors';
 
-const CancelOrderModal = ({ visible, onClose, onConfirm, orderId }) => {
-  const [selectedReason, setSelectedReason] = useState('');
-  const [otherReason, setOtherReason] = useState('');
+const CancelOrderModal = ({ 
+  visible, 
+  onClose, 
+  onConfirm, 
+  orderId, 
+  selectedReason, 
+  setSelectedReason, 
+  otherReason, 
+  setOtherReason,
+  isLoading = false 
+}) => {
 
   const cancellationReasons = [
     "Change of plans",
@@ -19,8 +27,6 @@ const CancelOrderModal = ({ visible, onClose, onConfirm, orderId }) => {
   const handleConfirm = () => {
     const reason = selectedReason === "Other reason" ? otherReason : selectedReason;
     onConfirm(reason);
-    setSelectedReason('');
-    setOtherReason('');
   };
 
   const handleClose = () => {
@@ -65,6 +71,7 @@ const CancelOrderModal = ({ visible, onClose, onConfirm, orderId }) => {
                   selectedReason === reason && styles.selectedReasonOption
                 ]}
                 onPress={() => setSelectedReason(reason)}
+                disabled={isLoading}
               >
                 <View style={styles.radioContainer}>
                   <View style={[
@@ -92,6 +99,7 @@ const CancelOrderModal = ({ visible, onClose, onConfirm, orderId }) => {
                   multiline={true}
                   numberOfLines={3}
                   placeholderTextColor={appColors.font}
+                  editable={!isLoading}
                 />
               </View>
             )}
@@ -102,6 +110,7 @@ const CancelOrderModal = ({ visible, onClose, onConfirm, orderId }) => {
             <TouchableOpacity 
               style={[styles.modalButton, styles.cancelButton]} 
               onPress={handleClose}
+              disabled={isLoading}
             >
               <Text style={styles.cancelButtonText}>Keep Order</Text>
             </TouchableOpacity>
@@ -110,26 +119,19 @@ const CancelOrderModal = ({ visible, onClose, onConfirm, orderId }) => {
               style={[
                 styles.modalButton, 
                 styles.confirmButton,
-                (!selectedReason || (selectedReason === "Other reason" && !otherReason.trim())) && 
+                (!selectedReason || (selectedReason === "Other reason" && !otherReason.trim()) || isLoading) && 
                 styles.disabledButton
               ]} 
               onPress={handleConfirm}
-              disabled={!selectedReason || (selectedReason === "Other reason" && !otherReason.trim())}
+              disabled={!selectedReason || (selectedReason === "Other reason" && !otherReason.trim()) || isLoading}
             >
-              <Text
-  style={[
-    styles.confirmButtonText,
-    {
-      color:
-        selectedReason && (selectedReason !== "Other reason" || otherReason.trim())
-          ? appColors.white   // enabled color
-          : "gray",          // disabled color
-    },
-  ]}
->
-  Cancel Order
-</Text>
-
+              {isLoading ? (
+                <ActivityIndicator size="small" color={appColors.white} />
+              ) : (
+                <Text style={styles.confirmButtonText}>
+                  Cancel Order
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>

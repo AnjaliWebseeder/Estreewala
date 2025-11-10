@@ -10,7 +10,6 @@ import {
   Modal,
   PermissionsAndroid,
   Platform,
-  Dimensions,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import WebView from 'react-native-webview';
@@ -23,18 +22,11 @@ import appColors from '../../../theme/appColors';
 import { useDispatch, useSelector } from 'react-redux';
 import { placeOrder } from '../../../redux/slices/orderSlice';
 import moment from 'moment';
-import { setSelectedAddress } from '../../../redux/slices/addressSlice';
 import { clearCart } from '../../../redux/slices/cartSlice';
-import CustomToast from '../../../components/customToast';
-import { useToast } from '../../../utils/context/toastContext';
 
-const { width, height } = Dimensions.get('window');
 
 const UserDetailsScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
-  // const { location } = route.params || {};
-  const { showToast } = useToast();
-
   const {
     vendorId,
     pickupDate,
@@ -43,14 +35,13 @@ const UserDetailsScreen = ({ navigation, route }) => {
     paymentMethod,
     note,
     location,
-    // address: selectedAddress,
     editingAddress,
     tooltipVisible,
     tooltipText,
     showScheduleOptions,
   } = route.params || {};
 
-  // console.log('find selectedDropDate  by route in UserDetailsScreen ===>>', selectedDropDate);
+  console.log("VENDOR ID IS *******************",vendorId)
 
   const cartItems = useSelector(state => state.cart.items);
 
@@ -82,7 +73,7 @@ const UserDetailsScreen = ({ navigation, route }) => {
   const [permissionModalVisible, setPermissionModalVisible] = useState(false);
   const [locationErrorModalVisible, setLocationErrorModalVisible] =
     useState(false);
-  const [errorType, setErrorType] = useState(''); // 'permission', 'unavailable', 'general'
+  const [errorType, setErrorType] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const webViewRef = useRef(null);
   const { saveLocation, userLocation } = useAuth();
@@ -112,7 +103,6 @@ const UserDetailsScreen = ({ navigation, route }) => {
           return false;
         }
       } else {
-        // For iOS, Geolocation service handles permissions
         setHasLocationPermission(true);
         return true;
       }
@@ -132,8 +122,6 @@ const UserDetailsScreen = ({ navigation, route }) => {
   const initializeLocation = async () => {
     setIsLoading(true);
     setPermissionModalVisible(false);
-    // ❌ Ye line hata do
-    // setLocationErrorModalVisible(false);
 
     const hasPermission = await requestLocationPermission();
 
@@ -167,8 +155,6 @@ const UserDetailsScreen = ({ navigation, route }) => {
 
   const handleLocationError = (type, message) => {
     setIsLoading(false);
-
-    // Agar modal already open hai to dobara mat dikhao
     if (locationErrorModalVisible) return;
 
     setErrorType(type);
@@ -205,7 +191,6 @@ const UserDetailsScreen = ({ navigation, route }) => {
         console.log('Location error:', error);
         setIsLoading(false);
 
-        // Handle different error scenarios with custom modals
         if (error.code === error.PERMISSION_DENIED) {
           handleLocationError(
             'permission',
@@ -309,101 +294,69 @@ const UserDetailsScreen = ({ navigation, route }) => {
   const validateForm = () => {
     const newErrors = {};
 
+    // Name validation - Required
     if (!name.trim()) {
       newErrors.name = 'Full Name is required';
+    } else if (name.trim().length < 2) {
+      newErrors.name = 'Name must be at least 2 characters long';
     }
 
+    // Mobile validation - Required
     if (!mobile.trim()) {
       newErrors.mobile = 'Mobile number is required';
     } else if (!/^\d{10}$/.test(mobile.trim())) {
       newErrors.mobile = 'Please enter a valid 10-digit mobile number';
     }
 
-    if (!address.trim()) {
-      newErrors.address = 'Address is required';
+    // Email validation - Required
+    if (!email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+      newErrors.email = 'Please enter a valid email address';
     }
 
-    if (email.trim() && !/^\S+@\S+\.\S+$/.test(email)) {
-      newErrors.email = 'Please enter a valid email address';
+    // Address validation - Required
+    if (!address.trim()) {
+      newErrors.address = 'Address is required';
+    } else if (address.trim().length < 10) {
+      newErrors.address = 'Please enter a complete address (minimum 10 characters)';
+    }
+
+    // Flat/House No validation - Required
+    if (!flatNo.trim()) {
+      newErrors.flatNo = 'Flat/House number is required';
+    }
+
+    // Landmark validation - Required
+    if (!landmark.trim()) {
+      newErrors.landmark = 'Landmark is required';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // const handleSave = async () => {
-  //   if (!validateForm()) return;
-
-  //   const userData = {
-  //     name,
-  //     mobile,
-  //     email,
-  //     address,
-  //     flatNo,
-  //     landmark,
-  //     saveAddressAs,
-  //     latitude: coords.latitude,
-  //     longitude: coords.longitude,
-  //   };
-
-  //   try {
-  //     await AsyncStorage.setItem('userInfo', JSON.stringify(userData));
-
-  //     const addressToSave = {
-  //       id: Date.now().toString(),
-  //       type: saveAddressAs,
-  //       address: `${flatNo ? flatNo + ', ' : ''}${address}${
-  //         landmark ? ', Near ' + landmark : ''
-  //       }`,
-  //       latitude: coords.latitude,
-  //       longitude: coords.longitude,
-  //       createdAt: new Date().toISOString(),
-  //     };
-
-  //     const updatedAddresses = [
-  //       ...savedAddresses.filter(addr => addr.type !== saveAddressAs),
-  //       addressToSave,
-  //     ];
-  //     await AsyncStorage.setItem(
-  //       'savedAddresses',
-  //       JSON.stringify(updatedAddresses),
-  //     );
-  //     setSavedAddresses(updatedAddresses);
-
-  //     await saveLocation({
-  //       latitude: coords.latitude,
-  //       longitude: coords.longitude,
-  //       address: address,
-  //     });
-
-  //     navigation.replace('OrderConfirmation');
-  //   } catch (err) {
-  //     console.error('Error saving user info:', err);
-  //     Alert.alert('Error', 'Failed to save information. Please try again.');
-  //   }
-  // };
-
   const handleSave = async () => {
     try {
-      // 🔹 Validate user form before proceeding
-      if (!validateForm()) return;
+      // 🔹 Validate all fields before proceeding
+      if (!validateForm()) {
+        // showToast('Please fill all required fields correctly', 'error');
+        return;
+      }
 
       // 🔹 Ensure pickup & delivery dates are valid and backend-safe
       const pickup = moment(pickupDate).isValid()
         ? moment(pickupDate)
         : moment().add(1, 'days');
 
-      // 🔹 Use route param selectedDropDate if valid, otherwise default +2 days
       const deliveryMoment = moment(selectedDropDate).isValid()
         ? moment(selectedDropDate)
         : pickup.clone().add(2, 'days');
 
       // 🔹 Build full address dynamically
-      const fullAddress = address
-        ? `${flatNo ? flatNo + ', ' : ''}${address}${
-            landmark ? ', Near ' + landmark : ''
-          }`
-        : `${flatNo || '123'}, MG Road, Bangalore, Karnataka 560001`;
+      const fullAddress = `${flatNo ? flatNo + ', ' : ''}${address}${
+        landmark ? ', Near ' + landmark : ''
+      }`;
 
       // 🔹 Extract pickup start time from slot and convert to 24-hour format
       const rawPickupTime = pickupSlot?.time || '09:00 AM';
@@ -433,7 +386,7 @@ const UserDetailsScreen = ({ navigation, route }) => {
 
         // ✅ Dates & times
         pickupDate: pickup.format('YYYY-MM-DD'),
-        pickupTime: pickupStartTime, // ✅ Now "10:00" format
+        pickupTime: pickupStartTime,
 
         deliveryDate: deliveryMoment.format('YYYY-MM-DD'),
         deliveryTime: deliveryMoment.format('HH:mm'),
@@ -441,23 +394,22 @@ const UserDetailsScreen = ({ navigation, route }) => {
         // ✅ Notes & instructions
         instructions: note || 'optional',
 
-        // ✅ Address info
+        // ✅ Address info - ALL FIELDS ARE NOW REQUIRED
         address: fullAddress,
         coordinates: {
           type: 'Point',
           coordinates: [
-            coords?.longitude || 77.5946, // [longitude, latitude]
+            coords?.longitude || 77.5946,
             coords?.latitude || 12.9716,
           ],
         },
         house: flatNo || '',
         landmark: landmark || '',
         contactDetails: {
-          fullName: name || 'Guest User',
+          fullName: name || '',
           mobile: mobile || '',
           email: email || '',
         },
-        // paymentMethod: paymentMethod || 'cash',
       };
 
       console.log(
@@ -472,7 +424,7 @@ const UserDetailsScreen = ({ navigation, route }) => {
       dispatch(clearCart());
 
       // ✅ Show toast dynamically
-      showToast(result?.message || 'Order placed successfully!', 'success');
+      // showToast(result?.message || 'Order placed successfully!', 'success');
 
       navigation.replace('OrderConfirmation', { orderData: result });
     } catch (error) {
@@ -566,7 +518,7 @@ const UserDetailsScreen = ({ navigation, route }) => {
                 setLocationErrorModalVisible(false);
                 setTimeout(() => {
                   getCurrentLocation();
-                }, 300); // thoda delay dene se safe re-render hoga
+                }, 300);
               }}
             >
               <Text style={styles.primaryButtonText}>Try Again</Text>
@@ -696,7 +648,7 @@ const UserDetailsScreen = ({ navigation, route }) => {
                     errors.address && styles.inputError,
                     { paddingRight: 40 },
                   ]}
-                  placeholder="Enter your complete address"
+                  placeholder="Enter your complete address *"
                   placeholderTextColor={appColors.font}
                   value={address}
                   onChangeText={text => {
@@ -721,31 +673,43 @@ const UserDetailsScreen = ({ navigation, route }) => {
 
             {/* Flat/House No */}
             <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Flat / House No</Text>
+              <Text style={styles.label}>Flat / House No *</Text>
               <TextInput
-                style={styles.input}
-                placeholder="E.g. B-102, Sunrise Apartments"
+                style={[styles.input, errors.flatNo && styles.inputError]}
+                placeholder="E.g. B-102, Sunrise Apartments *"
                 placeholderTextColor={appColors.border}
                 value={flatNo}
-                onChangeText={setFlatNo}
+                onChangeText={text => {
+                  setFlatNo(text);
+                  setErrors({ ...errors, flatNo: null });
+                }}
               />
+              {errors.flatNo && (
+                <Text style={styles.errorText}>{errors.flatNo}</Text>
+              )}
             </View>
 
             {/* Landmark */}
             <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Landmark (Optional)</Text>
+              <Text style={styles.label}>Landmark *</Text>
               <TextInput
-                style={styles.input}
-                placeholder="E.g. Near Central Mall"
+                style={[styles.input, errors.landmark && styles.inputError]}
+                placeholder="E.g. Near Central Mall *"
                 placeholderTextColor={appColors.border}
                 value={landmark}
-                onChangeText={setLandmark}
+                onChangeText={text => {
+                  setLandmark(text);
+                  setErrors({ ...errors, landmark: null });
+                }}
               />
+              {errors.landmark && (
+                <Text style={styles.errorText}>{errors.landmark}</Text>
+              )}
             </View>
 
             {/* Save Address As */}
             <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Save Address As</Text>
+              <Text style={styles.label}>Save Address As *</Text>
               <View style={styles.radioGroup}>
                 <RadioButton
                   selected={saveAddressAs === 'Home'}
@@ -775,7 +739,7 @@ const UserDetailsScreen = ({ navigation, route }) => {
               <Text style={styles.label}>Full Name *</Text>
               <TextInput
                 style={[styles.input, errors.name && styles.inputError]}
-                placeholder="Your name"
+                placeholder="Your name *"
                 placeholderTextColor={appColors.border}
                 value={name}
                 onChangeText={text => {
@@ -793,7 +757,7 @@ const UserDetailsScreen = ({ navigation, route }) => {
               <Text style={styles.label}>Mobile Number *</Text>
               <TextInput
                 style={[styles.input, errors.mobile && styles.inputError]}
-                placeholder="10-digit mobile number"
+                placeholder="10-digit mobile number *"
                 placeholderTextColor={appColors.border}
                 value={mobile}
                 onChangeText={text => {
@@ -810,10 +774,10 @@ const UserDetailsScreen = ({ navigation, route }) => {
 
             {/* Email */}
             <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Email (Optional)</Text>
+              <Text style={styles.label}>Email *</Text>
               <TextInput
                 style={[styles.input, errors.email && styles.inputError]}
-                placeholder="Your email address"
+                placeholder="Your email address *"
                 placeholderTextColor={appColors.border}
                 value={email}
                 onChangeText={text => {
@@ -832,6 +796,11 @@ const UserDetailsScreen = ({ navigation, route }) => {
             <TouchableOpacity style={styles.button} onPress={handleSave}>
               <Text style={styles.buttonText}>Save & Continue</Text>
             </TouchableOpacity>
+
+            {/* Required Fields Note */}
+            <Text style={styles.requiredNote}>
+              * All fields are required
+            </Text>
           </ScrollView>
         </>
       )}

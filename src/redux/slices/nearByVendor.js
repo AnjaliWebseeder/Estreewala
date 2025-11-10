@@ -49,19 +49,10 @@ export const getVendorCatalog = createAsyncThunk(
   async (vendorId, { getState, rejectWithValue }) => {
     try {
       console.log('📦 Fetching vendor catalog for ID:', vendorId);
-
-      const token = getState()?.auth?.token; // ✅ fixed path
-      if (!token) throw new Error('No token found. Please log in again.');
-
-      console.log('📦 Found token:', token);
-
-      const response = await axiosInstance.get(
-        `https://api.estreewalla.com/api/v1/customers/vendor-catalog/${vendorId}`,
+        const response = await axiosInstance.get(`https://api.estreewalla.com/api/v1/customers/vendor-catalog/${vendorId}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
-          timeout: 10000,
-        },
-      );
+        timeout: 10000,
+      });
 
       console.log('✅ Vendor Catalog Response:', response.data);
       return response.data;

@@ -6,6 +6,8 @@ import orderReducer from '../redux/slices/orderSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { persistStore, persistReducer } from 'redux-persist';
 import cartReducer from '../redux/slices/cartSlice';
+import myOrderReducer from '../redux/slices/myOrderSlice'
+import customerReducer from "../redux/slices/customerSlice"
 
 const persistConfig = {
   key: 'root',
@@ -19,23 +21,14 @@ const rootReducer = combineReducers({
   nearByVendor: nearByVendorReducer,
   order: orderReducer,
   cart: cartReducer,
+  myOrder: myOrderReducer,
+  customer: customerReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// const store = configureStore({
-//   reducer: {
-//     auth: authReducer,
-//     address: addressReducer,
-//     nearByVendor: nearByVendorReducer,
-//     order: orderReducer,
-//   },
-// });
-
 export const store = configureStore({
   reducer: persistedReducer,
 });
-
-// export default store;
 
 export const persistor = persistStore(store);

@@ -13,7 +13,7 @@ import Header from '../../../components/header';
 import SearchBar from '../../../components/searchBar';
 import { styles } from './styles';
 import appColors from '../../../theme/appColors';
-import { service } from '../../../utils/images/images';
+import { service , service1 , service2 , service3 ,service4 } from '../../../utils/images/images';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,9 +21,11 @@ import { getNearbyVendors } from '../../../redux/slices/nearByVendor';
 
 // Default placeholder image - add this to your images
 const defaultVendorImage = service; // or any default image you prefer
+const randomImages = [service, service1, service2, service3, service4];
 
 // Laundry Card Component
-const LaundryCard = ({ vendor, navigation }) => {
+const LaundryCard = ({ vendor, navigation , index}) => {
+    const randomImage = randomImages[index % randomImages.length];
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -40,17 +42,17 @@ const LaundryCard = ({ vendor, navigation }) => {
           source={
             vendor.profileImage
               ? { uri: vendor.profileImage }
-              : defaultVendorImage
+              : randomImage
           }
           style={styles.cardImage}
           resizeMode="cover"
-          defaultSource={defaultVendorImage} // Fallback image
+          defaultSource={randomImage} // fallback image
         />
       </View>
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>{vendor.businessName}</Text>
         <View style={styles.deliveryInfo}>
-          <Ionicons name="location-outline" size={14} color="#07172cff" />
+          <Ionicons style={styles.icon} name="location-outline" size={14} color="#07172cff" />
           <Text style={styles.cardLocation} numberOfLines={2}>
             {vendor.address}
           </Text>
@@ -157,44 +159,90 @@ const LaundryServiceList = ({ navigation, route }) => {
     );
   }
 
-  if (vendorsError) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.container}>
-          <View style={{ backgroundColor: '#07172cff', paddingBottom: 20 }}>
-            <Header
-              containerStyle={{ marginBottom: 5 }}
-              iconColor={appColors.white}
-              title={serviceName ? serviceName : 'Nearby Laundry'}
-              onBackPress={() => navigation.goBack()}
-              titleStyle={{ marginHorizontal: 20, color: appColors.white }}
-            />
-          </View>
-          <View
-            style={[
-              styles.container,
-              { justifyContent: 'center', alignItems: 'center' },
-            ]}
-          >
-            <Text style={[styles.textStyle, { color: 'red' }]}>
-              Error: {vendorsError}
-            </Text>
-            <TouchableOpacity
-              style={{
-                marginTop: 10,
-                padding: 10,
-                backgroundColor: appColors.darkBlue,
-                borderRadius: 5,
-              }}
-              onPress={() => dispatch(getNearbyVendors())}
-            >
-              <Text style={{ color: appColors.white }}>Retry</Text>
-            </TouchableOpacity>
-          </View>
+ if (vendorsError) {
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <View style={{ backgroundColor: '#07172cff', paddingBottom: 20 }}>
+          <Header
+            containerStyle={{ marginBottom: 5 }}
+            iconColor={appColors.white}
+            title={serviceName ? serviceName : 'Nearby Laundry'}
+            onBackPress={() => navigation.goBack()}
+            titleStyle={{ marginHorizontal: 20, color: appColors.white }}
+          />
         </View>
-      </SafeAreaView>
-    );
-  }
+        
+        <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
+          {/* Error Icon */}
+          <View style={styles.errorIconContainer}>
+            <Icon name="location-off" size={60} color={appColors.orange} />
+          </View>
+          
+          {/* Error Title */}
+          <Text style={styles.errorTitle}>Location Required</Text>
+          
+          {/* Error Message */}
+          <Text style={styles.errorMessage}>
+            {vendorsError.includes('location') || vendorsError.includes('address') 
+              ? "We need your location to find nearby laundry services. Please add your delivery address to continue."
+              : "Unable to load nearby vendors. Please check your connection and try again."}
+          </Text>
+          
+          {/* Action Buttons */}
+          <View style={styles.errorActions}>
+            {(vendorsError.includes('location') || vendorsError.includes('address')) ? (
+              <>
+                {/* Add Address Button */}
+                <TouchableOpacity
+                  style={styles.primaryButton}
+                  onPress={() => navigation.navigate('Profile', { 
+                    screen: 'ManageAddress',
+                    params: { redirectToLaundry: true }
+                  })}
+                >
+                  <Icon name="add-location" size={20} color={appColors.white} />
+                  <Text style={styles.primaryButtonText}>Add Delivery Address</Text>
+                </TouchableOpacity>
+                
+                {/* Alternative: Retry with default location */}
+                <TouchableOpacity
+                  style={styles.secondaryButton}
+                  onPress={() => dispatch(getNearbyVendors())}
+                >
+                  <Text style={styles.secondaryButtonText}>Try Again</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                {/* For other errors */}
+                <TouchableOpacity
+                  style={styles.primaryButton}
+                  onPress={() => dispatch(getNearbyVendors())}
+                >
+                  <Icon name="refresh" size={20} color={appColors.white} />
+                  <Text style={styles.primaryButtonText}>Retry</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={styles.secondaryButton}
+                  onPress={() => navigation.goBack()}
+                >
+                  <Text style={styles.secondaryButtonText}>Go Back</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+          
+          {/* Help Text */}
+          <Text style={styles.helpText}>
+            💡 Go to Profile → Manage Address to add your delivery location
+          </Text>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}
 
   return (
     <SafeAreaView style={styles.container}>
@@ -230,11 +278,12 @@ const LaundryServiceList = ({ navigation, route }) => {
           showsVerticalScrollIndicator={false}
         >
           {filteredVendors.length > 0 ? (
-            filteredVendors.map(vendor => (
+             filteredVendors.map((vendor, index) => (
               <LaundryCard
                 key={vendor.id}
                 vendor={vendor}
                 navigation={navigation}
+                index={index}
               />
             ))
           ) : (

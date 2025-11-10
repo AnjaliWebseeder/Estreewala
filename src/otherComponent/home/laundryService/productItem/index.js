@@ -18,12 +18,14 @@ export default function ProductItem({
 }) {
   const inCart = qty > 0;
 
-  console.log('find service value in ProductItem ===>>>', service);
-  console.log('find services value in ProductItem ===>>>', services);
-  console.log(
-    'find onChangeService value in ProductItem ===>>>',
-    onChangeService,
-  );
+  // console.log('find service value in ProductItem ===>>>', service);
+  // console.log('find services value in ProductItem ===>>>', services);
+  // console.log(
+  //   'find onChangeService value in ProductItem ===>>>',
+  //   onChangeService,
+  // );
+
+  // console.log("PRODUCT IS=================>",product)
 
   return (
     <View style={styles.wrap}>

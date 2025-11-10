@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, SectionList } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from "react-native";
 import { styles } from "./styles";
 import FastImage from "react-native-fast-image";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -8,97 +8,27 @@ import { service1, service2, service3, service4 } from "../../utils/images/image
 import Header from "../../components/header";
 import appColors from "../../theme/appColors";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from 'react-redux';
+import { getOrdersByStatus, addNewOrder, refreshOrders } from "../../redux/slices/myOrderSlice"; // Import new actions
+import moment from "moment";
 
-// Sample data for different order types
-const ordersData = {
-  scheduled: [
-    {
-      id: "1",
-      title: "QuickClean Laundry",
-      orderId: "AD323453",
-      date: "20 Jun, 10:20 AM",
-      scheduledDate: "Today, 2:00 PM",
-      items: "2 items",
-      price: "13.00",
-      status: "SCHEDULED",
-      statusColor: "#e3f2fd",
-      textColor: "#1976d2",
-      image: service1,
-    },
-    {
-      id: "2",
-      title: "Sparkle Wash",
-      orderId: "AD325854",
-      date: "20 Jun, 09:02 AM",
-      scheduledDate: "Tomorrow, 10:00 AM",
-      items: "3 items",
-      price: "28.00",
-      status: "SCHEDULED",
-      statusColor: "#e3f2fd",
-      textColor: "#1976d2",
-      image: service2,
-    },
-  ],
-  active: [
-    {
-      id: "3",
-      title: "FreshFold Express",
-      orderId: "AD365247",
-      date: "20 Jun, 08:36 AM",
-      items: "4 items",
-      price: "8.00",
-      status: "PICKUP",
-      statusColor: "#fff3e0",
-      textColor: "#f57c00",
-      image: service4,
-      progress: "Driver on the way",
-    },
-    {
-      id: "4",
-      title: "UrbanWash Hub",
-      orderId: "AD325843",
-      date: "20 Jun, 09:02 AM",
-      items: "3 items",
-      price: "28.00",
-      status: "WASHING",
-      statusColor: "#e8f5e8",
-      textColor: "#388e3c",
-      image: service1,
-      progress: "In progress",
-    },
-  ],
-  completed: [
-    {
-      id: "5",
-      title: "QuickClean Laundry",
-      orderId: "AD32453",
-      date: "18 Jun, 10:20 AM",
-      items: "5 items",
-      price: "17.00",
-      status: "COMPLETED",
-      statusColor: appColors.lightCream,
-      textColor: "#a0a1a5",
-      image: service3,
-      rating: "5.0",
-    },
-    {
-      id: "6",
-      title: "Premium Laundry",
-      orderId: "AD367891",
-      date: "17 Jun, 03:45 PM",
-      items: "2 items",
-      price: "15.00",
-      status: "COMPLETED",
-      statusColor: appColors.lightCream,
-      textColor: "#a0a1a5",
-      image: service2,
-      rating: "4.5",
-    },
-  ],
-};
+// Default images for vendors
+const defaultServiceImages = [service1, service2, service3, service4];
 
-const OrdersScreen = ({ navigation }) => {
+const OrdersScreen = ({ navigation, route }) => {
   const [activeTab, setActiveTab] = useState("active"); // active, scheduled, completed
+  const dispatch = useDispatch();
+  
+  // Get orders from Redux store
+  const {
+    pendingOrders,
+    acceptedOrders,
+    rejectedOrders,
+    completedOrders,
+    pendingLoading,
+    acceptedLoading,
+    completedLoading
+  } = useSelector(state => state.myOrder);
 
   const tabs = [
     { id: "active", label: "Active Orders" },
@@ -106,107 +36,262 @@ const OrdersScreen = ({ navigation }) => {
     { id: "completed", label: "Past Orders" },
   ];
 
-  const getOrdersForTab = () => {
+  // Check for newly created order from route params
+  useEffect(() => {
+    if (route.params?.newOrder) {
+      const newOrder = route.params.newOrder;
+      console.log('🎉 New order received in OrdersScreen:', newOrder);
+      dispatch(addNewOrder(newOrder));
+      
+      // Clear the route params to avoid adding duplicate
+      navigation.setParams({ newOrder: null });
+      
+      // Switch to the appropriate tab based on order status
+      if (newOrder.status === 'pending') {
+        setActiveTab('scheduled');
+      } else if (newOrder.status === 'accepted') {
+        setActiveTab('active');
+      }
+    }
+  }, [route.params?.newOrder]);
+
+  // Fetch orders when component mounts and when tab changes
+  useEffect(() => {
+    fetchOrdersForCurrentTab();
+  }, [activeTab]);
+
+  const fetchOrdersForCurrentTab = () => {
+    console.log(`🔄 Fetching orders for tab: ${activeTab}`);
     switch (activeTab) {
       case "scheduled":
-        return ordersData.scheduled;
+        dispatch(getOrdersByStatus('pending'));
+        break;
       case "active":
-        return ordersData.active;
+        dispatch(getOrdersByStatus('accepted'));
+        break;
       case "completed":
-        return ordersData.completed;
+        dispatch(getOrdersByStatus('completed'));
+        break;
+    }
+  };
+
+  // Enhanced refresh function
+  const handleRefresh = () => {
+    console.log('🔄 Manual refresh triggered');
+    // Force clear and refetch
+    dispatch(refreshOrders());
+    fetchOrdersForCurrentTab();
+  };
+
+  // Transform API data to match existing UI structure
+  const transformOrderData = (order) => {
+    const randomImage = defaultServiceImages[Math.floor(Math.random() * defaultServiceImages.length)];
+    const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
+    
+    // Format dates
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        day: 'numeric', 
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+
+    const scheduledDate = new Date(order.pickupDateTime);
+    const isToday = new Date().toDateString() === scheduledDate.toDateString();
+    const scheduledText = isToday 
+      ? `Today, ${scheduledDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`
+      : `Tomorrow, ${scheduledDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+
+    // Determine status display based on order status
+    let statusDisplay, statusColor, textColor, progress;
+    
+    switch (order.status) {
+      case 'pending':
+        statusDisplay = "SCHEDULED";
+        statusColor = "#e3f2fd";
+        textColor = "#1976d2";
+        break;
+      case 'accepted':
+        statusDisplay = "PICKUP";
+        statusColor = "#fff3e0";
+        textColor = "#f57c00";
+        progress = "Driver on the way";
+        break;
+      case 'completed':
+        statusDisplay = "COMPLETED";
+        statusColor = appColors.lightCream;
+        textColor = "#a0a1a5";
+        break;
       default:
-        return [];
+        statusDisplay = order.status.toUpperCase();
+        statusColor = "#e3f2fd";
+        textColor = "#1976d2";
+    }
+
+    return {
+      id: order.id,
+      title: order.vendor.businessName,
+      orderId: order.id.slice(-8).toUpperCase(),
+      date: formatDate(order.createdAt),
+      scheduledDate: scheduledText,
+      items: `${totalItems} item${totalItems > 1 ? 's' : ''}`,
+      price: (order.totalAmount / 100).toFixed(2), // Assuming amount is in paisa
+      status: statusDisplay,
+      statusColor,
+      textColor,
+      image: randomImage,
+      progress,
+      originalData: order // Keep original data for details screen
+    };
+  };
+
+  const getOrdersForTab = () => {
+    let orders = [];
+    switch (activeTab) {
+      case "scheduled":
+        orders = pendingOrders;
+        break;
+      case "active":
+        orders = acceptedOrders;
+        break;
+      case "completed":
+        orders = completedOrders;
+        break;
+      default:
+        orders = [];
+    }
+    
+    // Sort orders by creation date (newest first)
+    const sortedOrders = [...orders].sort((a, b) => 
+      new Date(b.createdAt) - new Date(a.createdAt)
+    );
+    
+    return sortedOrders.map(transformOrderData);
+  };
+
+  const isLoading = () => {
+    switch (activeTab) {
+      case "scheduled":
+        return pendingLoading;
+      case "active":
+        return acceptedLoading;
+      case "completed":
+        return completedLoading;
+      default:
+        return false;
     }
   };
 
   const renderItem = ({ item }) => {
-    const isRating = item.rating;
-    const isScheduled = activeTab === "scheduled";
-    const isActive = activeTab === "active";
-
     return (
       <TouchableOpacity 
-        onPress={() => navigation.navigate('OrderDetails', { order: item })} 
+        onPress={() => navigation.navigate('OrderDetails', { order: item.originalData })} 
         style={styles.card}
       >
         <View style={{ flexDirection: "row", paddingHorizontal: 10 }}>
           <FastImage source={item.image} style={styles.image} />
           <View style={styles.details}>
             <Text style={styles.title}>{item.title}</Text>
+
             <View style={styles.row}>
               <Text style={styles.subText}>Order ID {item.orderId}</Text>
-              <Text style={styles.date}>{item.date}</Text>
+              <Text style={styles.date}>
+                {moment(item?.originalData?.createdAt).utcOffset("+05:30").format("DD MMM, hh:mm A")}
+              </Text>
             </View>
-            
-            {isScheduled && (
-              <View style={styles.scheduledInfo}>
-                <MaterialIcons name="schedule" size={14} color={appColors.blue}/>
-                <Text style={styles.scheduledText}>{item.scheduledDate}</Text>
-              </View>
-            )}
-            
-            {isActive && item.progress && (
-              <View style={styles.progressInfo}>
-                <Text style={styles.progressText}>{item.progress}</Text>
-              </View>
-            )}
+
+            {/* Scheduled Info */}
+            <View style={styles.scheduledInfo}>
+              <MaterialIcons name="schedule" size={14} color={appColors.blue} />
+              <Text style={styles.scheduledText}>
+                Pickup: {moment(item?.originalData?.pickupDateTime).utcOffset("+05:30").format("DD MMM hh:mm A")}
+              </Text>
+            </View>
+            <View style={styles.scheduledInfo}>
+              <MaterialIcons name="local-shipping" size={14} color={appColors.blue} />
+              <Text style={styles.scheduledText}>
+                Delivery: {moment(item?.originalData?.deliveryDateTime).utcOffset("+05:30").format("DD MMM hh:mm A")}
+              </Text>
+            </View>
           </View>
         </View>
-        
+
         <View style={styles.border} />
-        
+
         <View style={[styles.row, { paddingHorizontal: 16 }]}>
           <View style={styles.row}>
-            <Text style={styles.subText}>{item.items}</Text>
+            <Text style={styles.subText}>
+              {item?.originalData?.items?.length} Item{item?.originalData?.items?.length !== 1 ? 's' : ''}
+            </Text>
           </View>
 
-         
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <FontAwesome name="rupee" style={{ marginTop: 3 }} size={14} color="#8E8E93" />
-              <Text style={[styles.subText, { marginLeft: 4 }]}>{item.price}</Text>
-            </View>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <FontAwesome name="rupee" style={{ marginTop: 3 }} size={14} color="#8E8E93" />
+            <Text style={[styles.subText, { marginLeft: 4 }]}>{item?.originalData?.totalAmount}</Text>
+          </View>
         </View>
       </TouchableOpacity>
     );
   };
 
-  const renderEmptyState = () => (
-    <View style={styles.emptyContainer}>
-      <MaterialIcons name="inbox" size={60} color="#ddd" />
-      <Text style={styles.emptyText}>No {activeTab === 'scheduled' ? 'scheduled' : activeTab === 'active' ? 'active' : 'past'} orders</Text>
-    </View>
-  );
+  const renderEmptyState = () => {
+    if (isLoading()) {
+      return (
+        <View style={styles.emptyContainer}>
+          <ActivityIndicator size="large" color={appColors.blue} />
+          <Text style={styles.emptyText}>Loading orders...</Text>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.emptyContainer}>
+        <MaterialIcons name="inbox" size={60} color="#ddd" />
+        <Text style={styles.emptyText}>
+          No {activeTab === 'scheduled' ? 'scheduled' : activeTab === 'active' ? 'active' : 'past'} orders
+        </Text>
+        <TouchableOpacity onPress={handleRefresh} style={styles.refreshButton}>
+          <Text style={styles.refreshButtonText}>Tap to refresh</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.container}>
-      <View style={styles.main}>
-          <Header iconColor={appColors.white} titleStyle={{color:appColors.white}} title={"My Orders"} onBackPress={() => navigation.goBack()} />
+        <View style={styles.main}>
+          <Header 
+            iconColor={appColors.white} 
+            titleStyle={{color:appColors.white}} 
+            title={"My Orders"} 
+            onBackPress={() => navigation.goBack()} 
+          />
   
-     
-<View style={styles.tabContainer}>
-  {tabs.map((tab) => (
-    <TouchableOpacity
-      key={tab.id}
-      style={styles.tab}
-      onPress={() => setActiveTab(tab.id)}
-    >
-      <Text
-        style={[
-          styles.tabText,
-          activeTab === tab.id && styles.activeTabText,
-        ]}
-      >
-        {tab.label}
-      </Text>
+          <View style={styles.tabContainer}>
+            {tabs.map((tab) => (
+              <TouchableOpacity
+                key={tab.id}
+                style={styles.tab}
+                onPress={() => setActiveTab(tab.id)}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === tab.id && styles.activeTabText,
+                  ]}
+                >
+                  {tab.label}
+                </Text>
 
-      {/* underline indicator only for active tab */}
-      {activeTab === tab.id && <View style={styles.tabIndicator} />}
-    </TouchableOpacity>
-  ))}
-</View>
-      </View>
-
+                {activeTab === tab.id && <View style={styles.tabIndicator} />}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
 
         <FlatList
           contentContainerStyle={styles.contentContainerStyle}
@@ -216,11 +301,12 @@ const OrdersScreen = ({ navigation }) => {
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={renderEmptyState}
+          refreshing={isLoading()}
+          onRefresh={handleRefresh} // Use enhanced refresh
         />
       </View>
     </SafeAreaView>
   );
 };
-
 
 export default OrdersScreen;

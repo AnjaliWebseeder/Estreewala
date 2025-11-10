@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,8 @@ import { BellIcon } from "../../assets/Icons/svg/bell";
 import HelpSupportIcon from "../../assets/Icons/svg/helpSupport";
 import Faq from "../../assets/Icons/svg/faq";
 import { windowHeight } from "../../theme/appConstant";
+import { useDispatch, useSelector } from 'react-redux';
+import {getCustomerDetails} from "../../redux/slices/customerSlice"
 
 // ==== MENU ITEM COMPONENT ====
 const MenuItem = ({ icon, label, onPress, isLast, rightComponent }) => (
@@ -36,6 +38,8 @@ const MenuItem = ({ icon, label, onPress, isLast, rightComponent }) => (
 export default function Profile({ navigation }) {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [profileImage, setProfileImage] = useState(null);
+  const dispatch = useDispatch();
+  const { customerData} = useSelector(state => state.customer);
 
   const handleRateApp = () => {
     Linking.openURL("market://details?id=your.package.name");
@@ -61,6 +65,11 @@ export default function Profile({ navigation }) {
     });
   };
 
+    // Load customer details on component mount
+  useEffect(() => {
+    dispatch(getCustomerDetails());
+  }, [dispatch]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.main}>
@@ -77,8 +86,8 @@ export default function Profile({ navigation }) {
             />
           </TouchableOpacity>
 
-          <Text style={styles.userName}>Johan Smith</Text>
-          <Text style={styles.userEmail}>johan.smith@example.com</Text>
+          <Text style={styles.userName}>{customerData?.name}</Text>
+          <Text style={styles.userEmail}>{customerData?.email}</Text>
         </View>
       </View>
       <ScrollView
@@ -117,11 +126,11 @@ export default function Profile({ navigation }) {
 
         {/* ==== Second Group ==== */}
         <View style={styles.menuCard}>
-          <MenuItem
+          {/* <MenuItem
             icon={<Icon name="key-outline" size={18} color={appColors.font} />}
             label="Change Password"
             onPress={() => navigation.navigate("ChangePassword")}
-          />
+          /> */}
           <MenuItem
             icon={<HelpSupportIcon />}
             label="Contact Support"

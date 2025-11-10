@@ -92,6 +92,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
+  icon:{
+    marginRight:4
+  },
   deliveryText: {
     fontSize: 11,
     color: appColors.font,
@@ -139,5 +142,79 @@ export const styles = StyleSheet.create({
     marginLeft: 8,
       fontFamily:fonts.InterRegular,
   },
+  errorIconContainer: {
+  marginBottom: 20,
+  padding: 20,
+  backgroundColor: '#FFF6E6',
+  borderRadius: 50,
+},
+
+errorTitle: {
+  fontSize: 22,
+  fontWeight: 'bold',
+  color: appColors.darkBlue,
+  textAlign: 'center',
+  marginBottom: 12,
+},
+
+errorMessage: {
+  fontSize: 16,
+  color: appColors.font,
+  textAlign: 'center',
+  lineHeight: 22,
+  marginBottom: 30,
+  paddingHorizontal: 20,
+},
+
+errorActions: {
+  width: '100%',
+  gap: 12,
+  marginBottom: 20,
+},
+
+primaryButton: {
+  flexDirection: 'row',
+  backgroundColor: appColors.darkBlue,
+  paddingVertical: 15,
+  paddingHorizontal: 20,
+  borderRadius: 10,
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 10,
+  minHeight: 50,
+},
+
+primaryButtonText: {
+  color: appColors.white,
+  fontSize: 16,
+  fontWeight: '600',
+},
+
+secondaryButton: {
+  backgroundColor: 'transparent',
+  paddingVertical: 15,
+  paddingHorizontal: 20,
+  borderRadius: 10,
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderWidth: 1,
+  borderColor: appColors.darkBlue,
+  minHeight: 50,
+},
+
+secondaryButtonText: {
+  color: appColors.darkBlue,
+  fontSize: 16,
+  fontWeight: '500',
+},
+
+helpText: {
+  fontSize: 14,
+  color: appColors.font,
+  textAlign: 'center',
+  fontStyle: 'italic',
+  marginTop: 20,
+  paddingHorizontal: 20,
+},
 });
 

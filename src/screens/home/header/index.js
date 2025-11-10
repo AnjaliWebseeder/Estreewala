@@ -25,9 +25,9 @@ const Header = (props) => {
                         <BellIcon color={appColors.white}/>
                     </TouchableOpacity>
                     <View style={styles.iconStyle}/>
-                    <TouchableOpacity onPress={() => props.navigation.navigate("Search")}>
+                    {/* <TouchableOpacity onPress={() => props.navigation.navigate("Search")}>
   <SearchIcon color={appColors.white}/>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                   
                 </View>
             </View>

@@ -9,108 +9,129 @@ import {
   Alert,
 } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
-import { updateProfile, resetProfileState } from "../../../redux/slices/authSlice"
 import Header from "../../../components/header";
 import { styles } from "./styles";
 import Icon from "react-native-vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import appColors from "../../../theme/appColors";
+import { getCustomerDetails, updateCustomerName, clearUpdateNameSuccess, updateCustomerNameLocally } from "../../../redux/slices/customerSlice";
 
 const LoginSecurityScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { user, profileLoading, profileSuccess, profileError } = useSelector(state => state.auth);
+  const { 
+    customerData, 
+    loading, 
+    updatingName, 
+    updateNameError, 
+    updateNameSuccess 
+  } = useSelector(state => state.customer);
   
-  const [editMode, setEditMode] = useState(null);
-  const [formData, setFormData] = useState({
-    customerId: "CUST12345", // static, non-editable
-    username: "",
-    email: "",
-    contactNo: "",
-  });
-  const [errors, setErrors] = useState({});
-  const [focusedField, setFocusedField] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [name, setName] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [focusedField, setFocusedField] = useState(false);
 
-  // Initialize form data from user state
+  // Load customer details on component mount
   useEffect(() => {
-    if (user) {
-      setFormData({
-        customerId: user.customerId || "CUST12345",
-        username: user.name || "",
-        email: user.email || "",
-        contactNo: user.phone || "",
-      });
-    }
-  }, [user]);
-
-  // Handle profile update success
-  useEffect(() => {
-    if (profileSuccess) {
-      Alert.alert('Success', 'Profile updated successfully');
-      setEditMode(null);
-      dispatch(resetProfileState());
-    }
-  }, [profileSuccess, dispatch]);
-
-  // Handle profile update errors
-  useEffect(() => {
-    if (profileError) {
-      Alert.alert('Update Failed', profileError);
-    }
-  }, [profileError]);
-
-  // Clear states when component unmounts
-  useEffect(() => {
-    return () => {
-      dispatch(resetProfileState());
-    };
+    dispatch(getCustomerDetails());
   }, [dispatch]);
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.username.trim()) {
-      newErrors.username = "Name is required";
+  // Initialize form data from customer data
+  useEffect(() => {
+    if (customerData) {
+      setName(customerData?.name || "");
     }
-    
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = "Invalid email format";
+  }, [customerData]);
+
+  // Handle update success
+  useEffect(() => {
+    if (updateNameSuccess) {
+      Alert.alert('Success', 'Name updated successfully!');
+      setEditMode(false);
+      dispatch(clearUpdateNameSuccess());
     }
-    
-    if (formData.contactNo && !/^[0-9]{10}$/.test(formData.contactNo)) {
-      newErrors.contactNo = "Invalid phone number";
+  }, [updateNameSuccess, dispatch]);
+
+  // Handle update errors
+  useEffect(() => {
+    if (updateNameError) {
+      Alert.alert('Update Failed', updateNameError);
     }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  }, [updateNameError]);
+
+  const validateName = () => {
+    if (!name.trim()) {
+      setNameError("Name is required");
+      return false;
+    }
+    if (name.trim().length < 2) {
+      setNameError("Name must be at least 2 characters");
+      return false;
+    }
+    setNameError("");
+    return true;
   };
 
-  const handleProfileUpdate = async () => {
-    if (!validateForm()) return;
+  const handleNameUpdate = async () => {
+    if (!validateName()) return;
 
     try {
-      const profileData = {
-        name: formData.username.trim(),
-        email: formData.email.trim(),
-      };
+      // Update locally first for immediate UI feedback
+      dispatch(updateCustomerNameLocally(name.trim()));
       
-      await dispatch(updateProfile(profileData)).unwrap();
+      // Then make API call
+      await dispatch(updateCustomerName(name.trim())).unwrap();
     } catch (error) {
-      // Error is handled in useEffect
-      console.log('Profile update error:', error);
+      // Revert local changes if API call fails
+      if (customerData?.name) {
+        dispatch(updateCustomerNameLocally(customerData.name));
+      }
+      console.log('Name update error:', error);
     }
+  };
+
+  const handleCancelEdit = () => {
+    // Reset to original name
+    setName(customerData?.name || "");
+    setEditMode(false);
+    setNameError("");
   };
 
   const fields = [
-    { label: "Customer ID", key: "customerId", value: formData.customerId, editable: false },
-    { label: "Name", key: "username", value: formData.username },
-    { label: "Email", key: "email", value: formData.email },
-    { label: "Contact", key: "contactNo", value: formData.contactNo , editable: false},
+    { 
+      label: "Name", 
+      key: "name", 
+      value: name,
+      editable: true 
+    },
+    { 
+      label: "Email", 
+      key: "email", 
+      value: customerData?.email || "N/A", 
+      editable: false 
+    },
+    { 
+      label: "Contact", 
+      key: "contactNo", 
+      value: customerData?.phone || "N/A", 
+      editable: false 
+    },
   ];
 
+  if (loading && !customerData) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Header title={"Login & Security"} onBackPress={() => navigation.goBack()} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={appColors.blue} />
+          <Text style={styles.loadingText}>Loading profile...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView style={[styles.container,{paddingHorizontal:0}]}>
+    <SafeAreaView style={[styles.container, { paddingHorizontal: 0 }]}>
       <View style={styles.container}>
         <Header title={"Login & Security"} onBackPress={() => navigation.goBack()} />
         <ScrollView contentContainerStyle={styles.content}>
@@ -122,31 +143,35 @@ const LoginSecurityScreen = ({ navigation }) => {
                   key={idx}
                   style={[
                     styles.fieldContainer,
-                    { borderBottomWidth: editMode === item.key ? 0 : 1 },
+                    { borderBottomWidth: editMode && item.editable ? 0 : 1 },
                   ]}
                 >
                   <View style={{ flex: 1 }}>
                     <Text style={styles.fieldLabel}>{item.label}</Text>
 
-                    {item.editable === false ? (
+                    {!item.editable ? (
                       <Text style={styles.fieldValue}>{item.value}</Text>
-                    ) : editMode === item.key ? (
+                    ) : editMode ? (
                       <>
                         <TextInput
-                          style={[styles.input, focusedField === item.key && styles.inputFocused]}
-                          onFocus={() => setFocusedField(item.key)}
-                          onBlur={() => setFocusedField(null)}
+                          style={[
+                            styles.input, 
+                            focusedField && styles.inputFocused,
+                            nameError && styles.inputError
+                          ]}
+                          onFocus={() => setFocusedField(true)}
+                          onBlur={() => setFocusedField(false)}
                           onChangeText={(text) => {
-                            setFormData({ ...formData, [item.key]: text });
-                            if (errors[item.key]) setErrors({...errors, [item.key]: ""});
+                            setName(text);
+                            if (nameError) setNameError("");
                           }}
-                          value={formData[item.key]}
-                          autoCapitalize={item.key === "email" ? "none" : "words"}
+                          value={name}
+                          autoCapitalize="words"
                           underlineColorAndroid="transparent"
-                          keyboardType={item.key === "contactNo" ? "numeric" : "default"}
+                          placeholder="Enter your name"
                         />
-                        {errors[item.key] && (
-                          <Text style={styles.errorText}>{errors[item.key]}</Text>
+                        {nameError && (
+                          <Text style={styles.errorText}>{nameError}</Text>
                         )}
                       </>
                     ) : (
@@ -154,19 +179,18 @@ const LoginSecurityScreen = ({ navigation }) => {
                     )}
                   </View>
 
-                  {item.editable !== false && (
+                  {item.editable && (
                     <TouchableOpacity
                       style={styles.editButton}
                       onPress={() => {
-                        if (editMode === item.key) {
-                          setEditMode(null);
-                          setErrors({});
+                        if (editMode) {
+                          handleCancelEdit();
                         } else {
-                          setEditMode(item.key);
+                          setEditMode(true);
                         }
                       }}
                     >
-                      {editMode === item.key ? (
+                      {editMode ? (
                         <Icon name="close-circle-outline" size={22} color="#FF3B30" />
                       ) : (
                         <Icon name="create-outline" size={22} color={appColors.blue} />
@@ -177,17 +201,20 @@ const LoginSecurityScreen = ({ navigation }) => {
               ))}
 
               {editMode && (
-                <TouchableOpacity 
-                  style={styles.saveButton} 
-                  onPress={handleProfileUpdate}
-                  disabled={profileLoading}
-                >
-                  {profileLoading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text style={styles.saveButtonText}>Save Changes</Text>
-                  )}
-                </TouchableOpacity>
+                <View style={styles.saveButtonContainer}>
+                  <TouchableOpacity 
+                    style={[styles.saveButton, updatingName && styles.saveButtonDisabled]} 
+                    onPress={handleNameUpdate}
+                    disabled={updatingName}
+                  >
+                    {updatingName ? (
+                      <ActivityIndicator color="#fff" size="small" />
+                    ) : (
+                      <Text style={styles.saveButtonText}>Save Changes</Text>
+                    )}
+                  </TouchableOpacity>
+                  
+                          </View>
               )}
             </View>
           </View>

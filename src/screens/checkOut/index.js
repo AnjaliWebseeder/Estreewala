@@ -272,7 +272,19 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
     setSelectedPickupSlot(closestSlot);
 
     // Proceed to confirmation
-    navigation.navigate('UserDetailsScreen');
+  navigation.navigate('UserDetailsScreen', {
+        vendorId: vendorId,
+        pickupDate: selectedPickupDate,
+        selectedDropDate: selectedDropDate,
+        pickupSlot: selectedPickupSlot,
+        paymentMethod: selectedPayment,
+        note: orderNote,
+        address: selectedAddress,
+        editingAddress: editingAddress,
+        tooltipVisible: tooltipVisible,
+        tooltipText: tooltipText,
+        showScheduleOptions: showScheduleOptions,
+      });
   };
 
   const handleSave = newAddress => {
@@ -294,11 +306,11 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
 
   const subtotal = items?.reduce((sum, it) => sum + it.price * it.quantity, 0);
   const deliveryFee = 2.5; // or fetch dynamically
-  const total = subtotal + deliveryFee;
+  const total = subtotal ;
 
   const totals = {
     subtotal: subtotal.toFixed(2),
-    deliveryFee: deliveryFee.toFixed(2),
+    // deliveryFee: deliveryFee.toFixed(2),
     total: total.toFixed(2),
   };
 
@@ -332,7 +344,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
             contentContainerStyle={styles.contentContainerStyle}
             showsVerticalScrollIndicator={false}
           >
-            <View style={styles.sectionStyle}>
+            {/* <View style={styles.sectionStyle}>
               <View style={styles.row}>
                 <Icon
                   name="home"
@@ -351,7 +363,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                 showEdit={true}
               />
             </View>
-            <View style={styles.horizontalBorder} />
+            <View style={styles.horizontalBorder} /> */}
 
             {showScheduleOptions ? (
               <>
@@ -544,7 +556,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
             <View
               style={[styles.section, { marginHorizontal: 10, marginTop: 10 }]}
             >
-              <View style={styles.priceRow}>
+              {/* <View style={styles.priceRow}>
                 <Text style={styles.priceLabel}>Subtotal</Text>
                 <Text style={styles.priceValue}>
                   <Icon
@@ -552,10 +564,10 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                     size={13}
                     color={appColors.font}
                   />
-                  {/* {totals.subtotal} */} ₹{totals.subtotal}
+                {totals.subtotal}
                 </Text>
-              </View>
-              <View style={styles.priceRow}>
+              </View> */}
+              {/* <View style={styles.priceRow}>
                 <Text style={styles.priceLabel}>Delivery fee</Text>
                 <Text style={styles.priceValue}>
                   <Icon
@@ -563,9 +575,9 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                     size={13}
                     color={appColors.font}
                   />
-                  {/* {totals.deliveryFee} */} ₹{totals.deliveryFee}
+                {totals.deliveryFee}
                 </Text>
-              </View>
+              </View> */}
               <View style={[styles.priceRow, styles.totalRow]}>
                 <Text style={styles.totalLabel}>Total</Text>
                 <Text style={styles.totalValue}>

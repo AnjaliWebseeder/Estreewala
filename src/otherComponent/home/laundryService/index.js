@@ -45,6 +45,7 @@ import {
   decrementQty,
   incrementQty,
 } from '../../../redux/slices/cartSlice';
+import { clearCart } from '../../../redux/slices/cartSlice';
 
 const PRODUCT_DATA = {
   men: [
@@ -93,13 +94,20 @@ const CATEGORIES = [
 export default function LaundryScreen({ navigation, route }) {
   const { title, vendorId } = route.params || {};
   const dispatch = useDispatch();
-
+  console.log("VENDOR ID IS",vendorId)
  
 
   const cart = useSelector(state => state.cart.items);
 
   const { vendorCatalog, vendorCatalogLoading, vendorCatalogError } =
     useSelector(state => state.nearByVendor);
+
+      useEffect(() => {
+    dispatch(clearCart());
+    return () => {
+    };
+  }, [dispatch]);
+
 
    // console.log("find vendorCatalog  ==>>>", vendorCatalog)
 
@@ -201,6 +209,7 @@ export default function LaundryScreen({ navigation, route }) {
     category === 'all'
       ? availableCategoryKeys.flatMap(key => selectedCategoryData[key] || [])
       : selectedCategoryData?.[category] || [];
+   
 
   const handleFilterPress = () => {
     if (filterIconRef.current) {
@@ -318,8 +327,6 @@ export default function LaundryScreen({ navigation, route }) {
   //   return sum + (prod ? prod.price * it.qty : 0);
   // }, 0);
 
-  const selectedCategoryLabel =
-    CATEGORIES.find(cat => cat.value === category)?.label || 'Select Category';
 
   return (
     <SafeAreaView style={styles.container}>
@@ -334,7 +341,7 @@ export default function LaundryScreen({ navigation, route }) {
         <Header
           iconColor={appColors.white}
           titleStyle={{ color: appColors.white }}
-          title={'My Cart'}
+          // title={'My Cart'}
           containerStyle={{ paddingVertical: 10 }}
           onBackPress={() => navigation.goBack()}
         />
@@ -345,13 +352,16 @@ export default function LaundryScreen({ navigation, route }) {
             alignItems: 'center',
           }}
         >
-          <View style={styles.header}>
+          <View style={{ paddingRight: 50 }}>
+                <View style={styles.header}>
             <Text style={styles.title}>
               {/* {title ? title : 'QuickClean Laundry'}{' '} */}
               {vendorCatalog?.vendor?.businessName || title || 'Laundry'}
             </Text>
             <Text style={styles.sub}>Central Park | 1.5 km</Text>
           </View>
+          </View>
+       
           <TouchableOpacity
             ref={filterIconRef}
             style={styles.filterButton}
@@ -452,29 +462,8 @@ export default function LaundryScreen({ navigation, route }) {
           ))}
         </View>
       </Modal>
-
-      {/* <FlatList
-        data={PRODUCTS}
-        keyExtractor={i => i.id}
-        renderItem={({ item }) => (
-          <ProductItem
-            product={item}
-            qty={cart[item.id]?.qty || 0}
-            service={selectedService[item.id] || SERVICES[0].value}
-            services={SERVICES}
-            onAdd={handleAdd}
-            onIncrement={handleIncrement}
-            onDecrement={handleDecrement}
-            onChangeService={handleChangeService}
-          />
-        )}
-        contentContainerStyle={{ paddingBottom: windowHeight(70) }}
-      /> */}
-
-      {/* Catalog List */}
-
       {vendorCatalogLoading ? (
-        <ActivityIndicator size="large" color={appColors.primary} />
+        <ActivityIndicator size="small" color={appColors.darkBlue} />
       ) : vendorCatalogError ? (
         <Text style={{ color: 'red', textAlign: 'center' }}>
           {vendorCatalogError}
@@ -507,32 +496,7 @@ export default function LaundryScreen({ navigation, route }) {
         />
       )}
 
-      {/* {totalItems > 0 && (
-        <View style={[styles.cartBar, { marginBottom: insets.bottom || -4 }]}>
-          <View>
-            <Text style={styles.cartTitle}>
-              {totalItems} Item{totalItems > 1 ? 's' : ''} •{' '}
-              <Text style={{ fontFamily: fonts.InterRegular }}>
-                <Icon name="currency-rupee" size={13} color={appColors.white} />
-              </Text>
-              {totalPrice.toFixed(2)}
-            </Text>
-            <Text style={styles.cartSub}>Extra charges may apply</Text>
-          </View>
-
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('LaundryCheckoutScreen', {
-                laundryName: title,
-              })
-            }
-            style={styles.cartBtn}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.cartBtnText}>View Cart</Text>
-          </TouchableOpacity>
-        </View>
-      )} */}
+ 
 
       {/* Bottom Cart Bar */}
       {totalItems > 0 && (

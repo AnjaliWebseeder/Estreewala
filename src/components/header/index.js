@@ -50,10 +50,10 @@ const styles = StyleSheet.create({
     // position: "absolute",
     left: 0,
     right: 0,
-    textAlign: "center",
     fontSize: 18,
     fontFamily: fonts.InterMedium,
     color: appColors.font,
+    lineHeight:23
   },
   rightIcon: {
     width: 35, // same width as back button for symmetry

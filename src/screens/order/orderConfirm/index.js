@@ -44,7 +44,7 @@ const OrderConfirmation = ({ navigation, route }) => {
   useEffect(() => {
     // Auto navigate to Main screen after 3 seconds
     const timer = setTimeout(() => {
-      navigation.replace('Main', { screen: 'Orders' }); // or navigation.navigate('Main')
+       navigation.replace('Main', { screen: 'Orders' }); // or navigation.navigate('Main')
     }, 3500);
 
     return () => clearTimeout(timer); // cleanup
