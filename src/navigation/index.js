@@ -34,6 +34,7 @@ import OrderDetails from '../screens/order/orderDetail'
 import OrdersScreen from '../screens/order';
 import NotificationPermission from '../screens/settings/notificationPermission'
 import UserDetailsScreen from '../screens/checkOut/userDetail'
+import MapAddressScreen from "../screens/settings/manageAddress/mapAddress"
 
 const Stack = createNativeStackNavigator();
 
@@ -107,6 +108,11 @@ export default function AppNavigation() {
             <Stack.Screen name="OrderDetails" component={OrderDetails} />
             <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen} />
             <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
+            <Stack.Screen 
+  name="MapAddressScreen" 
+  component={MapAddressScreen}
+  options={{ headerShown: false }}
+/>
           </>
         )}
       </Stack.Navigator>

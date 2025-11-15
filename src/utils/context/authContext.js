@@ -179,7 +179,6 @@ const logout = async () => {
     setUserDetails(null);
     setUserLocation(null);
     setGlobalAuth(null, null); // clear axios token
-    console.log("dddddddddddddddddd")
   } catch (error) {
     console.log("❌ Logout error:", error);
   }

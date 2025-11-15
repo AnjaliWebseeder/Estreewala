@@ -35,9 +35,6 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
   const { laundryName, vendorId } = route.params || {};
   const dispatch = useDispatch();
   const cartItems = useSelector(state => state.cart.items);
-
-  console.log('find vendorId  in cart screen ====>>> ', vendorId);
-
   const [addressModalVisible, setAddressModalVisible] = useState(false);
   const [pickupModalVisible, setPickupModalVisible] = useState(false);
   const [confirmationModalVisible, setConfirmationModalVisible] =
@@ -81,6 +78,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
     price: item.price || 0,
     service: item.service,
     quantity: item.qty,
+    category:item.category    
   }));
 
   // Calculate delivery date based on pickup date (2 days later)
@@ -526,6 +524,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                   item={item}
                   onUpdateQuantity={updateQuantity}
                   onRemoveItem={removeItem}
+                  category={item.category}
                 />
               ))}
             </View>

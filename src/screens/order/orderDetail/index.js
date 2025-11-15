@@ -6,16 +6,13 @@ import {
   Image,
   TouchableOpacity,
   Linking,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert,
+  Platform
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import appColors from "../../../theme/appColors";
-import {
-  service1,
-  service7,
-  service8,
-} from "../../../utils/images/images";
 import documentIcon from "../../../assets/Icons/svg/documentIcon";
 import deliveryIcon from "../../../assets/Icons/svg/deliveryIcon";
 import OrderOnWayIcon from "../../../assets/Icons/svg/orderway";
@@ -29,21 +26,22 @@ import InvoiceModal from "../../../otherComponent/invoiceModal";
 import moment from "moment";
 import { windowHeight } from "../../../theme/appConstant";
 import { useDispatch, useSelector } from 'react-redux';
-import { cancelOrder } from "../../../redux/slices/orderSlice";
+import { cancelOrder} from "../../../redux/slices/orderSlice";
+import { getItemImage } from "../../../utils/data/imageMapping"
+import { updateOrderStatus} from "../../../redux/slices/myOrderSlice";
+import { useToast } from "../../../utils/context/toastContext";
 
 const OrderDetails = ({ navigation, route }) => {
   const { order } = route.params || {};
-  
-  // Use a single source of truth - prefer the order from route params
-  // but maintain local state for immediate UI updates
-  const [currentOrder, setCurrentOrder] = useState(order || {});
+    const [currentOrder, setCurrentOrder] = useState(order || {});
   const [isCancelModalVisible, setCancelModalVisible] = useState(false);
   const [isInvoiceModalVisible, setInvoiceModalVisible] = useState(false);
   const [selectedReason, setSelectedReason] = useState('');
   const [otherReason, setOtherReason] = useState('');
-
+  const [downloadingInvoice, setDownloadingInvoice] = useState(false);
+  const { showToast } = useToast();
   const dispatch = useDispatch();
-  const { cancellingOrder} = useSelector(state => state.order);
+  const { cancellingOrder } = useSelector(state => state.order);
 
   // Update currentOrder when route params change
   useEffect(() => {
@@ -60,36 +58,66 @@ const OrderDetails = ({ navigation, route }) => {
     setInvoiceModalVisible(true);
   };
 
-  const handleDownloadPDF = () => {
-    console.log("Downloading invoice PDF...");
-  };
-
-  const confirmCancel = async (reason) => {
+  // Updated handleDownloadPDF for Android download
+  const handleDownloadPDF = async () => {
     try {
-      console.log('🔄 Cancelling order with reason:', reason);
+      setDownloadingInvoice(true);
       
-      // Make API call to cancel order
-      await dispatch(cancelOrder({ 
-        orderId: order?.id, 
-        reason: reason 
-      })).unwrap();
+      if (Platform.OS === 'android') {
+        // For Android, we'll use the WebView print functionality
+        // The actual download will be handled in the InvoiceModal
+       
+      } else {
+        // For iOS, show message
       
-      // Update local state immediately for better UX
-      setCurrentOrder((prev) => ({
-        ...prev,
-        status: "CANCELLED",
-      }));
-      
-      // Close modal
-      setCancelModalVisible(false);
-      setSelectedReason('');
-      setOtherReason('');
-      
+      }
     } catch (error) {
-      // Error is handled in the useEffect above
-      console.log('Order cancellation error:', error);
+      console.error('PDF download failed:', error);
+    
+    } finally {
+      setDownloadingInvoice(false);
     }
   };
+
+    const confirmCancel = async (reason) => {
+  try {
+    console.log('🔄 Cancelling order with reason:', reason);
+    
+    // 1. API call to cancel
+    await dispatch(cancelOrder({ 
+      orderId: order?.id, 
+      reason: reason 
+    })).unwrap();
+    
+    // 2. Update Redux state IMMEDIATELY
+    dispatch(updateOrderStatus({
+      orderId: order?.id,
+      newStatus: "cancelled" // Use whatever status your API returns
+    }));
+    
+    // 3. Update local UI
+    setCurrentOrder((prev) => ({
+      ...prev,
+      status: "cancelled",
+    }));
+    
+    // 4. Close modal
+    setCancelModalVisible(false);
+    setSelectedReason('');
+    setOtherReason('');
+
+   showToast("Cancelled Order successfully!", "success");
+    
+    // 5. Go back after brief delay for smooth UX
+    setTimeout(() => {
+      navigation.goBack();
+    }, 800);
+    
+  } catch (error) {
+    console.log('Order cancellation error:', error);
+  }
+};
+
 
   const customerPhone = order?.contactDetails?.mobile || "";
 
@@ -138,6 +166,7 @@ const OrderDetails = ({ navigation, route }) => {
   };
 
   const statusDisplay = getStatusDisplay();
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -226,18 +255,22 @@ const OrderDetails = ({ navigation, route }) => {
         {/* Ordered Items */}
         <View style={[styles.card, { marginVertical: 3 }]}>
           <Text style={styles.sectionTitle}>Ordered item(s)</Text>
-          {order?.items?.map((item, index) => (
-            <View key={index} style={styles.itemRow}>
-              <Image source={service7} style={styles.itemImage} />
-              <View style={{ flex: 1 }}>
-                <Text style={styles.itemName}>{item?.item}</Text>
-                <Text style={styles.itemService}>
-                  {item?.service} · x{item?.quantity}
-                </Text>
+          {order?.items?.map((item, index) => {
+            // Get the appropriate image for each item
+            const itemImage = getItemImage(item?.item);
+            
+            return (
+              <View key={index} style={styles.itemRow}>
+                <Image source={itemImage} style={styles.itemImage} />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.itemName}>{item?.item}</Text>
+                  <Text style={styles.itemService}>
+                    {item?.service} · x{item?.quantity}
+                  </Text>
+                </View>
               </View>
-          
-            </View>
-          ))}
+            );
+          })}
           <Text style={styles.instruction}>{order?.instructions || ""}</Text>
         </View>
 
@@ -269,24 +302,20 @@ const OrderDetails = ({ navigation, route }) => {
           <View style={styles.summaryRow}>
             <Text style={styles.text}>Pickup</Text>
             <Text style={styles.subTitle}>
-              {moment(order?.pickupDateTime)
-                .utcOffset("+05:30")
-                .format("DD MMM, hh:mm A")}
+              {moment(order?.pickupDate).format("DD MMM YYYY")} {order?.pickupTime}
             </Text>
           </View>
 
           <View style={styles.summaryRow}>
             <Text style={styles.text}>Delivery</Text>
             <Text style={styles.subTitle}>
-              {moment(order?.deliveryDateTime)
-                .utcOffset("+05:30")
-                .format("DD MMM, hh:mm A")}
+               {moment(order?.deliveryDate).format("DD MMM YYYY")} {order?.deliveryTime}
             </Text>
           </View>
 
           <View style={styles.summaryRow}>
             <Text style={styles.text}>Address</Text>
-            <Text style={[styles.subTitle,{width:230,left:windowHeight(17)}]}>
+            <Text style={[styles.subTitle,{width:230}]}>
               {order?.deliveryAddress?.address}
             </Text>
           </View>

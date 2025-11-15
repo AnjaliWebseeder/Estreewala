@@ -15,3 +15,5 @@ export const DELETE_ADDRESS = (id) => `${BASE_URL}/customer-auth/addresses/${id}
 export const GET_NEARBY_VENDORS = `${BASE_URL}/customers/nearby-vendors`;
 
 export const GET_CUSTOMERDETAILS = `${BASE_URL}/customers/details`
+
+export const SEARCH_VENDORS_API = `${BASE_URL}/customers/search-vendors`

@@ -105,7 +105,8 @@ contentContainerStyle:{
   subTitle:{
  color:appColors.font,
     fontFamily:fonts.InterSemiBold,
-    fontSize:fontSizes.FONT16
+    fontSize:fontSizes.FONT16,
+    textAlign:"right"
   },
   // Cancel Button
   cancelButton: { margin: 10, backgroundColor: appColors.font, padding: 12, borderRadius: 8 },

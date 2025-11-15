@@ -8,6 +8,8 @@ import { persistStore, persistReducer } from 'redux-persist';
 import cartReducer from '../redux/slices/cartSlice';
 import myOrderReducer from '../redux/slices/myOrderSlice'
 import customerReducer from "../redux/slices/customerSlice"
+import searchReducer from "../redux/slices/searchSlice"
+
 
 const persistConfig = {
   key: 'root',
@@ -22,7 +24,8 @@ const rootReducer = combineReducers({
   order: orderReducer,
   cart: cartReducer,
   myOrder: myOrderReducer,
-  customer: customerReducer
+  customer: customerReducer,
+  search: searchReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

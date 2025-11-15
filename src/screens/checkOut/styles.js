@@ -167,12 +167,13 @@ deliveryOption: {
   borderWidth: 1,
   borderColor: appColors.border,
   borderRadius: 8,
-  marginBottom: 10,
+  // marginBottom: 10,
 },
 primaryOption: {
   borderColor: appColors.blue,
   backgroundColor: appColors.blue + '10',
-  borderWidth:0.6
+  borderWidth:0.6,
+  marginBottom:12
 },
 optionTextContainer: {
   flex: 1,

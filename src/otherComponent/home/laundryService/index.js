@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,35 +7,17 @@ import {
   TouchableOpacity,
   Modal,
   TouchableWithoutFeedback,
-  Dimensions,
   ActivityIndicator,
 } from 'react-native';
 import ProductItem from './productItem';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../../../components/header';
 import { styles } from './styles';
-import {
-  service5,
-  service6,
-  service7,
-  service8,
-  service9,
-  service10,
-  service11,
-  service12,
-  service13,
-  service14,
-  service15,
-  service16,
-  service17,
-  service18,
-  service19,
-} from '../../../utils/images/images';
 import fonts from '../../../theme/appFonts';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import appColors from '../../../theme/appColors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { fontSizes, windowHeight } from '../../../theme/appConstant';
+import {  windowHeight } from '../../../theme/appConstant';
 import FilterIcon from '../../../assets/Icons/svg/filter';
 import { useDispatch, useSelector } from 'react-redux';
 import { getVendorCatalog } from '../../../redux/slices/nearByVendor';
@@ -46,70 +28,31 @@ import {
   incrementQty,
 } from '../../../redux/slices/cartSlice';
 import { clearCart } from '../../../redux/slices/cartSlice';
-
-const PRODUCT_DATA = {
-  men: [
-    { id: '1', name: 'Formal Shirt', price: 5, image: service6 },
-    { id: '2', name: 'Casual Shirt', price: 8, image: service5 },
-    { id: '3', name: 'Jeans', price: 12, image: service11 },
-    { id: '4', name: 'Trousers', price: 10, image: service12 },
-    { id: '5', name: 'Suit', price: 25, image: service13 },
-    { id: '6', name: 'Jacket', price: 18, image: service14 },
-  ],
-  women: [
-    { id: '7', name: 'Dress', price: 15, image: service7 },
-    { id: '8', name: 'Blouse', price: 12, image: service8 },
-    { id: '9', name: 'Saree', price: 20, image: service15 },
-    { id: '10', name: 'Skirt', price: 10, image: service16 },
-    { id: '11', name: 'Kurti', price: 14, image: service17 },
-    { id: '12', name: 'Jacket', price: 16, image: service18 },
-  ],
-  kids: [
-    { id: '13', name: 'Tshirt', price: 10, image: service9 },
-    { id: '14', name: 'Joggers', price: 10, image: service10 },
-    { id: '15', name: 'School Uniform', price: 12, image: service19 },
-  ],
-};
-
-// Combine all products for "All" category
-const ALL_PRODUCTS = [
-  ...PRODUCT_DATA.men,
-  ...PRODUCT_DATA.women,
-  ...PRODUCT_DATA.kids,
-];
-
-const SERVICES = [
-  { label: 'Wash & Iron', value: 'wash_iron' },
-  { label: 'Dry Clean', value: 'dry_clean' },
-  { label: 'Iron Only', value: 'iron_only' },
-];
-
-const CATEGORIES = [
-  { label: 'All', value: 'all' },
-  { label: "Men's Wear", value: 'men' },
-  { label: "Women's Wear", value: 'women' },
-  { label: 'Kids Wear', value: 'kids' },
-];
+import { transformCatalogData } from "../../../utils/data/imageMapping"
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function LaundryScreen({ navigation, route }) {
-  const { title, vendorId } = route.params || {};
+  const { title, vendorId, address } = route.params || {};
   const dispatch = useDispatch();
-  console.log("VENDOR ID IS",vendorId)
- 
+  
+  console.log("VENDOR ID IS", vendorId);
 
   const cart = useSelector(state => state.cart.items);
-
   const { vendorCatalog, vendorCatalogLoading, vendorCatalogError } =
     useSelector(state => state.nearByVendor);
+  
+  const parts = address?.split(',').map(s => s.trim());
+  const area = parts?.length > 1 ? parts[1] : parts[0];
 
-      useEffect(() => {
+  console.log("vendor catalog is===================>", vendorCatalog);
+
+  // Transform catalog data to include images
+  const transformedCatalog = transformCatalogData(vendorCatalog?.catalog);
+  console.log("🔄 transformedCatalog:", transformedCatalog);
+
+  useEffect(() => {
     dispatch(clearCart());
-    return () => {
-    };
   }, [dispatch]);
-
-
-   // console.log("find vendorCatalog  ==>>>", vendorCatalog)
 
   useEffect(() => {
     if (vendorId) {
@@ -117,8 +60,7 @@ export default function LaundryScreen({ navigation, route }) {
     }
   }, [vendorId, dispatch]);
 
-  // const [cart, setCart] = useState({});
-  const [category, setCategory] = useState('all'); // Set default to "all"
+  const [category, setCategory] = useState('all');
   const [showDropdown, setShowDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({
     top: 0,
@@ -127,23 +69,29 @@ export default function LaundryScreen({ navigation, route }) {
   const filterIconRef = useRef(null);
   const insets = useSafeAreaInsets();
 
-  const catalog = vendorCatalog?.catalog || {};
-  const serviceCategories = Object.keys(catalog); // e.g. ["Dry Wash", "Washing"]
+  const catalog = transformedCatalog || {};
+  const serviceCategories = Object.keys(catalog);
+  
+  console.log("🔧 serviceCategories:", serviceCategories);
+  console.log("🔧 catalog keys:", Object.keys(catalog));
 
   const [selectedServiceCategory, setSelectedServiceCategory] = useState(
     serviceCategories?.[0] || '',
   );
 
-  useEffect(() => {
-    if (serviceCategories.length > 0 && !selectedServiceCategory) {
-      setSelectedServiceCategory(serviceCategories[0]);
-    }
-  }, [serviceCategories]);
+  console.log("🎯 selectedServiceCategory:", selectedServiceCategory);
+
+  const [selectedService, setSelectedService] = useState({});
 
   const selectedCategoryData = catalog[selectedServiceCategory] || {};
+  
+  console.log("📊 selectedCategoryData:", selectedCategoryData);
+  console.log("📊 selectedCategoryData keys:", Object.keys(selectedCategoryData));
 
   // Build dynamic CATEGORIES based on keys available
   const availableCategoryKeys = Object.keys(selectedCategoryData);
+  console.log("👕 availableCategoryKeys:", availableCategoryKeys);
+  
   const dynamicCategories = [
     { label: 'All', value: 'all' },
     ...availableCategoryKeys.map(k => ({
@@ -159,57 +107,105 @@ export default function LaundryScreen({ navigation, route }) {
     })),
   ];
 
-  // Get products based on selected category
-  const PRODUCTS = category === 'all' ? ALL_PRODUCTS : PRODUCT_DATA[category];
+  console.log("🏷️ dynamicCategories:", dynamicCategories);
 
-  const [selectedService, setSelectedService] = useState(() =>
-    PRODUCTS.reduce((acc, p) => {
-      acc[p.id] = SERVICES[0].value;
-      return acc;
-    }, {}),
-  );
+  // Get products based on selected category - FIXED THIS PART
+  const selectedProducts = React.useMemo(() => {
+    if (category === 'all') {
+      const allProducts = availableCategoryKeys.flatMap(key => {
+        const categoryProducts = selectedCategoryData[key] || [];
+        console.log(`📦 Category ${key} products:`, categoryProducts);
+        return categoryProducts.map(product => ({
+          ...product,
+          category: key
+        }));
+      });
+      console.log("🛍️ All selectedProducts:", allProducts);
+      return allProducts;
+    } else {
+      const categoryProducts = (selectedCategoryData?.[category] || []).map(product => ({
+        ...product,
+        category: category
+      }));
+      console.log(`🛍️ ${category} selectedProducts:`, categoryProducts);
+      return categoryProducts;
+    }
+  }, [category, selectedCategoryData, availableCategoryKeys]);
+
+  console.log("🎯 FINAL selectedProducts:", selectedProducts);
+  console.log("🎯 selectedProducts length:", selectedProducts.length);
 
   const dynamicServices = serviceCategories?.map(s => ({
     label: s,
     value: s,
   }));
 
-  useEffect(() => {
-    if (
-      Object.keys(selectedService)?.length === 0 &&
-      selectedProducts?.length > 0 &&
-      serviceCategories?.length > 0
-    ) {
-      const defaultService = serviceCategories[0];
-      const initialService = selectedProducts.reduce((acc, p) => {
-        acc[p.item] = defaultService;
-        return acc;
-      }, {});
-      setSelectedService(initialService);
-    }
-  }, [selectedProducts, serviceCategories]);
+  console.log("🔄 dynamicServices:", dynamicServices);
 
+  // Debug: Check what's in the first service category
   useEffect(() => {
-    if (
-      Object.keys(selectedService).length === 0 &&
-      selectedProducts?.length > 0 &&
-      serviceCategories.length > 0
-    ) {
-      const defaultService = serviceCategories[0];
-      const initialService = selectedProducts.reduce((acc, p) => {
-        acc[p.item] = defaultService;
-        return acc;
-      }, {});
-      setSelectedService(initialService);
+    if (serviceCategories.length > 0) {
+      const firstService = serviceCategories[0];
+      console.log(`🔍 First service (${firstService}) data:`, catalog[firstService]);
+      console.log(`🔍 First service categories:`, Object.keys(catalog[firstService] || {}));
     }
-  }, [selectedProducts, serviceCategories]);
+  }, [serviceCategories, catalog]);
 
-  // Compute products
-  const selectedProducts =
-    category === 'all'
-      ? availableCategoryKeys.flatMap(key => selectedCategoryData[key] || [])
-      : selectedCategoryData?.[category] || [];
-   
+  // ✅ FIXED: useCallback to prevent unnecessary re-renders
+  const getPriceForServiceAndItem = useCallback((serviceName, itemName, category) => {
+    console.log('🔍 Looking up price:', { serviceName, itemName, category });
+    
+    if (!catalog[serviceName] || !catalog[serviceName][category]) {
+      console.log('❌ Service or category not found:', { 
+        serviceName, 
+        category, 
+        availableServices: Object.keys(catalog),
+        availableCategories: catalog[serviceName] ? Object.keys(catalog[serviceName]) : 'No service'
+      });
+      return 0;
+    }
+    
+    const categoryItems = catalog[serviceName][category];
+    const item = categoryItems.find(product => 
+      product.item.toLowerCase() === itemName.toLowerCase()
+    );
+    
+    if (!item) {
+      console.log('❌ Item not found in category:', {
+        itemName,
+        category,
+        availableItems: categoryItems.map(i => i.item)
+      });
+      return 0;
+    }
+    
+    console.log('✅ Price found:', { itemName, serviceName, category, price: item.price });
+    return item.price;
+  }, [catalog]);
+
+  // ✅ FIXED: Initialize selectedService only when catalog data is ready
+  useEffect(() => {
+    if (selectedProducts?.length > 0 && serviceCategories?.length > 0 && Object.keys(selectedService).length === 0) {
+      console.log('🔄 Initializing selectedService state...');
+      const defaultService = serviceCategories[0];
+      const initialService = {};
+      
+      selectedProducts.forEach(product => {
+        const price = getPriceForServiceAndItem(
+          defaultService, 
+          product.item, 
+          product.category
+        );
+        initialService[product.item] = {
+          service: defaultService,
+          price: price
+        };
+      });
+      
+      setSelectedService(initialService);
+      console.log('✅ Initialized services with prices:', initialService);
+    }
+  }, [selectedProducts, serviceCategories, getPriceForServiceAndItem, selectedService]);
 
   const handleFilterPress = () => {
     if (filterIconRef.current) {
@@ -223,114 +219,143 @@ export default function LaundryScreen({ navigation, route }) {
     }
   };
 
-  function handleAdd(p) {
-    const defaultService =
-      selectedService[p.item] || serviceCategories?.[0] || '';
-    dispatch(
-      addToCart({ id: p.item, service: defaultService, price: p.price }),
+  // ✅ FIXED: Handle add to cart
+  const handleAdd = useCallback((product) => {
+    const currentService = selectedService[product.item]?.service || serviceCategories?.[0] || '';
+    const price = getPriceForServiceAndItem(
+      currentService, 
+      product.item, 
+      product.category
     );
-  }
+    
+    console.log('🛒 Adding to cart:', {
+      item: product.item,
+      service: currentService,
+      price: price,
+      category: product.category
+    });
+    
+    dispatch(
+      addToCart({ 
+        id: product.item, 
+        service: currentService, 
+        price: price,
+        name: product.item,
+        image: product.image,
+        category: product.category
+      }),
+    );
+  }, [selectedService, serviceCategories, getPriceForServiceAndItem, dispatch]);
 
-  function handleIncrement(id) {
+  const handleIncrement = useCallback((id) => {
     dispatch(incrementQty(id));
-  }
+  }, [dispatch]);
 
-  function handleDecrement(id) {
+  const handleDecrement = useCallback((id) => {
     dispatch(decrementQty(id));
-  }
+  }, [dispatch]);
 
-  // function handleChangeService(id, service) {
-  //   setSelectedService(s => ({ ...s, [id]: service }));
-  //   setCart(s => {
-  //     if (!s[id]) return s;
-  //     return { ...s, [id]: { ...s[id], service } };
-  //   });
-  // }
-
-  // when selecting a service
-  const handleChangeService = (itemId, serviceValue) => {
-    console.log(`🟢 Changed ${itemId} → ${serviceValue}`);
-    dispatch(changeService({ id: itemId, service: serviceValue }));
+  // ✅ FIXED: Handle service change with price update
+  const handleChangeService = useCallback((itemId, serviceValue, category) => {
+    console.log(`🟢 Changing service for ${itemId} → ${serviceValue} in category: ${category}`);
+    
+    // Get the new price for this service and category
+    const newPrice = getPriceForServiceAndItem(serviceValue, itemId, category);
+    
+    console.log(`💰 New price for ${itemId}: ${newPrice}`);
+    
+    // Update local state
     setSelectedService(prev => ({
       ...prev,
-      [itemId]: serviceValue,
+      [itemId]: {
+        service: serviceValue,
+        price: newPrice
+      },
     }));
-  };
+
+    // Update Redux store with new service AND price
+    dispatch(changeService({ 
+      id: itemId, 
+      service: serviceValue,
+      price: newPrice,
+      category: category
+    }));
+  }, [getPriceForServiceAndItem, dispatch]);
 
   const handleCategorySelect = value => {
+    console.log("🎯 Category selected:", value);
     setCategory(value);
     setShowDropdown(false);
   };
 
   const cartItems = Object.keys(cart)?.map(k => ({ id: k, ...cart[k] }));
 
+  // Calculate totals
   const totalItems = cartItems.reduce((sum, it) => sum + it.qty, 0);
-  const totalPrice = cartItems.reduce((sum, it) => {
-    const prod = selectedProducts?.find(p => p.item === it.id);
-    return sum + (prod ? prod.price * it.qty : 0);
+  const totalPrice = cartItems.reduce((sum, item) => {
+    return sum + (item.price * item.qty);
   }, 0);
 
-  // const handleFilterPress = () => {
-  //   if (filterIconRef.current) {
-  //     filterIconRef.current.measureInWindow((x, y, width, height) => {
-  //       const screenWidth = Dimensions.get('window').width;
-  //       setDropdownPosition({
-  //         top: y + height + 5, // below the icon
-  //         left: x + width - 160, // align right edge (160 = dropdown minWidth)
-  //       });
-  //       setShowDropdown(true);
-  //     });
-  //   }
-  // };
+  // ✅ FIXED: Get current price for display in ProductItem
+  const getCurrentPriceForItem = useCallback((itemId, category) => {
+    const cartItem = cart[itemId];
+    if (cartItem) {
+      return cartItem.price;
+    }
+    
+    // If not in cart, get from selectedService or default
+    const serviceInfo = selectedService[itemId];
+    if (serviceInfo) {
+      return serviceInfo.price;
+    }
+    
+    // Fallback: get price from default service
+    const defaultService = serviceCategories?.[0] || '';
+    return getPriceForServiceAndItem(defaultService, itemId, category);
+  }, [cart, selectedService, serviceCategories, getPriceForServiceAndItem]);
 
-  // function handleAdd(p) {
-  //   setCart(s => ({
-  //     ...s,
-  //     [p.id]: { qty: 1, service: selectedService[p.id] || SERVICES[0].value },
-  //   }));
-  // }
+  // ✅ FIXED: Memoized render item to prevent unnecessary re-renders
+  const renderProductItem = useCallback(({ item }) => {
+    const currentService = selectedService[item.item]?.service || serviceCategories?.[0] || '';
+    const currentPrice = getCurrentPriceForItem(item.item, item.category);
+    
+    console.log('📦 Rendering product:', {
+      name: item.item,
+      category: item.category,
+      service: currentService,
+      price: currentPrice
+    });
+    
+    return (
+      <ProductItem
+        product={{
+          id: item.item,
+          name: item.item,
+          price: currentPrice,
+          image: item.image,
+          category: item.category
+        }}
+        qty={cart[item.item]?.qty || 0}
+        service={currentService}
+        services={dynamicServices}
+        onAdd={() => handleAdd(item)}
+        onIncrement={() => handleIncrement(item.item)}
+        onDecrement={() => handleDecrement(item.item)}
+        onChangeService={(itemId, serviceValue) => {
+          handleChangeService(itemId, serviceValue, item.category);
+        }}
+      />
+    );
+  }, [selectedService, serviceCategories, getCurrentPriceForItem, cart, dynamicServices, handleAdd, handleIncrement, handleDecrement, handleChangeService]);
 
-  // function handleIncrement(id) {
-  //   setCart(s => ({ ...s, [id]: { ...s[id], qty: s[id].qty + 1 } }));
-  // }
-
-  // function handleDecrement(id) {
-  //   setCart(s => {
-  //     const cur = s[id];
-  //     if (!cur) return s;
-  //     if (cur.qty <= 1) {
-  //       const copy = { ...s };
-  //       delete copy[id];
-  //       return copy;
-  //     }
-  //     return { ...s, [id]: { ...cur, qty: cur.qty - 1 } };
-  //   });
-  // }
-
-  // function handleChangeService(id, service) {
-  //   setSelectedService(s => ({ ...s, [id]: service }));
-  //   setCart(s => {
-  //     if (!s[id]) return s;
-  //     return { ...s, [id]: { ...s[id], service } };
-  //   });
-  // }
-
-  // function handleCategorySelect(selectedCategory) {
-  //   setCategory(selectedCategory);
-  //   setShowDropdown(false);
-  // }
-
-  // const cartItems = Object.keys(cart).map(k => ({ id: k, ...cart[k] }));
-  // const totalItems = cartItems.reduce((sum, it) => sum + it.qty, 0);
-  // const totalPrice = cartItems.reduce((sum, it) => {
-  //   const prod = ALL_PRODUCTS.find(p => p.id === it.id); // Use ALL_PRODUCTS to find prices
-  //   return sum + (prod ? prod.price * it.qty : 0);
-  // }, 0);
-
+ 
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
+      
+      {/* Debug Info */}
+     
       <View
         style={{
           backgroundColor: appColors.darkBlue,
@@ -341,7 +366,6 @@ export default function LaundryScreen({ navigation, route }) {
         <Header
           iconColor={appColors.white}
           titleStyle={{ color: appColors.white }}
-          // title={'My Cart'}
           containerStyle={{ paddingVertical: 10 }}
           onBackPress={() => navigation.goBack()}
         />
@@ -353,13 +377,15 @@ export default function LaundryScreen({ navigation, route }) {
           }}
         >
           <View style={{ paddingRight: 50 }}>
-                <View style={styles.header}>
-            <Text style={styles.title}>
-              {/* {title ? title : 'QuickClean Laundry'}{' '} */}
-              {vendorCatalog?.vendor?.businessName || title || 'Laundry'}
-            </Text>
-            <Text style={styles.sub}>Central Park | 1.5 km</Text>
-          </View>
+            <View style={styles.header}>
+              <Text style={styles.title}>
+                {vendorCatalog?.vendor?.businessName || title || 'Laundry'}
+              </Text>
+              <View style={{ flexDirection: 'row', alignItems: "flex-end" }}>
+                <Ionicons name="location-outline" size={16} color="#555" style={{ marginRight: 6 }} />
+                <Text style={styles.sub}>{area}</Text>
+              </View>
+            </View>
           </View>
        
           <TouchableOpacity
@@ -377,49 +403,6 @@ export default function LaundryScreen({ navigation, route }) {
           <Text style={styles.meta}>🕒 9 AM - 11 PM</Text>
         </View>
       </View>
-
-      {/* Category Selection Modal/Dropdown */}
-      {/* <Modal
-        visible={showDropdown}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setShowDropdown(false)}
-      >
-        <TouchableWithoutFeedback onPress={() => setShowDropdown(false)}>
-          <View style={styles.modalOverlay} />
-        </TouchableWithoutFeedback>
-
-        <View
-          style={[
-            styles.dropdownContainer,
-            { top: dropdownPosition.top, left: dropdownPosition.left },
-          ]}
-        >
-          {CATEGORIES.map((cat, index) => (
-            <View key={cat.value}>
-              <TouchableOpacity
-                style={[
-                  styles.dropdownItem,
-                  category === cat.value && styles.dropdownItemSelected,
-                ]}
-                onPress={() => handleCategorySelect(cat.value)}
-              >
-                <Text
-                  style={[
-                    styles.dropdownItemText,
-                    category === cat.value && styles.dropdownItemTextSelected,
-                  ]}
-                >
-                  {cat.label}
-                </Text>
-              </TouchableOpacity>
-              {index < CATEGORIES.length - 1 && (
-                <View style={styles.dropdownDivider} />
-              )}
-            </View>
-          ))}
-        </View>
-      </Modal> */}
 
       <Modal
         visible={showDropdown}
@@ -462,41 +445,27 @@ export default function LaundryScreen({ navigation, route }) {
           ))}
         </View>
       </Modal>
+
       {vendorCatalogLoading ? (
-        <ActivityIndicator size="small" color={appColors.darkBlue} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={appColors.darkBlue} />
+        </View>
       ) : vendorCatalogError ? (
-        <Text style={{ color: 'red', textAlign: 'center' }}>
-          {vendorCatalogError}
-        </Text>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{vendorCatalogError}</Text>
+        </View>
+      ) : selectedProducts.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No products available</Text>
+        </View>
       ) : (
         <FlatList
           data={selectedProducts}
           keyExtractor={(item, index) => `${item.item}_${index}`}
-          renderItem={({ item }) => (
-            <ProductItem
-              product={{
-                id: item.item,
-                name: item.item,
-                price: item.price,
-              }}
-              qty={cart[item.item]?.qty || 0}
-              service={
-                selectedService[item.item] || serviceCategories?.[0] || ''
-              }
-              services={dynamicServices}
-              onAdd={() => handleAdd(item)}
-              onIncrement={() => handleIncrement(item.item)}
-              onDecrement={() => handleDecrement(item.item)}
-              onChangeService={(itemId, serviceValue) =>
-                handleChangeService(itemId, serviceValue)
-              }
-            />
-          )}
+          renderItem={renderProductItem}
           contentContainerStyle={{ paddingBottom: windowHeight(70) }}
         />
       )}
-
- 
 
       {/* Bottom Cart Bar */}
       {totalItems > 0 && (
@@ -515,9 +484,8 @@ export default function LaundryScreen({ navigation, route }) {
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('LaundryCheckoutScreen', {
-                laundryName:
-                  vendorCatalog?.vendor?.businessName || title || 'Laundry',
-                  vendorId: vendorId
+                laundryName: vendorCatalog?.vendor?.businessName || title || 'Laundry',
+                vendorId: vendorId
               })
             }
             style={styles.cartBtn}

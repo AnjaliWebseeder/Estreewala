@@ -336,102 +336,123 @@ const UserDetailsScreen = ({ navigation, route }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSave = async () => {
-    try {
-      // 🔹 Validate all fields before proceeding
-      if (!validateForm()) {
-        // showToast('Please fill all required fields correctly', 'error');
-        return;
-      }
-
-      // 🔹 Ensure pickup & delivery dates are valid and backend-safe
-      const pickup = moment(pickupDate).isValid()
-        ? moment(pickupDate)
-        : moment().add(1, 'days');
-
-      const deliveryMoment = moment(selectedDropDate).isValid()
-        ? moment(selectedDropDate)
-        : pickup.clone().add(2, 'days');
-
-      // 🔹 Build full address dynamically
-      const fullAddress = `${flatNo ? flatNo + ', ' : ''}${address}${
-        landmark ? ', Near ' + landmark : ''
-      }`;
-
-      // 🔹 Extract pickup start time from slot and convert to 24-hour format
-      const rawPickupTime = pickupSlot?.time || '09:00 AM';
-      const pickupStartTime = moment(rawPickupTime.split('-')[0].trim(), [
-        'hh:mm A',
-        'HH:mm',
-      ]).format('HH:mm');
-
-      console.log('🕓 pickup full:', pickup.format('YYYY-MM-DD HH:mm'));
-      console.log(
-        '🕓 delivery full:',
-        deliveryMoment.format('YYYY-MM-DD HH:mm'),
-      );
-      console.log('pickupTime (raw):', rawPickupTime);
-      console.log('pickupTime (parsed):', pickupStartTime);
-
-      // 🔹 Construct final payload
-      const orderPayload = {
-        vendorId: vendorId || '',
-        items: Object.keys(cartItems).map(key => ({
-          item: key,
-          category: cartItems[key].category || 'man',
-          service: cartItems[key].service || '',
-          quantity: cartItems[key].qty || 1,
-        })),
-        totalPrice: totalPrice || 0,
-
-        // ✅ Dates & times
-        pickupDate: pickup.format('YYYY-MM-DD'),
-        pickupTime: pickupStartTime,
-
-        deliveryDate: deliveryMoment.format('YYYY-MM-DD'),
-        deliveryTime: deliveryMoment.format('HH:mm'),
-
-        // ✅ Notes & instructions
-        instructions: note || 'optional',
-
-        // ✅ Address info - ALL FIELDS ARE NOW REQUIRED
-        address: fullAddress,
-        coordinates: {
-          type: 'Point',
-          coordinates: [
-            coords?.longitude || 77.5946,
-            coords?.latitude || 12.9716,
-          ],
-        },
-        house: flatNo || '',
-        landmark: landmark || '',
-        contactDetails: {
-          fullName: name || '',
-          mobile: mobile || '',
-          email: email || '',
-        },
-      };
-
-      console.log(
-        '🧾 FINAL ORDER PAYLOAD ===>>>',
-        JSON.stringify(orderPayload, null, 2),
-      );
-
-      // 🔹 Dispatch API call
-      const result = await dispatch(placeOrder(orderPayload)).unwrap();
-
-      // ✅ CLEAR CART AFTER SUCCESS
-      dispatch(clearCart());
-
-      // ✅ Show toast dynamically
-      // showToast(result?.message || 'Order placed successfully!', 'success');
-
-      navigation.replace('OrderConfirmation', { orderData: result });
-    } catch (error) {
-      console.error('❌ Error placing order:', error);
-      Alert.alert('Error', error?.message || 'Failed to place order');
+const handleSave = async () => {
+  try {
+    // 🔹 Validate all fields before proceeding
+    if (!validateForm()) {
+      return;
     }
-  };
+
+    // 🔹 Ensure pickup & delivery dates are valid
+    const pickupMoment = moment(pickupDate).isValid()
+      ? moment(pickupDate)
+      : moment().add(1, 'days');
+
+    const deliveryMoment = moment(selectedDropDate).isValid()
+      ? moment(selectedDropDate)
+      : pickupMoment.clone().add(2, 'days');
+
+    // 🔹 Build full address dynamically
+    const fullAddress = `${flatNo ? flatNo + ', ' : ''}${address}${
+      landmark ? ', ' + landmark : ''
+    }`;
+
+    // 🔹 Extract pickup start time
+  const now = new Date();
+
+// 2. Add 2 or 3 hours delay (let's take 3 hours for example)
+const defaultPickupTimeDate = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+
+// 3. Format it to "HH:mm AM/PM"
+const formatTime = (date) => {
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12; // convert 0 => 12
+  const minutesStr = minutes < 10 ? `0${minutes}` : minutes;
+  return `${hours}:${minutesStr} ${ampm}`;
+};
+
+// 4. Use pickupSlot time or default time
+const rawPickupTime = pickupSlot?.time || formatTime(defaultPickupTimeDate);
+    const pickupStartTime = rawPickupTime.split('-')[0].trim();
+    const formattedDeliveryTime = deliveryMoment.format('hh:mm A');
+
+
+    // 🔹 FIX: Convert to UTC explicitly to avoid timezone confusion
+    const pickupDateTimeUTC = moment(
+      `${pickupMoment.format('YYYY-MM-DD')} ${pickupStartTime}`,
+      'YYYY-MM-DD hh:mm A'
+    ).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+
+    const deliveryDateTimeUTC = moment(
+      `${deliveryMoment.format('YYYY-MM-DD')} ${formattedDeliveryTime}`,
+      'YYYY-MM-DD hh:mm A'
+    ).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'); // C
+
+
+    console.log('🕓 Pickup UTC:', pickupDateTimeUTC);
+    console.log('🕓 Delivery UTC:', deliveryDateTimeUTC);
+
+    // 🔹 Construct final payload
+    const orderPayload = {
+      vendorId: vendorId || '',
+      items: Object.keys(cartItems).map(key => ({
+        item: key,
+        category: cartItems[key].category || 'man',
+        service: cartItems[key].service || '',
+        quantity: cartItems[key].qty || 1,
+      })),
+      totalPrice: totalPrice || 0,
+
+      // ✅ FIXED: Send as UTC datetime strings
+      // pickupDateTime: pickupDateTimeUTC,
+      // deliveryDateTime: deliveryDateTimeUTC,
+
+      // ✅ Optional: Keep separate fields for reference
+      pickupDate: pickupMoment.format('YYYY-MM-DD'),
+      pickupTime: pickupStartTime,
+      deliveryDate: deliveryMoment.format('YYYY-MM-DD'),
+            deliveryTime: formattedDeliveryTime,
+
+      // ✅ Notes & instructions
+      instructions: note,
+
+      // ✅ Address info
+      address: fullAddress,
+      coordinates: {
+        type: 'Point',
+        coordinates: [
+          coords?.longitude || 0,
+          coords?.latitude || 0,
+        ],
+      },
+      house: flatNo || '',
+      landmark: landmark || '',
+      contactDetails: {
+        fullName: name || '',
+        mobile: mobile || '',
+        email: email || '',
+      },
+    };
+
+    console.log(
+      '🧾 FINAL ORDER PAYLOAD ===>>>',
+      JSON.stringify(orderPayload, null, 2),
+    );
+
+    // 🔹 Dispatch API call
+    const result = await dispatch(placeOrder(orderPayload)).unwrap();
+
+    // ✅ CLEAR CART AFTER SUCCESS
+    dispatch(clearCart());
+
+    navigation.replace('OrderConfirmation', { orderData: result });
+  } catch (error) {
+    console.error('❌ Error placing order:', error);
+    Alert.alert('Error', error?.message || 'Failed to place order');
+  }
+};
 
   // Custom Modal Components
   const PermissionModal = () => (

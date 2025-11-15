@@ -50,6 +50,7 @@ const PopularLaundry = (props) => {
             onPress={() => props.navigation.navigate('LaundryService', { 
               title: item.name,
               vendorId: item.id,
+              address: item.location
             })} 
             activeOpacity={0.9} 
             style={styles.card}

@@ -10,7 +10,7 @@ import appColors from "../../theme/appColors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from 'react-redux';
 import { getOrdersByStatus, addNewOrder, refreshOrders } from "../../redux/slices/myOrderSlice"; // Import new actions
-import moment from "moment";
+import moment from "moment-timezone";
 
 // Default images for vendors
 const defaultServiceImages = [service1, service2, service3, service4];
@@ -84,70 +84,50 @@ const OrdersScreen = ({ navigation, route }) => {
   };
 
   // Transform API data to match existing UI structure
-  const transformOrderData = (order) => {
-    const randomImage = defaultServiceImages[Math.floor(Math.random() * defaultServiceImages.length)];
-    const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
-    
-    // Format dates
-    const formatDate = (dateString) => {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', { 
-        day: 'numeric', 
-        month: 'short',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    };
+ const transformOrderData = (order) => {
+  const randomImage = defaultServiceImages[Math.floor(Math.random() * defaultServiceImages.length)];
+  const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
 
-    const scheduledDate = new Date(order.pickupDateTime);
-    const isToday = new Date().toDateString() === scheduledDate.toDateString();
-    const scheduledText = isToday 
-      ? `Today, ${scheduledDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`
-      : `Tomorrow, ${scheduledDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+  // ✅ Determine status display
+  let statusDisplay, statusColor, textColor, progress;
 
-    // Determine status display based on order status
-    let statusDisplay, statusColor, textColor, progress;
-    
-    switch (order.status) {
-      case 'pending':
-        statusDisplay = "SCHEDULED";
-        statusColor = "#e3f2fd";
-        textColor = "#1976d2";
-        break;
-      case 'accepted':
-        statusDisplay = "PICKUP";
-        statusColor = "#fff3e0";
-        textColor = "#f57c00";
-        progress = "Driver on the way";
-        break;
-      case 'completed':
-        statusDisplay = "COMPLETED";
-        statusColor = appColors.lightCream;
-        textColor = "#a0a1a5";
-        break;
-      default:
-        statusDisplay = order.status.toUpperCase();
-        statusColor = "#e3f2fd";
-        textColor = "#1976d2";
-    }
+  switch (order.status) {
+    case "pending":
+      statusDisplay = "SCHEDULED";
+      statusColor = "#e3f2fd";
+      textColor = "#1976d2";
+      break;
+    case "accepted":
+      statusDisplay = "PICKUP";
+      statusColor = "#fff3e0";
+      textColor = "#f57c00";
+      progress = "Driver on the way";
+      break;
+    case "completed":
+      statusDisplay = "COMPLETED";
+      statusColor = appColors.lightCream;
+      textColor = "#a0a1a5";
+      break;
+    default:
+      statusDisplay = order.status.toUpperCase();
+      statusColor = "#e3f2fd";
+      textColor = "#1976d2";
+  }
 
-    return {
-      id: order.id,
-      title: order.vendor.businessName,
-      orderId: order.id.slice(-8).toUpperCase(),
-      date: formatDate(order.createdAt),
-      scheduledDate: scheduledText,
-      items: `${totalItems} item${totalItems > 1 ? 's' : ''}`,
-      price: (order.totalAmount / 100).toFixed(2), // Assuming amount is in paisa
-      status: statusDisplay,
-      statusColor,
-      textColor,
-      image: randomImage,
-      progress,
-      originalData: order // Keep original data for details screen
-    };
+  return {
+    id: order.id,
+    title: order.vendor?.businessName || "Unknown Vendor",
+    orderId: order.id.slice(-8).toUpperCase(),
+    items: `${totalItems} item${totalItems > 1 ? "s" : ""}`,
+    price: (order.totalAmount / 100).toFixed(2), // Assuming paisa
+    status: statusDisplay,
+    statusColor,
+    textColor,
+    image: randomImage,
+    progress,
+    originalData: order, // Keep full data for detail screen
   };
-
+};
   const getOrdersForTab = () => {
     let orders = [];
     switch (activeTab) {
@@ -186,6 +166,8 @@ const OrdersScreen = ({ navigation, route }) => {
   };
 
   const renderItem = ({ item }) => {
+    const formattedPickupDate = moment(item.originalData.pickupDate).format("DD MMM YYYY");
+    const formattedDeliveryDate = moment(item?.originalData?.deliveryDate).format("DD MMM YYYY");
     return (
       <TouchableOpacity 
         onPress={() => navigation.navigate('OrderDetails', { order: item.originalData })} 
@@ -207,13 +189,13 @@ const OrdersScreen = ({ navigation, route }) => {
             <View style={styles.scheduledInfo}>
               <MaterialIcons name="schedule" size={14} color={appColors.blue} />
               <Text style={styles.scheduledText}>
-                Pickup: {moment(item?.originalData?.pickupDateTime).utcOffset("+05:30").format("DD MMM hh:mm A")}
+                Pickup: {formattedPickupDate} {item?.originalData?.pickupTime}
               </Text>
             </View>
             <View style={styles.scheduledInfo}>
               <MaterialIcons name="local-shipping" size={14} color={appColors.blue} />
               <Text style={styles.scheduledText}>
-                Delivery: {moment(item?.originalData?.deliveryDateTime).utcOffset("+05:30").format("DD MMM hh:mm A")}
+                Delivery: {formattedDeliveryDate} {item?.originalData?.deliveryTime}
               </Text>
             </View>
           </View>

@@ -7,9 +7,11 @@ import { useNavigation } from '@react-navigation/native';
 import { BellIcon } from '../../assets/Icons/svg/bell'
 import HelpSupportIcon from '../../assets/Icons/svg/helpSupport'
 import { useAuth } from "../../utils/context/authContext"
+import { useSelector } from "react-redux";
 
 const CustomDrawerContent = (props) => {
   const { user, logout, userToken ,token} = useAuth(); // Using Redux hook
+  const { customerData} = useSelector(state => state.customer); 
   const navigation = useNavigation();
   const handleRateApp = () => {
     Linking.openURL('market://details?id=your.package.name');
@@ -45,11 +47,11 @@ const CustomDrawerContent = (props) => {
           </View>
           <View style={styles.headerTextContainer}>
             <Text style={styles.userNameText}>
-              Welcome {user?.name || 'User'}
+              Welcome {user?.name || customerData?.name}
             </Text>
-            <Text style={styles.detailText}>
+            {/* <Text style={styles.detailText}>
               Customer ID: {user?.customerId || '735625674'}
-            </Text>
+            </Text> */}
             {user?.phone && (
               <Text style={styles.detailText}>
                 Phone: {user.phone}

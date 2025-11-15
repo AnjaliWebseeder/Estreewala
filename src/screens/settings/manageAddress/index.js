@@ -153,10 +153,12 @@ export default function ManageAddress({ navigation, route }) {
     setLocalSelectedAddress(id);
   };
 
-  const openModal = (item = null) => {
-    setEditingAddress(item);
-    setModalVisible(true);
-  };
+ const openModal = (item = null) => {
+  // Instead of opening modal, navigate to MapAddressScreen
+  navigation.navigate('MapAddressScreen', {
+    editingAddress: item
+  });
+};
 
   const handleSave = async (addressData) => {
     try {

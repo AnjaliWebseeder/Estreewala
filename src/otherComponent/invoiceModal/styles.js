@@ -25,6 +25,9 @@ export const styles = StyleSheet.create({
     borderBottomColor: appColors.border,
     paddingBottom:10
   },
+  contentContainerStyle:{
+    paddingBottom:80
+  },
   modalTitle: {
     fontSize: fontSizes.FONT20,
     fontFamily: fonts.InterSemiBold,
@@ -92,6 +95,7 @@ export const styles = StyleSheet.create({
     backgroundColor: appColors.blue,
     padding: 8,
     borderRadius: 6,
+    marginBottom:8
   },
   logoText: {
     color: appColors.white,
@@ -194,7 +198,7 @@ export const styles = StyleSheet.create({
     color: appColors.font,
   },
   termsSection: {
-    marginBottom: 20,
+    marginBottom: 30,
   },
   termsTitle: {
     fontSize: fontSizes.FONT14,
@@ -210,5 +214,32 @@ export const styles = StyleSheet.create({
   },
   disabledButton: {
   opacity: 0.6,
+},
+// Add these styles to your existing styles
+// Add these to your existing styles
+webViewHeader: {
+  backgroundColor: appColors.primary,
+  padding: 15,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+},
+webViewBackButton: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+webViewBackText: {
+  color: appColors.white,
+  marginLeft: 10,
+  fontSize: 16,
+  fontWeight: 'bold',
+},
+webViewTitle: {
+  color: appColors.white,
+  fontSize: 16,
+  fontWeight: 'bold',
+  flex: 1,
+  textAlign: 'center',
+  marginRight: 60, // Balance the back button width
 },
 });

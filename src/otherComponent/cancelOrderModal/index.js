@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Modal, TouchableOpacity, ScrollView , TextInput, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Modal, TouchableOpacity, ScrollView, TextInput, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 import appColors from '../../theme/appColors';
@@ -16,6 +16,8 @@ const CancelOrderModal = ({
   isLoading = false 
 }) => {
 
+  const [errorMessage, setErrorMessage] = useState('');
+
   const cancellationReasons = [
     "Change of plans",
     "Found a better price",
@@ -25,6 +27,13 @@ const CancelOrderModal = ({
   ];
 
   const handleConfirm = () => {
+    if (selectedReason === "Other reason") {
+      if (!otherReason.trim() || otherReason.trim().length < 5) {
+        setErrorMessage('Reason required: At least 5 chars, e.g., "Changed my plans"');
+        return;
+      }
+    }
+    setErrorMessage('');
     const reason = selectedReason === "Other reason" ? otherReason : selectedReason;
     onConfirm(reason);
   };
@@ -32,6 +41,7 @@ const CancelOrderModal = ({
   const handleClose = () => {
     setSelectedReason('');
     setOtherReason('');
+    setErrorMessage('');
     onClose();
   };
 
@@ -95,12 +105,18 @@ const CancelOrderModal = ({
                   style={styles.otherReasonInput}
                   placeholder="Enter your reason..."
                   value={otherReason}
-                  onChangeText={setOtherReason}
+                  onChangeText={(text) => {
+                    setOtherReason(text);
+                    if (text.trim().length >= 5) setErrorMessage('');
+                  }}
                   multiline={true}
                   numberOfLines={3}
                   placeholderTextColor={appColors.font}
                   editable={!isLoading}
                 />
+                {errorMessage ? (
+                  <Text style={{ color: 'red', marginTop: 5 }}>{errorMessage}</Text>
+                ) : null}
               </View>
             )}
           </ScrollView>
@@ -116,23 +132,28 @@ const CancelOrderModal = ({
             </TouchableOpacity>
             
             <TouchableOpacity 
-              style={[
-                styles.modalButton, 
-                styles.confirmButton,
-                (!selectedReason || (selectedReason === "Other reason" && !otherReason.trim()) || isLoading) && 
-                styles.disabledButton
-              ]} 
-              onPress={handleConfirm}
-              disabled={!selectedReason || (selectedReason === "Other reason" && !otherReason.trim()) || isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator size="small" color={appColors.white} />
-              ) : (
-                <Text style={styles.confirmButtonText}>
-                  Cancel Order
-                </Text>
-              )}
-            </TouchableOpacity>
+  style={[
+    styles.modalButton, 
+    styles.confirmButton,
+    (!selectedReason || (selectedReason === "Other reason" && otherReason.trim().length < 5) || isLoading) && 
+    styles.disabledButton
+  ]} 
+  onPress={handleConfirm}
+  disabled={!selectedReason || (selectedReason === "Other reason" && otherReason.trim().length < 5) || isLoading}
+>
+  {isLoading ? (
+    <ActivityIndicator size="small" color={appColors.white} />
+  ) : (
+    <Text style={[
+      styles.confirmButtonText,
+      (!selectedReason || (selectedReason === "Other reason" && otherReason.trim().length < 5) || isLoading) && 
+      { color: "#a0a0a0" } // <-- disabled text color
+    ]}>
+      Cancel Order
+    </Text>
+  )}
+</TouchableOpacity>
+
           </View>
         </View>
       </View>

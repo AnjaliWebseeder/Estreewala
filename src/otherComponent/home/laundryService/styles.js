@@ -4,8 +4,8 @@ import { fontSizes, windowHeight } from "../../../theme/appConstant";
 import appColors from "../../../theme/appColors";
 export const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: appColors.background },
-  header: { paddingHorizontal: 18,paddingTop:windowHeight(6) },
-  title: { fontSize: fontSizes.FONT22, color: appColors.white , fontFamily:fonts.InterSemiBold},
+  header: { paddingHorizontal: 18,paddingTop:windowHeight(6) ,},
+  title: { fontSize: fontSizes.FONT22, color: appColors.white , fontFamily:fonts.InterSemiBold,textAlign:"left",paddingTop:2},
   sub: { marginTop: windowHeight(0), color:appColors.lightFont,fontFamily: fonts.InterRegular,fontSize:fontSizes.FONT16},
   metaRow: {
     flexDirection: "row",
@@ -92,6 +92,22 @@ dropdownDivider: {
   height: 1,
   backgroundColor: appColors.lightGray,
   marginHorizontal: 8,
+},
+loadingContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+emptyContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingVertical: 50,
+},
+emptyText: {
+  fontSize: 16,
+  color: appColors.gray,
+  fontFamily: fonts.InterRegular,
 },
 filterButton: {
   position: 'absolute',

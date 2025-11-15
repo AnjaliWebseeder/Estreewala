@@ -216,5 +216,50 @@ helpText: {
   marginTop: 20,
   paddingHorizontal: 20,
 },
+// Add these to your existing styles
+skeletonText: {
+  backgroundColor: appColors.lightGray,
+  borderRadius: 4,
+},
+searchStatusContent: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+},
+clearSearchButton: {
+  padding: 4,
+},
+emptyState: {
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingVertical: 60,
+  paddingHorizontal: 40,
+},
+emptyStateTitle: {
+  fontSize: 18,
+  fontWeight: '600',
+  color: appColors.darkGray,
+  textAlign: 'center',
+  marginTop: 16,
+  marginBottom: 8,
+},
+emptyStateSubtitle: {
+  fontSize: 14,
+  color: appColors.gray,
+  textAlign: 'center',
+  lineHeight: 20,
+},
+suggestSearchButton: {
+  marginTop: 16,
+  paddingHorizontal: 20,
+  paddingVertical: 10,
+  backgroundColor: appColors.lightBlue,
+  borderRadius: 8,
+},
+suggestSearchText: {
+  color: appColors.darkBlue,
+  fontWeight: '500',
+  fontSize: 14,
+},
 });
 
