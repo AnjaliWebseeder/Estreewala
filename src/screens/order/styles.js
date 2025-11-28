@@ -95,7 +95,8 @@ export const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 12,
-  fontFamily:fonts.InterRegular
+  fontFamily:fonts.InterRegular,
+ fontWeight:"700"
   },
     tabContainer: {
   flexDirection: "row",

@@ -8,7 +8,8 @@ import {
   Linking,
   ActivityIndicator,
   Alert,
-  Platform
+  Platform,
+  StatusBar
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -42,8 +43,8 @@ const OrderDetails = ({ navigation, route }) => {
   const { showToast } = useToast();
   const dispatch = useDispatch();
   const { cancellingOrder } = useSelector(state => state.order);
-
   // Update currentOrder when route params change
+
   useEffect(() => {
     if (order) {
       setCurrentOrder(order);
@@ -84,7 +85,7 @@ const OrderDetails = ({ navigation, route }) => {
     console.log('🔄 Cancelling order with reason:', reason);
     
     // 1. API call to cancel
-    await dispatch(cancelOrder({ 
+  await dispatch(cancelOrder({ 
       orderId: order?.id, 
       reason: reason 
     })).unwrap();
@@ -147,7 +148,7 @@ const OrderDetails = ({ navigation, route }) => {
 
   // Check if order is cancelled
   const isOrderCancelled = currentOrder?.status === "CANCELLED";
-  const isOrderCompleted = currentOrder?.status === "COMPLETED";
+  const isOrderCompleted = currentOrder?.status === "completed";
 
   // Get status display text and color
   const getStatusDisplay = () => {
@@ -170,6 +171,7 @@ const OrderDetails = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <ScrollView
         contentContainerStyle={styles.contentContainerStyle}
         style={styles.container}
@@ -236,7 +238,7 @@ const OrderDetails = ({ navigation, route }) => {
               color={appColors.darkBlue}
             />
             <Text style={styles.addressText}>
-             {""} {order?.vendor?.businessName || "Unknown Laundry"},{" "}
+             {""} {order?.vendor?.businessName || "Unknown Laundry"}{" "}
              
             </Text>
           </View>

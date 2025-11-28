@@ -20,6 +20,8 @@ import Faq from "../../assets/Icons/svg/faq";
 import { windowHeight } from "../../theme/appConstant";
 import { useDispatch, useSelector } from 'react-redux';
 import {getCustomerDetails} from "../../redux/slices/customerSlice"
+import TermsServiceIcon from "../../assets/Icons/svg/termsServiceIcon"
+import DeleteAccountModal from "../../otherComponent/deleteModal"
 
 // ==== MENU ITEM COMPONENT ====
 const MenuItem = ({ icon, label, onPress, isLast, rightComponent }) => (
@@ -40,6 +42,12 @@ export default function Profile({ navigation }) {
   const [profileImage, setProfileImage] = useState(null);
   const dispatch = useDispatch();
   const { customerData} = useSelector(state => state.customer);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+
+  const handleDeleteAccount = () => {
+    setDeleteModalVisible(false)
+  }
+
 
   const handleRateApp = () => {
     Linking.openURL("market://details?id=your.package.name");
@@ -152,13 +160,42 @@ export default function Profile({ navigation }) {
             onPress={() => navigation.navigate("Faqs")}
           />
           <MenuItem
+            icon={<TermsServiceIcon />}
+            label="Terms Of Service"
+            onPress={() => navigation.navigate("TermsOfServiceScreen")}
+          />
+          <MenuItem
             icon={<Icon name="star-outline" size={16} color={appColors.font} />}
             label="Rate Us"
             onPress={handleRateApp}
             isLast
           />
         </View>
+
+        
+ <View style={{ marginVertical: 10 }}>
+  <TouchableOpacity
+    activeOpacity={0.8}
+    onPress={() => setDeleteModalVisible(true)}
+    style={styles.deleteButton}
+  >
+    <Icon
+      name="trash-outline"
+      size={20}
+      color="#f07777ff"
+      style={{ marginRight: 10 }}
+    />
+    <Text style={styles.deleteText}>Delete Account</Text>
+  </TouchableOpacity>
+</View>
+
       </ScrollView>
+
+<DeleteAccountModal
+  visible={deleteModalVisible}
+  onCancel={() => setDeleteModalVisible(false)}
+  onConfirm={handleDeleteAccount}
+/>
     </SafeAreaView>
   );
 }

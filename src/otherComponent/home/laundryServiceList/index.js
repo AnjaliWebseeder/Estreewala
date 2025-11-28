@@ -5,7 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  Animated,
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
@@ -18,11 +18,12 @@ import { service , service1 , service2 , service3 ,service4 } from '../../../uti
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
-import { getNearbyVendors } from '../../../redux/slices/nearByVendor';
+import { getNearbyVendors, updateNearbyVendors } from '../../../redux/slices/nearByVendor';
 import { searchVendors, clearSearchResults } from '../../../redux/slices/searchSlice';
+import { useSocket } from '../../../utils/context/socketContext';
+import { useToast } from '../../../utils/context/toastContext';
 
 // Default placeholder image - add this to your images
-const defaultVendorImage = service; // or any default image you prefer
 const randomImages = [service, service1, service2, service3, service4];
 
 // Laundry Card Component
@@ -61,6 +62,16 @@ const LaundryCard = ({ vendor, navigation , index}) => {
           </Text>
         </View>
 
+        {/* Distance Info - Show if available */}
+        {vendor.distanceKm && (
+          <View style={styles.deliveryInfo}>
+            <Icon name="location-on" size={12} color={appColors.darkBlue} />
+            <Text style={styles.deliveryText}>
+              {vendor.distanceKm.toFixed(1)} km away
+            </Text>
+          </View>
+        )}
+
         {/* Delivery Info - You can customize this based on your vendor data */}
         <View style={styles.deliveryInfo}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -81,6 +92,8 @@ const LaundryCard = ({ vendor, navigation , index}) => {
 // Main Component
 const LaundryServiceList = ({ navigation, route }) => {
   const dispatch = useDispatch();
+  const { socket, isConnected } = useSocket();
+  const { showToast } = useToast();
   
   // Get data from both nearby vendors and search
   const { vendors, vendorsLoading, vendorsError } = useSelector(
@@ -95,7 +108,54 @@ const LaundryServiceList = ({ navigation, route }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [localSearchResults, setLocalSearchResults] = useState([]);
   const [showSearchLoader, setShowSearchLoader] = useState(false);
+  const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const { serviceName } = route.params || {};
+
+  // 🔥 REAL-TIME VENDORS UPDATES - Listen for nearby vendors updates
+  useEffect(() => {
+    if (!socket) {
+      console.log('❌ No socket available for vendors updates');
+      return;
+    }
+
+    console.log('🎯 Setting up nearby-vendors-update listener...');
+
+    // Listen for nearby vendors updates from backend
+    const handleNearbyVendorsUpdate = (data) => {
+      console.log('📍 Real-time vendors update received:', data);
+      console.log('📊 Vendors count:', data.vendors?.length);
+      console.log('📍 Location:', data.location);
+      
+      // Validate data structure
+      if (!data.vendors || !Array.isArray(data.vendors)) {
+        console.error('❌ Invalid vendors data received');
+        return;
+      }
+
+      // Update vendors in Redux store
+      dispatch(updateNearbyVendors({
+        vendors: data.vendors,
+        location: data.location,
+        timestamp: new Date().toISOString()
+      }));
+
+    
+      // Update last update time
+      setLastUpdateTime(new Date());
+    };
+
+    // Set up the main nearby-vendors-update listener
+    socket.on('nearby-vendors-update', handleNearbyVendorsUpdate);
+
+    // Cleanup listeners when component unmounts
+    return () => {
+      if (socket) {
+        console.log('🧹 Cleaning up vendors listeners');
+        socket.off('nearby-vendors-update', handleNearbyVendorsUpdate);
+        socket.offAny();
+      }
+    };
+  }, [socket, dispatch, showToast]);
 
   // Smart search function with multiple strategies
   const performSearch = useCallback((query) => {
@@ -134,7 +194,7 @@ const LaundryServiceList = ({ navigation, route }) => {
     return () => clearTimeout(timeoutId);
   }, [searchQuery, performSearch]);
 
-  // FIXED: Handle search results - clear loader when search completes (even with empty results)
+  // Handle search results
   useEffect(() => {
     if (!searchLoading && searchQuery.trim() !== '') {
       setShowSearchLoader(false);
@@ -170,8 +230,19 @@ const LaundryServiceList = ({ navigation, route }) => {
   const hasSearchError = searchError && searchQuery.trim() !== '';
   const hasVendorsError = vendorsError && searchQuery.trim() === '';
 
-  // Show skeleton loaders during search
-  const showSkeletons = isSearching && displayVendors.length === 0;
+  // Manual refresh function
+  const handleManualRefresh = () => {
+    console.log('🔄 Manual refresh triggered');
+    dispatch(getNearbyVendors());
+    
+    // Request real-time update from backend via socket
+    if (socket && isConnected) {
+      socket.emit('request-vendors-update', {
+        timestamp: new Date().toISOString(),
+        source: 'manual-refresh'
+      });
+    }
+  };
 
   const applyFilters = filters => {
     let filtered = vendors;
@@ -239,6 +310,7 @@ const LaundryServiceList = ({ navigation, route }) => {
   if (hasVendorsError && displayVendors.length === 0) {
     return (
       <SafeAreaView style={styles.container}>
+          <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
         <View style={styles.container}>
           <View style={{ backgroundColor: '#07172cff', paddingBottom: 20 }}>
             <Header
@@ -283,7 +355,7 @@ const LaundryServiceList = ({ navigation, route }) => {
                   
                   <TouchableOpacity
                     style={styles.secondaryButton}
-                    onPress={() => dispatch(getNearbyVendors())}
+                    onPress={handleManualRefresh}
                   >
                     <Text style={styles.secondaryButtonText}>Try Again</Text>
                   </TouchableOpacity>
@@ -292,7 +364,7 @@ const LaundryServiceList = ({ navigation, route }) => {
                 <>
                   <TouchableOpacity
                     style={styles.primaryButton}
-                    onPress={() => dispatch(getNearbyVendors())}
+                    onPress={handleManualRefresh}
                   >
                     <Icon name="refresh" size={20} color={appColors.white} />
                     <Text style={styles.primaryButtonText}>Retry</Text>
@@ -339,20 +411,27 @@ const LaundryServiceList = ({ navigation, route }) => {
               backgroundColor: appColors.white,
               borderWidth: 0,
             }}
-            inputStyle={{ color: appColors.black }}
+            inputStyle={{ color: appColors.black,  fontSize: 12,  }}
             placeholderTextColor={appColors.black}
             onClear={handleClearSearch}
           />
+
+        
         </View>
 
         <View style={styles.main} />
       
-    
-
         <ScrollView
           contentContainerStyle={styles.contentContainerStyle}
           style={styles.listContainer}
           showsVerticalScrollIndicator={false}
+          // refreshControl={
+          //   <RefreshControl 
+          //     refreshing={vendorsLoading} 
+          //     onRefresh={handleManualRefresh}
+          //     colors={[appColors.blue]}
+          //   />
+          // }
         >
           {displayVendors.length > 0 ? (
             // Show actual results

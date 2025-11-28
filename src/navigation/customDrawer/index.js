@@ -84,7 +84,7 @@ const CustomDrawerContent = (props) => {
               onPress={() => handleNavigation("ManageAddress")}
             >
               <Icon name="location-outline" size={20} color={appColors.font} />
-              <Text style={styles.menuText}>My Addresses</Text>
+              <Text style={styles.menuText}>Manage Address</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
@@ -92,7 +92,7 @@ const CustomDrawerContent = (props) => {
               onPress={() => handleNavigation("Notification")}
             >
               <BellIcon color={appColors.font}/>
-              <Text style={styles.menuText}>Notifications</Text>
+              <Text style={styles.menuText}>Notification</Text>
               <View style={styles.notificationBadge}>
                 <Text style={styles.badgeText}>3</Text>
               </View>
@@ -104,7 +104,7 @@ const CustomDrawerContent = (props) => {
               onPress={() => handleNavigation("LoginSecurity")}
             >
               <Icon name="person-outline" size={20} color={appColors.font} />
-              <Text style={styles.menuText}>My Profile</Text>
+              <Text style={styles.menuText}>Personal Information</Text>
             </TouchableOpacity>
           </View>
 
@@ -139,8 +139,17 @@ const CustomDrawerContent = (props) => {
               onPress={() => handleNavigation("Faqs")}
             >
               <Icon name="help-circle-outline" size={20} color={appColors.font}/>
-              <Text style={styles.menuText}>FAQs</Text>
+              <Text style={styles.menuText}>FAQ</Text>
             </TouchableOpacity>
+
+             <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => handleNavigation("TermsOfServiceScreen")}
+            >
+            <Icon name="document-text-outline" size={20} color={appColors.font} />
+              <Text style={styles.menuText}>Terms Of Service</Text>
+            </TouchableOpacity>
+
 
             <TouchableOpacity 
               style={styles.menuItem}

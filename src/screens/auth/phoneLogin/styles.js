@@ -109,6 +109,10 @@ phoneInput: {
     alignSelf: 'center',
     marginBottom: 10,
   },
+  scrollContent: {
+  flexGrow: 1,
+  paddingBottom: 20, // Add some bottom padding for better scrolling
+},
   disabledResend: {
     opacity: 0.5,
   },

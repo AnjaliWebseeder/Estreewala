@@ -87,7 +87,7 @@ const onNotificationClick = async () => {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" /> 
       <View style={styles.container}>
         <Text style={styles.title}>
           Enable notifications to get updates{'\n'}about offers, order status and more

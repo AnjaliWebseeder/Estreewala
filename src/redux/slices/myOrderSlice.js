@@ -112,35 +112,48 @@ const myorderSlice = createSlice({
       console.log('🔄 Orders cleared for refresh');
     },
     updateOrderStatus: (state, action) => {
-      const { orderId, newStatus } = action.payload;
-      console.log(`🔄 Updating order ${orderId} to status: ${newStatus}`);
-      
-      // Remove from current status array and add to new status array
-      const allOrders = [
-        ...state.pendingOrders,
-        ...state.acceptedOrders, 
-        ...state.completedOrders
-      ];
-      
-      const orderToUpdate = allOrders.find(order => order.id === orderId);
-      
-      if (orderToUpdate) {
-        // Remove from all arrays
-        state.pendingOrders = state.pendingOrders.filter(order => order.id !== orderId);
-        state.acceptedOrders = state.acceptedOrders.filter(order => order.id !== orderId);
-        state.completedOrders = state.completedOrders.filter(order => order.id !== orderId);
-        
-        // Add to appropriate array with updated status
-        const updatedOrder = { ...orderToUpdate, status: newStatus };
-        if (newStatus === 'pending') {
-          state.pendingOrders.unshift(updatedOrder);
-        } else if (newStatus === 'accepted') {
-          state.acceptedOrders.unshift(updatedOrder);
-        } else if (newStatus === 'completed') {
-          state.completedOrders.unshift(updatedOrder);
-        }
-      }
-    },
+  const { orderId, status, reason, updatedAt } = action.payload; // ← Change to "status"
+  console.log(`🔄 Updating order ${orderId} to status: ${status}`);
+  
+  // Remove from current status array and add to new status array
+  const allOrders = [
+    ...state.pendingOrders,
+    ...state.acceptedOrders, 
+    ...state.completedOrders
+  ];
+  
+  const orderToUpdate = allOrders.find(order => order.id === orderId);
+  
+  if (orderToUpdate) {
+    // Remove from all arrays
+    state.pendingOrders = state.pendingOrders.filter(order => order.id !== orderId);
+    state.acceptedOrders = state.acceptedOrders.filter(order => order.id !== orderId);
+    state.completedOrders = state.completedOrders.filter(order => order.id !== orderId);
+    
+    // Add to appropriate array with updated status
+    const updatedOrder = { 
+      ...orderToUpdate, 
+      status: status,
+      ...(reason && { reason }), // Add reason if provided
+      ...(updatedAt && { updatedAt }) // Add updatedAt if provided
+    };
+    
+    if (status === 'pending') {
+      state.pendingOrders.unshift(updatedOrder);
+    } else if (status === 'accepted') {
+      state.acceptedOrders.unshift(updatedOrder);
+    } else if (status === 'completed') {
+      state.completedOrders.unshift(updatedOrder);
+    } else if (status === 'rejected') {
+      // Handle rejected orders if needed
+      state.rejectedOrders.unshift(updatedOrder);
+    }
+    
+    console.log(`✅ Order ${orderId} moved to ${status} tab`);
+  } else {
+    console.log(`⚠️ Order ${orderId} not found in current orders`);
+  }
+},
   },
   extraReducers: builder => {
     builder

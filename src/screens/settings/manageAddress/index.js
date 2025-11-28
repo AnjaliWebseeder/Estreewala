@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  StatusBar
 } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import { 
@@ -45,6 +46,8 @@ export default function ManageAddress({ navigation, route }) {
   
   const { userLocation } = useAuth();
   const { showToast } = useToast();
+
+  console.log("USER LOCATION IS======================>",userLocation)
 
   // Check if user has any addresses
   const hasAddresses = addresses && addresses.length > 0;
@@ -259,12 +262,12 @@ export default function ManageAddress({ navigation, route }) {
             <Icon name="create-outline" size={20} color="#1c1a1aff" />
           </TouchableOpacity>
           
-          <TouchableOpacity
+       {/* <TouchableOpacity
             onPress={() => confirmDelete(item._id)}
             style={styles.iconBtn}
           >
             <Icon name="trash-outline" size={20} color="#FF4D4D" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
 
@@ -281,11 +284,11 @@ export default function ManageAddress({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <Header
         title="Manage Address"
         onBackPress={() => navigation.goBack()}
       />
-      
       {/* Current Location Button - Only show if user has NO addresses */}
       {!hasAddresses && (
         <TouchableOpacity 

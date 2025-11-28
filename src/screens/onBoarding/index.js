@@ -128,7 +128,6 @@ navigation.replace("PhoneLogin");
     <Animated.View style={[styles.container, { backgroundColor }]}>
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-
         {/* Skip Button */}
         {currentIndex < slides.length - 1 && (
           <TouchableOpacity style={styles.skipBtn} onPress={handleSkip}>

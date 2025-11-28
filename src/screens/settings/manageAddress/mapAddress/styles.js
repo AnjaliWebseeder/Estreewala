@@ -8,8 +8,9 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: appColors.white,
   },
+  // Increased map height to 60% of screen
   mapContainer: {
-    height: height * 0.4,
+    height: height * 0.6, // Changed from 0.4 to 0.6 (60% of screen)
     position: 'relative',
   },
   map: {
@@ -78,6 +79,60 @@ export const styles = StyleSheet.create({
     color: appColors.gray,
     marginTop: 4,
   },
+  fieldContainer: {
+    marginBottom: 16,
+  },
+  fieldLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: appColors.darkGray,
+    marginBottom: 8,
+  },
+  addressTypeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  addressTypeOption: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: appColors.lightGray,
+    alignItems: 'center',
+    marginHorizontal: 4,
+  },
+  addressTypeOptionSelected: {
+    backgroundColor: appColors.blue,
+  },
+  addressTypeText: {
+    fontSize: 14,
+    color: appColors.darkGray,
+    fontWeight: '500',
+  },
+  addressTypeTextSelected: {
+    color: appColors.white,
+  },
+  checkboxOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: appColors.gray,
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxSelected: {
+    backgroundColor: appColors.blue,
+    borderColor: appColors.blue,
+  },
+  checkboxText: {
+    fontSize: 14,
+    color: appColors.darkGray,
+  },
   saveButton: {
     backgroundColor: appColors.blue,
     padding: 16,
@@ -93,5 +148,15 @@ export const styles = StyleSheet.create({
     color: appColors.white,
     fontSize: 16,
     fontWeight: '600',
+  },
+  geocodingIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  geocodingText: {
+    fontSize: 12,
+    color: appColors.blue,
+    marginLeft: 8,
   },
 });

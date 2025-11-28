@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, TouchableOpacity, Text, Alert, View } from 'react-native';
+import { ScrollView, TouchableOpacity, Text, Alert, View, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerCustomer, resetRegisterState } from "../../../redux/slices/authSlice"
@@ -75,6 +75,7 @@ const isFormValid = name.trim() && isEmailValid && isPhoneValid;
 
   return (
     <SafeAreaView style={styles.container}>
+       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}

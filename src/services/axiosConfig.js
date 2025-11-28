@@ -1,9 +1,11 @@
 // api/axiosConfig.js
 import axios from 'axios';
 import { getGlobalToken, clearGlobalAuth, addTokenListener } from "../utils/context/authContext"
+import { BASE_URL } from './api';
 
 // Create axios instance with base config
 const axiosInstance = axios.create({
+  baseURL: BASE_URL,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
@@ -44,7 +46,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.log('❌ API Error:', {
+    console.log('❌ API Errors:', {
       url: error.config?.url,
       status: error.response?.status,
       message: error.response?.data?.message || error.message

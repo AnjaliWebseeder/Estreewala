@@ -7,6 +7,7 @@ import {
   ScrollView,
   PermissionsAndroid,
   Platform,
+  StatusBar
 } from 'react-native';
 import WebView from 'react-native-webview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -29,14 +30,10 @@ const MapAddressScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const { showToast } = useToast();
   const { userLocation } = useAuth();
-  
-  console.log("USER LOCATION IS ================>", userLocation);
-  
   const { addresses, addressesLoading } = useSelector(state => state.address);
   const { editingAddress } = route.params || {};
 
   const webViewRef = useRef(null);
-  
   // State for address form
   const [addressType, setAddressType] = useState(editingAddress?.type || 'Home');
   const [addressText, setAddressText] = useState(editingAddress?.location?.address || '');
@@ -107,7 +104,7 @@ const MapAddressScreen = ({ navigation, route }) => {
     }
   };
 
-  // Manual reverse geocoding function
+  // Manual reverse geocoding function - IMPROVED
   const reverseGeocodeCoordinates = async (lat, lng) => {
     if (isReverseGeocoding) return;
     
@@ -129,16 +126,24 @@ const MapAddressScreen = ({ navigation, route }) => {
         if (data && data.display_name) {
           console.log('📫 Got address from manual geocoding:', data.display_name);
           setAddressText(data.display_name);
+        } else {
+          // If no proper address found, create a basic one from coordinates
+          const basicAddress = `Location near ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+          setAddressText(basicAddress);
+          showToast("Location Set", "Coordinates saved, you can edit the address manually", "info");
         }
       }
     } catch (error) {
       console.error('❌ Manual geocoding error:', error);
+      // Fallback to coordinates if geocoding fails
+      const fallbackAddress = `Location at ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      setAddressText(fallbackAddress);
     } finally {
       setIsReverseGeocoding(false);
     }
   };
 
-  // Fixed Map HTML - Use correct coordinate format [lat, lng] for map
+  // Fixed Map HTML - Improved with better geocoding
   const getMapHtml = () => {
     // Convert coordinates from [lng, lat] to [lat, lng] for map display
     const mapLat = coordinates[1] || 22.2917228; // latitude
@@ -274,11 +279,13 @@ const MapAddressScreen = ({ navigation, route }) => {
                 coordinates: [currentLng, currentLat] // [lng, lat] for API
               }));
               
-              // Reverse geocode new location
-              reverseGeocode(currentLat, currentLng);
+              // Reverse geocode new location - FIXED: Ensure this triggers
+              setTimeout(() => {
+                reverseGeocode(currentLat, currentLng);
+              }, 300);
             });
 
-            // Handle map click to move marker
+            // Handle map click to move marker - FIXED: Improved click handling
             map.on('click', function(e) {
               const newLatLng = e.latlng;
               currentLat = newLatLng.lat;
@@ -296,8 +303,10 @@ const MapAddressScreen = ({ navigation, route }) => {
                 coordinates: [currentLng, currentLat] // [lng, lat] for API
               }));
               
-              // Reverse geocode new location
-              reverseGeocode(currentLat, currentLng);
+              // Reverse geocode new location - FIXED: Ensure this always triggers
+              setTimeout(() => {
+                reverseGeocode(currentLat, currentLng);
+              }, 300);
             });
 
             // Force map refresh
@@ -370,10 +379,27 @@ const MapAddressScreen = ({ navigation, route }) => {
                   '<small>Lat: ' + lat.toFixed(6) + ', Lng: ' + lng.toFixed(6) + '</small>' +
                   '</div>'
                 ).openPopup();
+              } else {
+                // If no address found, send coordinates only
+                window.ReactNativeWebView.postMessage(JSON.stringify({
+                  type: 'ADDRESS_NOT_FOUND',
+                  coordinates: [lng, lat]
+                }));
               }
+            } else {
+              // If API response not OK
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                type: 'GEOCODING_ERROR',
+                coordinates: [lng, lat]
+              }));
             }
           } catch (error) {
             console.error('❌ Geocoding error:', error);
+            // Send error for manual handling
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              type: 'GEOCODING_ERROR',
+              coordinates: [lng, lat]
+            }));
           } finally {
             isGeocoding = false;
           }
@@ -428,7 +454,7 @@ const MapAddressScreen = ({ navigation, route }) => {
     `;
   };
 
-  // Handle messages from WebView
+  // Handle messages from WebView - IMPROVED
   const handleWebViewMessage = (event) => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
@@ -439,12 +465,27 @@ const MapAddressScreen = ({ navigation, route }) => {
           // Coordinates come as [lng, lat] from map, store as [lng, lat] for API
           setCoordinates(data.coordinates);
           console.log('📍 Coordinates updated:', data.coordinates);
+          // Trigger manual geocoding as fallback
+          setTimeout(() => {
+            reverseGeocodeCoordinates(data.coordinates[1], data.coordinates[0]);
+          }, 1000);
           break;
           
         case 'ADDRESS':
           setAddressText(data.address);
           console.log('📫 Address updated:', data.address);
-          showToast("Location Updated", "Address updated based on selected location", "success");
+          break;
+          
+        case 'ADDRESS_NOT_FOUND':
+          console.log('📍 Address not found for coordinates:', data.coordinates);
+          // Use manual geocoding as fallback
+          reverseGeocodeCoordinates(data.coordinates[1], data.coordinates[0]);
+          break;
+          
+        case 'GEOCODING_ERROR':
+          console.error('❌ Geocoding failed for coordinates:', data.coordinates);
+          // Use manual geocoding as fallback
+          reverseGeocodeCoordinates(data.coordinates[1], data.coordinates[0]);
           break;
           
         case 'ERROR':
@@ -472,7 +513,6 @@ const MapAddressScreen = ({ navigation, route }) => {
       webViewRef.current?.injectJavaScript(jsCode);
       
       setAddressText(userLocation.address || '');
-      showToast("Current location set successfully", "success");
       return;
     }
 
@@ -496,7 +536,7 @@ const MapAddressScreen = ({ navigation, route }) => {
         const jsCode = `setCurrentLocation(${latitude}, ${longitude});`;
         webViewRef.current?.injectJavaScript(jsCode);
         
-        showToast("Current location set successfully", "success");
+ 
       },
       (error) => {
         console.error('❌ Location error:', error);
@@ -523,7 +563,6 @@ const MapAddressScreen = ({ navigation, route }) => {
   // Validate form
   const validateForm = () => {
     if (!addressText.trim()) {
-      showToast("Please select a location on the map", "error");
       return false;
     }
     return true;
@@ -553,11 +592,9 @@ const MapAddressScreen = ({ navigation, route }) => {
           id: editingAddress._id, 
           addressData 
         })).unwrap();
-        showToast("Address updated successfully", "success");
       } else {
         // Add new address
         await dispatch(addAddress(addressData)).unwrap();
-         showToast("Address added successfully", "success");
       }
 
       // Navigate back
@@ -576,12 +613,13 @@ const MapAddressScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+    <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />  
       <Header
         title={editingAddress ? "Edit Address" : "Add New Address"}
         onBackPress={() => navigation.goBack()}
       />
 
-      {/* Map Section */}
+      {/* Map Section - Increased Height */}
       <View style={styles.mapContainer}>
         <WebView
           ref={webViewRef}
@@ -644,9 +682,9 @@ const MapAddressScreen = ({ navigation, route }) => {
           <Text style={styles.selectedAddressText}>
             {addressText || 'Select a location on the map by dragging the marker or tapping anywhere'}
           </Text>
-          <Text style={styles.coordinatesText}>
+          {/* <Text style={styles.coordinatesText}>
             Coordinates: {coordinates[1]?.toFixed(6) || 'N/A'} (Lat), {coordinates[0]?.toFixed(6) || 'N/A'} (Lng)
-          </Text>
+          </Text> */}
           {isReverseGeocoding && (
             <View style={styles.geocodingIndicator}>
               <ActivityIndicator size="small" color={appColors.blue} />
@@ -655,7 +693,31 @@ const MapAddressScreen = ({ navigation, route }) => {
           )}
         </View>
 
-     
+        {/* Address Type Selection */}
+        <View style={styles.fieldContainer}>
+          <Text style={styles.fieldLabel}>Address Type</Text>
+          <View style={styles.addressTypeContainer}>
+            {addressTypes.map((type) => (
+              <TouchableOpacity
+                key={type}
+                style={[
+                  styles.addressTypeOption,
+                  addressType === type && styles.addressTypeOptionSelected
+                ]}
+                onPress={() => setAddressType(type)}
+              >
+                <Text
+                  style={[
+                    styles.addressTypeText,
+                    addressType === type && styles.addressTypeTextSelected
+                  ]}
+                >
+                  {type}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
 
         {/* Set as Default */}
         {!editingAddress?.isDefault && (

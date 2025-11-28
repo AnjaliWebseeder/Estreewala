@@ -9,7 +9,7 @@ import cartReducer from '../redux/slices/cartSlice';
 import myOrderReducer from '../redux/slices/myOrderSlice'
 import customerReducer from "../redux/slices/customerSlice"
 import searchReducer from "../redux/slices/searchSlice"
-
+import notificationReducer from "../redux/slices/notificationSlice"
 
 const persistConfig = {
   key: 'root',
@@ -26,6 +26,7 @@ const rootReducer = combineReducers({
   myOrder: myOrderReducer,
   customer: customerReducer,
   search: searchReducer,
+  notification:notificationReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

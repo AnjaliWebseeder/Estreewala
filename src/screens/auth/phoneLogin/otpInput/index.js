@@ -4,7 +4,8 @@ import {
   TextInput, 
   Text, 
   TouchableWithoutFeedback,
-  Keyboard 
+  Keyboard,
+  StatusBar
 } from 'react-native';
 import { styles } from './styles';
 

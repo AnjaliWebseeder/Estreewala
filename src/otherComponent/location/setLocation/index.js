@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,6 +11,7 @@ const SetLocationScreen = () => {
   const navigation = useNavigation();
   return (
     <SafeAreaView style={styles.container}>
+    <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       {/* Skip Button */}
       <TouchableOpacity 
         style={styles.skipButton}

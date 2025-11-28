@@ -1,7 +1,8 @@
 import React from "react";
 import Svg, { Path } from "react-native-svg";
+import appColors from "../../../theme/appColors";
 
-const TermsServiceIcon = ({ color = "#4361EE", size = 20 }) => (
+const TermsServiceIcon = ({ color = appColors.black, size = 20 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     <Path
       d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 

@@ -35,20 +35,38 @@ export default function LaundryScreen({ navigation, route }) {
   const { title, vendorId, address } = route.params || {};
   const dispatch = useDispatch();
   
-  console.log("VENDOR ID IS", vendorId);
+  console.log("🎯 VENDOR ID RECEIVED:", vendorId,address);
 
   const cart = useSelector(state => state.cart.items);
   const { vendorCatalog, vendorCatalogLoading, vendorCatalogError } =
     useSelector(state => state.nearByVendor);
-  
-  const parts = address?.split(',').map(s => s.trim());
+
+
+   const parts = address?.split(',').map(s => s.trim());
   const area = parts?.length > 1 ? parts[1] : parts[0];
 
-  console.log("vendor catalog is===================>", vendorCatalog);
+  console.log("📦 vendor catalog raw data:", vendorCatalog);
 
-  // Transform catalog data to include images
-  const transformedCatalog = transformCatalogData(vendorCatalog?.catalog);
-  console.log("🔄 transformedCatalog:", transformedCatalog);
+  // ✅ FIX: Better data transformation with comprehensive logging
+  const transformedCatalog = React.useMemo(() => {
+    if (!vendorCatalog?.catalog) {
+      console.log("📭 No catalog data available yet");
+      return {};
+    }
+    
+    console.log("🔄 Starting catalog transformation...");
+    const transformed = transformCatalogData(vendorCatalog.catalog);
+    
+    console.log("✅ Transformed catalog structure:", {
+      keys: Object.keys(transformed),
+      hasData: Object.keys(transformed).length > 0,
+      sample: Object.keys(transformed).length > 0 ? transformed[Object.keys(transformed)[0]] : 'No data'
+    });
+    
+    return transformed;
+  }, [vendorCatalog]);
+
+  const catalog = transformedCatalog || {};
 
   useEffect(() => {
     dispatch(clearCart());
@@ -56,6 +74,7 @@ export default function LaundryScreen({ navigation, route }) {
 
   useEffect(() => {
     if (vendorId) {
+      console.log("🔄 Fetching catalog for vendor:", vendorId);
       dispatch(getVendorCatalog(vendorId));
     }
   }, [vendorId, dispatch]);
@@ -69,28 +88,32 @@ export default function LaundryScreen({ navigation, route }) {
   const filterIconRef = useRef(null);
   const insets = useSafeAreaInsets();
 
-  const catalog = transformedCatalog || {};
+  // ✅ FIX: Get ALL service categories with better error handling
   const serviceCategories = Object.keys(catalog);
+  console.log("🔧 Available service categories:", serviceCategories);
+
+  // ✅ FIX: Set selected service category only when categories are available
+  const [selectedServiceCategory, setSelectedServiceCategory] = useState('');
   
-  console.log("🔧 serviceCategories:", serviceCategories);
-  console.log("🔧 catalog keys:", Object.keys(catalog));
+  useEffect(() => {
+    if (serviceCategories.length > 0 && !selectedServiceCategory) {
+      console.log("🎯 Setting initial service category:", serviceCategories[0]);
+      setSelectedServiceCategory(serviceCategories[0]);
+    }
+  }, [serviceCategories, selectedServiceCategory]);
 
-  const [selectedServiceCategory, setSelectedServiceCategory] = useState(
-    serviceCategories?.[0] || '',
-  );
-
-  console.log("🎯 selectedServiceCategory:", selectedServiceCategory);
+  console.log("🎯 Current selectedServiceCategory:", selectedServiceCategory);
 
   const [selectedService, setSelectedService] = useState({});
 
-  const selectedCategoryData = catalog[selectedServiceCategory] || {};
-  
-  console.log("📊 selectedCategoryData:", selectedCategoryData);
-  console.log("📊 selectedCategoryData keys:", Object.keys(selectedCategoryData));
+  // ✅ FIX: Get category data with fallback
+  const selectedCategoryData = selectedServiceCategory ? (catalog[selectedServiceCategory] || {}) : {};
+  console.log("📊 Selected category data:", selectedCategoryData);
+  console.log("📊 Selected category data keys:", Object.keys(selectedCategoryData));
 
-  // Build dynamic CATEGORIES based on keys available
+  // ✅ FIX: Build dynamic CATEGORIES with better empty state handling
   const availableCategoryKeys = Object.keys(selectedCategoryData);
-  console.log("👕 availableCategoryKeys:", availableCategoryKeys);
+  console.log("👕 Available category keys:", availableCategoryKeys);
   
   const dynamicCategories = [
     { label: 'All', value: 'all' },
@@ -102,66 +125,85 @@ export default function LaundryScreen({ navigation, route }) {
           ? "Women's Wear"
           : k === 'kids'
           ? 'Kids Wear'
-          : k,
+          : k.charAt(0).toUpperCase() + k.slice(1), // Capitalize first letter
       value: k,
     })),
   ];
 
-  console.log("🏷️ dynamicCategories:", dynamicCategories);
+  console.log("🏷️ Dynamic categories:", dynamicCategories);
 
-  // Get products based on selected category - FIXED THIS PART
+  // ✅ FIX: Improved product selection logic with comprehensive logging
   const selectedProducts = React.useMemo(() => {
+    // Don't proceed if no service category is selected
+    if (!selectedServiceCategory || availableCategoryKeys.length === 0) {
+      console.log("⏳ Waiting for service category or category keys...");
+      return [];
+    }
+
+    let products = [];
+
     if (category === 'all') {
-      const allProducts = availableCategoryKeys.flatMap(key => {
+      // Get products from ALL categories in the selected service
+      products = availableCategoryKeys.flatMap(key => {
         const categoryProducts = selectedCategoryData[key] || [];
-        console.log(`📦 Category ${key} products:`, categoryProducts);
+        console.log(`📦 Category "${key}" has ${categoryProducts.length} products`);
+        
         return categoryProducts.map(product => ({
           ...product,
-          category: key
+          category: key,
+          serviceCategory: selectedServiceCategory
         }));
       });
-      console.log("🛍️ All selectedProducts:", allProducts);
-      return allProducts;
     } else {
-      const categoryProducts = (selectedCategoryData?.[category] || []).map(product => ({
+      // Get products from specific category
+      const categoryProducts = selectedCategoryData[category] || [];
+      console.log(`📦 Specific category "${category}" has ${categoryProducts.length} products`);
+      
+      products = categoryProducts.map(product => ({
         ...product,
-        category: category
+        category: category,
+        serviceCategory: selectedServiceCategory
       }));
-      console.log(`🛍️ ${category} selectedProducts:`, categoryProducts);
-      return categoryProducts;
     }
-  }, [category, selectedCategoryData, availableCategoryKeys]);
 
-  console.log("🎯 FINAL selectedProducts:", selectedProducts);
-  console.log("🎯 selectedProducts length:", selectedProducts.length);
+    console.log("🛍️ FINAL selected products:", {
+      count: products.length,
+      categories: [...new Set(products.map(p => p.category))],
+      items: products.map(p => p.item)
+    });
+    
+    return products;
+  }, [category, selectedServiceCategory, selectedCategoryData, availableCategoryKeys]);
+
+  console.log("🎯 FINAL selectedProducts count:", selectedProducts.length);
 
   const dynamicServices = serviceCategories?.map(s => ({
     label: s,
     value: s,
   }));
 
-  console.log("🔄 dynamicServices:", dynamicServices);
+  console.log("🔄 Dynamic services:", dynamicServices);
 
-  // Debug: Check what's in the first service category
+  // ✅ FIX: Debug catalog structure when it loads
   useEffect(() => {
-    if (serviceCategories.length > 0) {
-      const firstService = serviceCategories[0];
-      console.log(`🔍 First service (${firstService}) data:`, catalog[firstService]);
-      console.log(`🔍 First service categories:`, Object.keys(catalog[firstService] || {}));
+    if (Object.keys(catalog).length > 0) {
+      console.log("=== CATALOG STRUCTURE DEBUG ===");
+      Object.keys(catalog).forEach(serviceKey => {
+        console.log(`Service: ${serviceKey}`, {
+          categories: Object.keys(catalog[serviceKey] || {}),
+          totalProducts: Object.values(catalog[serviceKey] || {}).flat().length
+        });
+      });
+      console.log("=== END DEBUG ===");
     }
-  }, [serviceCategories, catalog]);
+  }, [catalog]);
 
   // ✅ FIXED: useCallback to prevent unnecessary re-renders
   const getPriceForServiceAndItem = useCallback((serviceName, itemName, category) => {
     console.log('🔍 Looking up price:', { serviceName, itemName, category });
     
     if (!catalog[serviceName] || !catalog[serviceName][category]) {
-      console.log('❌ Service or category not found:', { 
-        serviceName, 
-        category, 
-        availableServices: Object.keys(catalog),
-        availableCategories: catalog[serviceName] ? Object.keys(catalog[serviceName]) : 'No service'
-      });
+      console.log('❌ Service or category not found in catalog');
       return 0;
     }
     
@@ -171,15 +213,11 @@ export default function LaundryScreen({ navigation, route }) {
     );
     
     if (!item) {
-      console.log('❌ Item not found in category:', {
-        itemName,
-        category,
-        availableItems: categoryItems.map(i => i.item)
-      });
+      console.log('❌ Item not found in category');
       return 0;
     }
     
-    console.log('✅ Price found:', { itemName, serviceName, category, price: item.price });
+    console.log('✅ Price found:', item.price);
     return item.price;
   }, [catalog]);
 
@@ -203,7 +241,7 @@ export default function LaundryScreen({ navigation, route }) {
       });
       
       setSelectedService(initialService);
-      console.log('✅ Initialized services with prices:', initialService);
+      console.log('✅ Initialized services for', Object.keys(initialService).length, 'products');
     }
   }, [selectedProducts, serviceCategories, getPriceForServiceAndItem, selectedService]);
 
@@ -228,12 +266,7 @@ export default function LaundryScreen({ navigation, route }) {
       product.category
     );
     
-    console.log('🛒 Adding to cart:', {
-      item: product.item,
-      service: currentService,
-      price: price,
-      category: product.category
-    });
+    console.log('🛒 Adding to cart:', product.item);
     
     dispatch(
       addToCart({ 
@@ -257,14 +290,12 @@ export default function LaundryScreen({ navigation, route }) {
 
   // ✅ FIXED: Handle service change with price update
   const handleChangeService = useCallback((itemId, serviceValue, category) => {
-    console.log(`🟢 Changing service for ${itemId} → ${serviceValue} in category: ${category}`);
+    console.log(`🟢 Changing service for ${itemId} → ${serviceValue}`);
     
-    // Get the new price for this service and category
     const newPrice = getPriceForServiceAndItem(serviceValue, itemId, category);
     
     console.log(`💰 New price for ${itemId}: ${newPrice}`);
     
-    // Update local state
     setSelectedService(prev => ({
       ...prev,
       [itemId]: {
@@ -273,7 +304,6 @@ export default function LaundryScreen({ navigation, route }) {
       },
     }));
 
-    // Update Redux store with new service AND price
     dispatch(changeService({ 
       id: itemId, 
       service: serviceValue,
@@ -303,13 +333,11 @@ export default function LaundryScreen({ navigation, route }) {
       return cartItem.price;
     }
     
-    // If not in cart, get from selectedService or default
     const serviceInfo = selectedService[itemId];
     if (serviceInfo) {
       return serviceInfo.price;
     }
     
-    // Fallback: get price from default service
     const defaultService = serviceCategories?.[0] || '';
     return getPriceForServiceAndItem(defaultService, itemId, category);
   }, [cart, selectedService, serviceCategories, getPriceForServiceAndItem]);
@@ -318,13 +346,6 @@ export default function LaundryScreen({ navigation, route }) {
   const renderProductItem = useCallback(({ item }) => {
     const currentService = selectedService[item.item]?.service || serviceCategories?.[0] || '';
     const currentPrice = getCurrentPriceForItem(item.item, item.category);
-    
-    console.log('📦 Rendering product:', {
-      name: item.item,
-      category: item.category,
-      service: currentService,
-      price: currentPrice
-    });
     
     return (
       <ProductItem
@@ -348,14 +369,65 @@ export default function LaundryScreen({ navigation, route }) {
     );
   }, [selectedService, serviceCategories, getCurrentPriceForItem, cart, dynamicServices, handleAdd, handleIncrement, handleDecrement, handleChangeService]);
 
- 
+  // ✅ FIX: Improved loading and empty states
+  const renderContent = () => {
+    if (vendorCatalogLoading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={appColors.darkBlue} />
+          <Text style={styles.loadingText}>Loading products...</Text>
+        </View>
+      );
+    }
+
+    if (vendorCatalogError) {
+      return (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{vendorCatalogError}</Text>
+          <TouchableOpacity 
+            style={styles.retryButton}
+            onPress={() => vendorId && dispatch(getVendorCatalog(vendorId))}
+          >
+            <Text style={styles.retryButtonText}>Try Again</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    // ✅ FIX: Show empty state only when catalog is loaded but no products
+    if (!vendorCatalogLoading && selectedProducts.length === 0 && Object.keys(catalog).length > 0) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Icon name="inventory" size={50} color={appColors.lightGray} />
+          <Text style={styles.emptyText}>No products available</Text>
+        </View>
+      );
+    }
+
+    // ✅ FIX: Show initial loading while waiting for service category to be set
+    if (!selectedServiceCategory && Object.keys(catalog).length > 0) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={appColors.darkBlue} />
+          <Text style={styles.loadingText}>Preparing products...</Text>
+        </View>
+      );
+    }
+
+    // Show products when available
+    return (
+      <FlatList
+        data={selectedProducts}
+        keyExtractor={(item, index) => `${item.item}_${index}`}
+        renderItem={renderProductItem}
+        contentContainerStyle={{ paddingBottom: windowHeight(70) }}
+      />
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
-      
-      {/* Debug Info */}
-     
+    <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />  
       <View
         style={{
           backgroundColor: appColors.darkBlue,
@@ -446,26 +518,7 @@ export default function LaundryScreen({ navigation, route }) {
         </View>
       </Modal>
 
-      {vendorCatalogLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={appColors.darkBlue} />
-        </View>
-      ) : vendorCatalogError ? (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{vendorCatalogError}</Text>
-        </View>
-      ) : selectedProducts.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No products available</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={selectedProducts}
-          keyExtractor={(item, index) => `${item.item}_${index}`}
-          renderItem={renderProductItem}
-          contentContainerStyle={{ paddingBottom: windowHeight(70) }}
-        />
-      )}
+      {renderContent()}
 
       {/* Bottom Cart Bar */}
       {totalItems > 0 && (

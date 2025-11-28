@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "755867418876",
+    "project_id": "estreewala-e0c0c",
+    "storage_bucket": "estreewala-e0c0c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:755867418876:android:ef3c605f7fedf49afc5779",
+        "android_client_info": {
+          "package_name": "com.estreewala"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv1QBu4lzmmdY1fIMkDUbNn97gerurK3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

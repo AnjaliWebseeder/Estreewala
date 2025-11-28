@@ -7,6 +7,7 @@ import {
   TextInput,
   ActivityIndicator,
   Alert,
+  StatusBar
 } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import Header from "../../../components/header";
@@ -121,10 +122,9 @@ const LoginSecurityScreen = ({ navigation }) => {
   if (loading && !customerData) {
     return (
       <SafeAreaView style={styles.container}>
-        <Header title={"Login & Security"} onBackPress={() => navigation.goBack()} />
+        <Header title={"Personal Information"} onBackPress={() => navigation.goBack()} />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={appColors.blue} />
-          <Text style={styles.loadingText}>Loading profile...</Text>
         </View>
       </SafeAreaView>
     );
@@ -132,11 +132,11 @@ const LoginSecurityScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={[styles.container, { paddingHorizontal: 0 }]}>
+    <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />  
       <View style={styles.container}>
-        <Header title={"Login & Security"} onBackPress={() => navigation.goBack()} />
+        <Header title={"Personal Information"} onBackPress={() => navigation.goBack()} />
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Personal Information</Text>
             <View style={styles.sectionCard}>
               {fields.map((item, idx) => (
                 <View

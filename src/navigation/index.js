@@ -35,7 +35,7 @@ import OrdersScreen from '../screens/order';
 import NotificationPermission from '../screens/settings/notificationPermission'
 import UserDetailsScreen from '../screens/checkOut/userDetail'
 import MapAddressScreen from "../screens/settings/manageAddress/mapAddress"
-
+import TermsOfServiceScreen from "../screens/settings/termsOfService"
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigation() {
@@ -45,6 +45,12 @@ export default function AppNavigation() {
     userLocation, 
     isLoading 
   } = useAuth();
+
+    console.log('🔍 AppNavigation Render -', {
+    userToken: !!userToken,
+    userLocation: !!userLocation,
+    isLoading
+  });
 
   // Show loading until auth state is determined
   if (isLoading) {
@@ -94,6 +100,7 @@ export default function AppNavigation() {
             <Stack.Screen name="ContactSupport" component={ContactSupport} />
             <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
             <Stack.Screen name="Faqs" component={Faqs} />
+            <Stack.Screen name="TermsOfServiceScreen" component={TermsOfServiceScreen} />
             <Stack.Screen name="ManageAddress" component={ManageAddress} />
             <Stack.Screen name="Settings" component={Settings} />
             <Stack.Screen name="Search" component={Search} />

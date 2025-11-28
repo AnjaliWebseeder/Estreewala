@@ -31,12 +31,12 @@ const BannerOffer = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
 const renderItem = ({ item, index }) => (
-  <LinearGradient
-   colors={['rgba(9, 191, 230, 0.2) // light', '#FFF9CC']}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 1 }}
-    style={[styles.card, index === activeIndex && styles.activeCard]}
-  >
+ <LinearGradient
+  colors={['rgba(9, 191, 230, 0.2)', '#FFF9CC']} 
+  start={{ x: 0, y: 0 }}
+  end={{ x: 1, y: 1 }}
+  style={[styles.card, index === activeIndex && styles.activeCard]}
+>
     <View style={styles.contentContainer}>
       <Image source={item.image} style={styles.offerImage} />
       <View style={styles.textContainer}>
@@ -44,7 +44,7 @@ const renderItem = ({ item, index }) => (
         <Text style={styles.offerSub}>{item.subText}</Text>
       </View>
     </View>
-  </LinearGradient>
+</LinearGradient>
 );
 
   return (

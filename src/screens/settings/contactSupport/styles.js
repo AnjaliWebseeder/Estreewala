@@ -88,6 +88,8 @@ fontFamily:fonts.InterRegular,
     borderRadius: 10,
     marginTop: 20,
     alignItems: 'center',
+  margin:20,
+  bottom:windowHeight(20)
   },
   submitText: {
     color:appColors.white,

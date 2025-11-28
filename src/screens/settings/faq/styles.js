@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 18,
     paddingBottom: windowHeight(50),
-    paddingTop:4
+    paddingTop:3
   },
   faqContainer: {
     marginBottom: windowHeight(10),

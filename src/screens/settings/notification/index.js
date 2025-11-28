@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList,StatusBar } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import Header from "../../../components/header";
 import appColors from "../../../theme/appColors";
@@ -61,6 +61,7 @@ const Notification = ({navigation}) => {
 
   return (
   <SafeAreaView style={styles.container}>
+       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <View style={styles.container}>
       <Header
         title="Notification"

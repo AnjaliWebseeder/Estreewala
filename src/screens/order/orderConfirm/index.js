@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView,StatusBar } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { styles } from './styles';
 import appColors from '../../../theme/appColors';
@@ -50,52 +50,9 @@ const OrderConfirmation = ({ navigation, route }) => {
     return () => clearTimeout(timer); // cleanup
   }, [navigation]);
 
-  // const orderDetails = {
-  //   orderId: '22145052',
-  //   orderDate: '25 June, 2018',
-  //   pickupDate: 'Today, 21 June',
-  //   pickupTime: '01:00 pm - 02:00 pm',
-  //   deliveryDate: 'Tomorrow, 22 June',
-  //   deliveryTime: '09:00 am - 10:00 am',
-  //   address: 'B11 Old Ford Street, Workshop tower..',
-  //   items: [
-  //     {
-  //       id: 1,
-  //       name: 'Shirts (Man)',
-  //       quantity: 2,
-  //       service: 'Wash & Iron',
-  //       price: 20,
-  //     },
-  //     {
-  //       id: 2,
-  //       name: 'Trouser (Man)',
-  //       quantity: 3,
-  //       service: 'Wash & Iron',
-  //       price: 25,
-  //     },
-  //     {
-  //       id: 3,
-  //       name: 'Jeans (Man)',
-  //       quantity: 1,
-  //       service: 'Wash & Fold',
-  //       price: 10,
-  //     },
-  //     {
-  //       id: 4,
-  //       name: 'T-shirt (Woman)',
-  //       quantity: 2,
-  //       service: 'Wash & Iron',
-  //       price: 18,
-  //     },
-  //   ],
-  //   subTotal: 73,
-  //   tax: 5,
-  //   total: 78,
-  //   paymentMethod: 'Cash on Delivery',
-  // };
-
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <Header

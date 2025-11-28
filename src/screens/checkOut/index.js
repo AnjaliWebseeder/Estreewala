@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TextInput } from 'react-native';
+import { View, Text, ScrollView, TextInput,StatusBar} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -314,6 +314,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: appColors.background }}>
+    <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />  
       <View style={styles.container}>
         {/* Header */}
         <View

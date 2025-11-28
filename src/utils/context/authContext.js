@@ -10,6 +10,9 @@ let globalToken = null;
 let globalUserDetails = null;
 let globalTokenListeners = [];
 
+
+console.log("GLOBAL TOKEN IS")
+
 export const setGlobalAuth = (token, userDetails) => {
   globalToken = token;
   globalUserDetails = userDetails;
@@ -109,10 +112,7 @@ export const AuthProvider = ({ children }) => {
 
  const login = async (token, customer) => {
   try {
-    console.log('🔐 Login process started...', { 
-      token: !!token, 
-      customer: !!customer 
-    });
+     console.log('🔄 Auth Context: login called');
     
     // Validate inputs
     if (!token) {

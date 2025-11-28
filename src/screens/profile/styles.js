@@ -93,6 +93,25 @@ userEmail: {
   textAlign: "center",
   marginBottom:windowHeight(18)
 },
+ deleteButton: {
+  backgroundColor: "white", // iOS system red (Instagram/Uber style)
+  paddingVertical: 12,
+  borderRadius: 12,
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  marginHorizontal: 0,
+  marginBottom: 10,
+  opacity:0.9,
+  borderColor:appColors.error,
+  borderWidth:1
+},
+
+deleteText: {
+  color: "#f07777ff",
+  fontSize: 16,
+  fontWeight: "600",
+},
 
 
   // ===== SIGN OUT =====

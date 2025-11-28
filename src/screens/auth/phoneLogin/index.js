@@ -7,6 +7,8 @@ import {
   Animated, 
   KeyboardAvoidingView, 
   Platform,
+  StatusBar,
+  ScrollView
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +23,8 @@ import appColors from '../../../theme/appColors';
 import AuthFooter from '../../../components/auth/authFooter';
 import {useToast} from "../../../utils/context/toastContext"
 import { useAuth } from '../../../utils/context/authContext';
+import { getFcmToken } from '../../../utils/notification/notificationService';
+import { updateFcmToken } from '../../../redux/slices/notificationSlice';
 
 const PhoneLoginScreen = () => {
   const navigation = useNavigation();
@@ -84,63 +88,46 @@ const { login,userToken } = useAuth();
     }
   };
 
-//   const handleVerifyOtp = async () => {
-//    try {
-//       const result = await dispatch(verifyOtp({ phone: phone, otp })).unwrap();
-// if (verifyOtp.fulfilled.match(result)) {
-//   const { token, customer } = result.payload;
-//   if (token && customer) {
-//   console.log("TOKEN IS",token,customer)  
-//    await login(token,customer);
-  
-
-//      navigation.replace('SetLocation');
-//   } else {
-//     console.warn("⚠️ Missing token or user in OTP verify response");
-//   }
-
-// } else if (verifyOtp.rejected.match(result)) {
-//   showToast(result?.payload || 'Wrong OTP, please try again!', "error");
-// }
-
-//       } catch (err) {
-//         console.error('Error dispatching OTP:', err);
-//            showToast(err || 'Wrong Otp, pls try again!', "error");
-//       }
-//   };
 
 
+  const handleResendOtp = () => {
+    if (resendTimer === 0) {
+      handleSendOtp();
+    }
+  };
 
-// PhoneLoginScreen.js - Fix the verifyOtp function
+   const saveFcmTokenAfterLogin = () => async (dispatch) => {
+  try {
+    const token = await getFcmToken();
+    if (!token) return;
+
+    await dispatch(updateFcmToken(token));
+  } catch (error) {
+    console.log("❌ Error saving FCM Token:", error);
+  }
+};
+
+
 const handleVerifyOtp = async () => {
   try {
-    const result = await dispatch(verifyOtp({ phone: phone, otp })).unwrap();
-    
+    const result = await dispatch(verifyOtp({ phone, otp })).unwrap();
+
     if (result.token && result.customer) {
       console.log("TOKEN IS", result.token, result.customer);
-      
-      // Login and wait for it to complete
+
+      // Login user
       await login(result.token, result.customer);
-      
-      // Check if user has location after login
-      // const userHasLocation = result.customer.location || result.customer.addresses?.length > 0;
-      
-      if (userToken) {
-        // User has location - go directly to main screen
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Main' }],
-        });
-      } else {
-        console.log("ELSE ART ")
-        // User needs to set location
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'SetLocation' }],
-        });
-      }
+
+      // Save FCM Token
+      await dispatch(saveFcmTokenAfterLogin());
+
+      // Navigate to home
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Main' }],
+      });
     } else {
-      console.warn("⚠️ Missing token or user in OTP verify response");
+      console.warn("⚠️ Missing token or customer info");
       showToast('Login failed. Please try again.', "error");
     }
   } catch (err) {
@@ -149,20 +136,19 @@ const handleVerifyOtp = async () => {
   }
 };
 
-  const handleResendOtp = () => {
-    if (resendTimer === 0) {
-      handleSendOtp();
-    }
-  };
-
-
 
   return (
     <SafeAreaView style={styles.container}>
+       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
+         <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
         <View style={styles.centerView}>
           <AuthHeader
             showBackButton={true}
@@ -282,6 +268,7 @@ const handleVerifyOtp = async () => {
             )}
           </View>
         </View>
+        </ScrollView>
       </KeyboardAvoidingView> 
     </SafeAreaView>
   );

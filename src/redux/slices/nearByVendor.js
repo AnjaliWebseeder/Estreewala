@@ -91,6 +91,11 @@ const vendorSlice = createSlice({
     vendorCatalog: null,
     vendorCatalogLoading: false,
     vendorCatalogError: null,
+
+    // 👇 NEW: Real-time updates tracking
+    lastUpdateTime: null,
+    updateSource: 'initial', // 'initial' | 'socket' | 'manual'
+    totalUpdates: 0,
   },
   reducers: {
     resetVendorState: state => {
@@ -103,6 +108,90 @@ const vendorSlice = createSlice({
     setSelectedVendor: (state, action) => {
       state.selectedVendor = action.payload;
     },
+
+    // 👇 NEW: Real-time vendor updates
+    updateNearbyVendors: (state, action) => {
+      console.log('🔄 Updating vendors via socket:', action.payload);
+      
+      const { vendors, location, timestamp } = action.payload;
+      
+      if (vendors && Array.isArray(vendors)) {
+        // Replace the entire vendors list with new data
+        state.vendors = vendors;
+        state.lastUpdateTime = timestamp || new Date().toISOString();
+        state.updateSource = 'socket';
+        state.totalUpdates += 1;
+        
+        console.log('✅ Vendors updated via socket. Total vendors:', vendors.length);
+        console.log('📍 Location:', location);
+        console.log('🕒 Last update:', state.lastUpdateTime);
+      } else {
+        console.error('❌ Invalid vendors data in updateNearbyVendors');
+      }
+    },
+
+    // 👇 NEW: Update single vendor status (online/offline)
+    updateVendorStatus: (state, action) => {
+      const { vendorId, isOnline, lastSeen } = action.payload;
+      
+      const vendorIndex = state.vendors.findIndex(vendor => vendor.id === vendorId);
+      
+      if (vendorIndex !== -1) {
+        state.vendors[vendorIndex] = {
+          ...state.vendors[vendorIndex],
+          isOnline,
+          lastSeen: lastSeen || new Date().toISOString()
+        };
+        
+        console.log(`✅ Vendor ${vendorId} status updated: ${isOnline ? 'online' : 'offline'}`);
+      } else {
+        console.log(`⚠️ Vendor ${vendorId} not found in list for status update`);
+      }
+    },
+
+    // 👇 NEW: Add a single vendor (when new vendor comes online)
+    addVendor: (state, action) => {
+      const newVendor = action.payload;
+      
+      // Check if vendor already exists
+      const existingIndex = state.vendors.findIndex(vendor => vendor.id === newVendor.id);
+      
+      if (existingIndex === -1) {
+        // Add new vendor to the beginning of the list
+        state.vendors.unshift(newVendor);
+        console.log('✅ New vendor added:', newVendor.businessName);
+      } else {
+        // Update existing vendor
+        state.vendors[existingIndex] = { ...state.vendors[existingIndex], ...newVendor };
+        console.log('✅ Existing vendor updated:', newVendor.businessName);
+      }
+      
+      state.lastUpdateTime = new Date().toISOString();
+      state.updateSource = 'socket';
+    },
+
+    // 👇 NEW: Remove a vendor (when vendor goes offline)
+    removeVendor: (state, action) => {
+      const vendorId = action.payload;
+      
+      state.vendors = state.vendors.filter(vendor => vendor.id !== vendorId);
+      state.lastUpdateTime = new Date().toISOString();
+      
+      console.log(`✅ Vendor ${vendorId} removed from list`);
+    },
+
+    // 👇 NEW: Clear all vendors (reset)
+    clearVendors: state => {
+      state.vendors = [];
+      state.lastUpdateTime = new Date().toISOString();
+      console.log('✅ All vendors cleared');
+    },
+
+    // 👇 NEW: Manual refresh tracking
+    setManualRefresh: state => {
+      state.updateSource = 'manual';
+      state.lastUpdateTime = new Date().toISOString();
+    },
   },
   extraReducers: builder => {
     builder
@@ -114,6 +203,8 @@ const vendorSlice = createSlice({
       .addCase(getNearbyVendors.fulfilled, (state, action) => {
         state.vendorsLoading = false;
         state.vendors = action.payload || [];
+        state.lastUpdateTime = new Date().toISOString();
+        state.updateSource = 'initial';
         console.log('VENDORS FETCHED SUCCESSFULLY => ', action.payload);
       })
       .addCase(getNearbyVendors.rejected, (state, action) => {
@@ -139,7 +230,18 @@ const vendorSlice = createSlice({
   },
 });
 
-export const { resetVendorState, clearVendorErrors, setSelectedVendor } =
-  vendorSlice.actions;
+export const { 
+  resetVendorState, 
+  clearVendorErrors, 
+  setSelectedVendor,
+  
+  // 👇 Export the new real-time actions
+  updateNearbyVendors,
+  updateVendorStatus,
+  addVendor,
+  removeVendor,
+  clearVendors,
+  setManualRefresh
+} = vendorSlice.actions;
 
 export default vendorSlice.reducer;
