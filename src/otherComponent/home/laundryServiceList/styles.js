@@ -200,6 +200,7 @@ secondaryButton: {
   borderWidth: 1,
   borderColor: appColors.darkBlue,
   minHeight: 50,
+  marginTop:7
 },
 
 secondaryButtonText: {

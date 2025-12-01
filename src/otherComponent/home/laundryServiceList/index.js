@@ -311,7 +311,8 @@ const LaundryServiceList = ({ navigation, route }) => {
     return (
       <SafeAreaView style={styles.container}>
           <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-        <View style={styles.container}>
+     <ScrollView>
+         <View style={styles.container}>
           <View style={{ backgroundColor: '#07172cff', paddingBottom: 20 }}>
             <Header
               containerStyle={{ marginBottom: 5 }}
@@ -344,10 +345,13 @@ const LaundryServiceList = ({ navigation, route }) => {
                 <>
                   <TouchableOpacity
                     style={styles.primaryButton}
-                    onPress={() => navigation.navigate('Profile', { 
-                      screen: 'ManageAddress',
-                      params: { redirectToLaundry: true }
-                    })}
+                    onPress={() => navigation.navigate('Main', {
+  screen: 'Profile',
+  params: {
+    screen: 'ManageAddress',
+    params: { redirectToLaundry: true }
+  }
+})}
                   >
                     <Icon name="add-location" size={20} color={appColors.white} />
                     <Text style={styles.primaryButtonText}>Add Delivery Address</Text>
@@ -379,12 +383,9 @@ const LaundryServiceList = ({ navigation, route }) => {
                 </>
               )}
             </View>
-            
-            <Text style={styles.helpText}>
-              💡 Go to Profile → Manage Address to add your delivery location
-            </Text>
           </View>
         </View>
+     </ScrollView>
       </SafeAreaView>
     );
   }

@@ -14,8 +14,28 @@ import appColors from '../../theme/appColors';
 import fonts from '../../theme/appFonts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LaundryServiceList from '../../otherComponent/home/laundryServiceList';
+import { ProfileStack } from '../profileStack';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+
 
 const Tab = createBottomTabNavigator();
+
+function getTabBarStyle(route) {
+  const routeName = route.state?.routes[route.state.index]?.name;
+
+  // Hide tab bar only on ManageAddress
+  if (routeName === "ManageAddress") {
+    return { display: "none" };
+  }
+
+  // Default tab bar style
+  return {
+    height: 65,
+  };
+}
+
+
+
 const MinimalTabButton = ({
   focused,
   icon: IconComponent,
@@ -114,20 +134,31 @@ export default function BottomTab() {
             ),
           }}
         />
+<Tab.Screen
+  name="Profile"
+  component={ProfileStack}
+  options={({ route }) => {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? "ProfileHome";
 
-        <Tab.Screen
-          name="Profile"
-          component={Profile}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <MinimalTabButton
-                focused={focused}
-                icon={ProfileIcon}
-                label="Profile"
-              />
-            ),
-          }}
-        />
+    // hide tab bar on these screens
+    const hideOnScreens = ["ManageAddress", "MapAddressScreen"];
+
+    return {
+      tabBarStyle: hideOnScreens.includes(routeName)
+        ? { display: "none" }
+        : [
+            styles.minimalTabBar,
+            {
+              height: 65 + insets.bottom,
+            },
+          ],
+      tabBarIcon: ({ focused }) => (
+        <MinimalTabButton focused={focused} icon={ProfileIcon} label="Profile" />
+      ),
+    };
+  }}
+/>
+
       </Tab.Navigator>
     </SafeAreaProvider>
   );
