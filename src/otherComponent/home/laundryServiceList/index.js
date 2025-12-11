@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -230,6 +230,8 @@ const LaundryServiceList = ({ navigation, route }) => {
   const hasSearchError = searchError && searchQuery.trim() !== '';
   const hasVendorsError = vendorsError && searchQuery.trim() === '';
 
+  console.log("DISPLAY VENDORS",displayVendors)
+
   // Manual refresh function
   const handleManualRefresh = () => {
     console.log('🔄 Manual refresh triggered');
@@ -345,12 +347,8 @@ const LaundryServiceList = ({ navigation, route }) => {
                 <>
                   <TouchableOpacity
                     style={styles.primaryButton}
-                    onPress={() => navigation.navigate('Main', {
-  screen: 'Profile',
-  params: {
-    screen: 'ManageAddress',
-    params: { redirectToLaundry: true }
-  }
+onPress={() => navigation.navigate('ManageAddress', {
+  redirectToLaundry: true
 })}
                   >
                     <Icon name="add-location" size={20} color={appColors.white} />

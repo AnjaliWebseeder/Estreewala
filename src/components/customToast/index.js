@@ -66,6 +66,7 @@ const CustomToast = ({ message, type = 'success', duration = 3000, onHide }) => 
     <Animated.View 
       style={[
         styles.toast,
+        type === "info" && { paddingVertical: 10 },
         { 
           backgroundColor: getBackgroundColor(),
           opacity: fadeAnim,

@@ -148,10 +148,11 @@ tabIndicator: {
     marginTop: 4,
   },
   progressText: {
-    fontSize: 12,
+    fontSize: 10,
     color: appColors.primary,
     fontFamily: fonts.InterMedium,
     fontStyle: "italic",
+    marginVertical:2
   },
   emptyContainer: {
     alignItems: "center",

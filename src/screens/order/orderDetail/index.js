@@ -149,6 +149,9 @@ const OrderDetails = ({ navigation, route }) => {
   // Check if order is cancelled
   const isOrderCancelled = currentOrder?.status === "CANCELLED";
   const isOrderCompleted = currentOrder?.status === "completed";
+ 
+
+
 
   // Get status display text and color
   const getStatusDisplay = () => {
@@ -256,7 +259,7 @@ const OrderDetails = ({ navigation, route }) => {
 
         {/* Ordered Items */}
         <View style={[styles.card, { marginVertical: 3 }]}>
-          <Text style={styles.sectionTitle}>Ordered item(s)</Text>
+          <Text style={styles.sectionTitle}>Order item(s)</Text>
           {order?.items?.map((item, index) => {
             // Get the appropriate image for each item
             const itemImage = getItemImage(item?.item);
@@ -278,7 +281,9 @@ const OrderDetails = ({ navigation, route }) => {
 
         {/* Invoice Section */}
         <View style={[styles.card, styles.summeryStyle]}>
-          <Text style={styles.invoiceId}>Order Id: #{order?.id}</Text>
+          <Text style={styles.invoiceId}>Order Id: {'ORD-' + (order?.id || order?._id || '').slice(-5).toUpperCase()}</Text>
+
+         
           
           {/* Status Display with Color */}
           <Text style={[styles.invoiceStatus, { color: statusDisplay.color }]}>
@@ -360,7 +365,7 @@ const OrderDetails = ({ navigation, route }) => {
         </TouchableOpacity>
 
         {/* Cancel Button - Only show if order is NOT cancelled and NOT completed */}
-        {!isOrderCancelled && !isOrderCompleted && (
+        {currentOrder?.status === "pending" && (
           <TouchableOpacity 
             style={[styles.cancelButton, cancellingOrder && styles.cancelButtonDisabled]} 
             onPress={handleCancelOrder}

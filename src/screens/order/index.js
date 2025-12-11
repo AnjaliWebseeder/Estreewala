@@ -247,7 +247,7 @@ const OrdersScreen = ({ navigation, route }) => {
     return {
       id: order.id || order._id,
       title: order.vendor?.businessName || "Unknown Vendor",
-      orderId: (order.id || order._id || '').slice(-8).toUpperCase(),
+      orderId: 'ORD-' + (order.id || order._id || '').slice(-5).toUpperCase(),
       items: `${totalItems} item${totalItems > 1 ? "s" : ""}`,
       price: (order.totalAmount / 100).toFixed(2),
       status: statusDisplay,
@@ -275,6 +275,8 @@ const OrdersScreen = ({ navigation, route }) => {
         orders = [];
     }
     
+
+    console.log("CCCCCCCCCCCCCCCC",completedOrders)
     // Sort orders by creation date (newest first)
     const sortedOrders = [...orders].sort((a, b) => 
       new Date(b.createdAt) - new Date(a.createdAt)

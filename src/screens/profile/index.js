@@ -22,6 +22,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import {getCustomerDetails} from "../../redux/slices/customerSlice"
 import TermsServiceIcon from "../../assets/Icons/svg/termsServiceIcon"
 import DeleteAccountModal from "../../otherComponent/deleteModal"
+import { deleteAccount } from "../../redux/slices/deleteAccountSlice";
+import { useAuth } from "../../utils/context/authContext";
 
 // ==== MENU ITEM COMPONENT ====
 const MenuItem = ({ icon, label, onPress, isLast, rightComponent }) => (
@@ -43,11 +45,19 @@ export default function Profile({ navigation }) {
   const dispatch = useDispatch();
   const { customerData} = useSelector(state => state.customer);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const {logout} = useAuth(); 
 
-  const handleDeleteAccount = () => {
-    setDeleteModalVisible(false)
-  }
-
+  const handleDeleteAccount = async () => {
+    try {
+      const result = await dispatch(deleteAccount()).unwrap();
+      console.log("Account deletion result:", result);
+      await logout();
+    } catch (error) {
+      console.error("Delete account error:", error);
+    } finally {
+      setDeleteModalVisible(false);
+    }
+  };
 
   const handleRateApp = () => {
     Linking.openURL("market://details?id=your.package.name");

@@ -104,7 +104,16 @@ export default function LaundryScreen({ navigation, route }) {
 
   console.log("🎯 Current selectedServiceCategory:", selectedServiceCategory);
 
-  const [selectedService, setSelectedService] = useState({});
+  // ✅ UPDATED: Change selectedService to support multiple services per item
+  const [selectedServices, setSelectedServices] = useState({}); // { [itemId]: [service1, service2, ...] }
+
+  // Generate unique key for item + category
+const getItemCategoryKey = (itemId, category) => {
+  const cleanItemName = itemId.split('_')[0]; // ✅ Clean it
+  return `${cleanItemName}_${category}`;
+};
+
+
 
   // ✅ FIX: Get category data with fallback
   const selectedCategoryData = selectedServiceCategory ? (catalog[selectedServiceCategory] || {}) : {};
@@ -132,49 +141,47 @@ export default function LaundryScreen({ navigation, route }) {
 
   console.log("🏷️ Dynamic categories:", dynamicCategories);
 
-  // ✅ FIX: Improved product selection logic with comprehensive logging
-  const selectedProducts = React.useMemo(() => {
-    // Don't proceed if no service category is selected
-    if (!selectedServiceCategory || availableCategoryKeys.length === 0) {
-      console.log("⏳ Waiting for service category or category keys...");
-      return [];
-    }
+// ✅ FIXED: Improved product selection logic with category verification
+const selectedProducts = React.useMemo(() => {
+  // Don't proceed if no service category is selected
+  if (!selectedServiceCategory || availableCategoryKeys.length === 0) {
+    console.log("⏳ Waiting for service category or category keys...");
+    return [];
+  }
 
-    let products = [];
+  let products = [];
 
-    if (category === 'all') {
-      // Get products from ALL categories in the selected service
-      products = availableCategoryKeys.flatMap(key => {
-        const categoryProducts = selectedCategoryData[key] || [];
-        console.log(`📦 Category "${key}" has ${categoryProducts.length} products`);
-        
-        return categoryProducts.map(product => ({
-          ...product,
-          category: key,
-          serviceCategory: selectedServiceCategory
-        }));
-      });
-    } else {
-      // Get products from specific category
-      const categoryProducts = selectedCategoryData[category] || [];
-      console.log(`📦 Specific category "${category}" has ${categoryProducts.length} products`);
+  if (category === 'all') {
+    // Get products from ALL categories in the selected service
+    products = availableCategoryKeys.flatMap(key => {
+      const categoryProducts = selectedCategoryData[key] || [];
+      console.log(`📦 Category "${key}" has ${categoryProducts.length} products`);
       
-      products = categoryProducts.map(product => ({
+      return categoryProducts.map(product => ({
         ...product,
-        category: category,
+        category: key, // ✅ Ensure category is set correctly
         serviceCategory: selectedServiceCategory
       }));
-    }
-
-    console.log("🛍️ FINAL selected products:", {
-      count: products.length,
-      categories: [...new Set(products.map(p => p.category))],
-      items: products.map(p => p.item)
     });
+  } else {
+    // Get products from specific category
+    const categoryProducts = selectedCategoryData[category] || [];
+    console.log(`📦 Specific category "${category}" has ${categoryProducts.length} products`);
     
-    return products;
-  }, [category, selectedServiceCategory, selectedCategoryData, availableCategoryKeys]);
+    products = categoryProducts.map(product => ({
+      ...product,
+      category: category, // ✅ Explicitly set category
+      serviceCategory: selectedServiceCategory
+    }));
+  }
 
+  // ✅ DEBUG: Log each product with its category
+  products.forEach(p => {
+    console.log(`📋 Product: ${p.item} | Category: ${p.category} | Price: ${p.price || 'N/A'}`);
+  });
+  
+  return products;
+}, [category, selectedServiceCategory, selectedCategoryData, availableCategoryKeys]);
   console.log("🎯 FINAL selectedProducts count:", selectedProducts.length);
 
   const dynamicServices = serviceCategories?.map(s => ({
@@ -199,51 +206,48 @@ export default function LaundryScreen({ navigation, route }) {
   }, [catalog]);
 
   // ✅ FIXED: useCallback to prevent unnecessary re-renders
-  const getPriceForServiceAndItem = useCallback((serviceName, itemName, category) => {
-    console.log('🔍 Looking up price:', { serviceName, itemName, category });
+// ✅ FIXED: useCallback to prevent unnecessary re-renders - MAKE IT CATEGORY-SPECIFIC
+const getPriceForServiceAndItem = useCallback((serviceName, itemName, category) => {
+  console.log('🔍 Looking up price:', { serviceName, itemName, category });
+  
+  if (!catalog[serviceName] || !catalog[serviceName][category]) {
+    console.log('❌ Service or category not found in catalog:', serviceName, category);
+    return 0;
+  }
+  
+  const categoryItems = catalog[serviceName][category];
+  console.log('📊 Items in category', category, ':', categoryItems.map(i => i.item));
+  
+  // ✅ FIXED: Exact match with category filtering
+  const item = categoryItems.find(product => {
+    // Compare item names (case insensitive)
+    const nameMatch = product.item.toLowerCase() === itemName.toLowerCase();
+    console.log(`🔎 Checking "${product.item}" vs "${itemName}": ${nameMatch}`);
+    return nameMatch;
+  });
+  
+  if (!item) {
+    console.log('❌ Item not found in category:', itemName, 'in category:', category);
     
-    if (!catalog[serviceName] || !catalog[serviceName][category]) {
-      console.log('❌ Service or category not found in catalog');
-      return 0;
-    }
-    
-    const categoryItems = catalog[serviceName][category];
-    const item = categoryItems.find(product => 
-      product.item.toLowerCase() === itemName.toLowerCase()
-    );
-    
-    if (!item) {
-      console.log('❌ Item not found in category');
-      return 0;
-    }
-    
-    console.log('✅ Price found:', item.price);
-    return item.price;
-  }, [catalog]);
-
-  // ✅ FIXED: Initialize selectedService only when catalog data is ready
-  useEffect(() => {
-    if (selectedProducts?.length > 0 && serviceCategories?.length > 0 && Object.keys(selectedService).length === 0) {
-      console.log('🔄 Initializing selectedService state...');
-      const defaultService = serviceCategories[0];
-      const initialService = {};
-      
-      selectedProducts.forEach(product => {
-        const price = getPriceForServiceAndItem(
-          defaultService, 
-          product.item, 
-          product.category
+    // Debug: Check if item exists in wrong category
+    Object.keys(catalog[serviceName] || {}).forEach(cat => {
+      if (cat !== category) {
+        const wrongCatItems = catalog[serviceName][cat] || [];
+        const foundInWrongCat = wrongCatItems.find(p => 
+          p.item.toLowerCase() === itemName.toLowerCase()
         );
-        initialService[product.item] = {
-          service: defaultService,
-          price: price
-        };
-      });
-      
-      setSelectedService(initialService);
-      console.log('✅ Initialized services for', Object.keys(initialService).length, 'products');
-    }
-  }, [selectedProducts, serviceCategories, getPriceForServiceAndItem, selectedService]);
+        if (foundInWrongCat) {
+          console.log(`⚠️ Item found in WRONG category ${cat}: ${foundInWrongCat.price}`);
+        }
+      }
+    });
+    
+    return 0;
+  }
+  
+  console.log('✅ Price found for', itemName, 'in category', category, ':', item.price);
+  return item.price;
+}, [catalog]);
 
   const handleFilterPress = () => {
     if (filterIconRef.current) {
@@ -257,60 +261,89 @@ export default function LaundryScreen({ navigation, route }) {
     }
   };
 
-  // ✅ FIXED: Handle add to cart
-  const handleAdd = useCallback((product) => {
-    const currentService = selectedService[product.item]?.service || serviceCategories?.[0] || '';
-    const price = getPriceForServiceAndItem(
-      currentService, 
-      product.item, 
-      product.category
-    );
-    
-    console.log('🛒 Adding to cart:', product.item);
-    
-    dispatch(
-      addToCart({ 
-        id: product.item, 
-        service: currentService, 
-        price: price,
-        name: product.item,
-        image: product.image,
-        category: product.category
-      }),
-    );
-  }, [selectedService, serviceCategories, getPriceForServiceAndItem, dispatch]);
 
-  const handleIncrement = useCallback((id) => {
-    dispatch(incrementQty(id));
-  }, [dispatch]);
+  const handleAdd = useCallback((product, service) => {
+  const price = getPriceForServiceAndItem(
+    service, 
+    product.item,
+    product.category
+  );
+  
+  console.log('🛒 Adding to cart with category:', {
+    item: product.item,
+    service: service,
+    category: product.category,
+    price: price
+  });
+  
+  dispatch(
+    addToCart({ 
+      id: product.item, // ✅ Keep clean item name (backend requirement)
+      service: service, 
+      price: price,
+      name: product.item,
+      image: product.image,
+      category: product.category // ✅ But store category separately
+    }),
+  );
+}, [getPriceForServiceAndItem, dispatch]);
 
-  const handleDecrement = useCallback((id) => {
-    dispatch(decrementQty(id));
-  }, [dispatch]);
+  // ✅ UPDATED: Handle increment for specific service
+const handleIncrement = useCallback((itemId, service, category) => {
+  // ✅ Create unique key with category: "T Shirt_man_Washing"
+  const uniqueKey = `${itemId}_${category}_${service}`;
+  console.log("🔼 Incrementing with category-key:", uniqueKey);
+  dispatch(incrementQty(uniqueKey));
+}, [dispatch]);
 
-  // ✅ FIXED: Handle service change with price update
-  const handleChangeService = useCallback((itemId, serviceValue, category) => {
-    console.log(`🟢 Changing service for ${itemId} → ${serviceValue}`);
+const handleDecrement = useCallback((itemId, service, category) => {
+  // ✅ Create unique key with category: "T Shirt_man_Washing"
+  const uniqueKey = `${itemId}_${category}_${service}`;
+  console.log("🔽 Decrementing with category-key:", uniqueKey);
+  dispatch(decrementQty(uniqueKey));
+}, [dispatch]);
+  // ✅ UPDATED: Handle service change (add/remove service)
+
+  // ✅ UPDATED: Handle service change with better sync
+const handleChangeService = useCallback((itemId, serviceValue, category) => {
+  console.log(`🟢 Changing service for ${itemId} in category ${category} → ${serviceValue}`);
+  
+  const itemCategoryKey = getItemCategoryKey(itemId, category);
+  
+  setSelectedServices(prev => {
+    const currentServices = prev[itemCategoryKey] || [];
     
-    const newPrice = getPriceForServiceAndItem(serviceValue, itemId, category);
+    // Check if service already exists for this item in this category
+    const serviceExists = currentServices.includes(serviceValue);
     
-    console.log(`💰 New price for ${itemId}: ${newPrice}`);
+    let newServices;
+    if (serviceExists) {
+      // Remove the service
+      newServices = currentServices.filter(s => s !== serviceValue);
+      
+      // Find if this service is in cart and remove it
+      const cartItem = cartItems.find(item => 
+        getItemCategoryKey(item.itemId, item.category) === itemCategoryKey &&
+        item.service === serviceValue
+      );
+      
+      if (cartItem) {
+        // Remove from cart via decrement
+        const uniqueKey = `${itemId}_${category}_${serviceValue}`;
+        dispatch(decrementQty(uniqueKey));
+      }
+    } else {
+      // Add the service
+      newServices = [...currentServices, serviceValue];
+    }
     
-    setSelectedService(prev => ({
+    return {
       ...prev,
-      [itemId]: {
-        service: serviceValue,
-        price: newPrice
-      },
-    }));
+      [itemCategoryKey]: newServices
+    };
+  });
+}, [dispatch, cartItems]); // Add cartItems as dependency
 
-    dispatch(changeService({ 
-      id: itemId, 
-      service: serviceValue,
-      price: newPrice,
-      category: category
-    }));
-  }, [getPriceForServiceAndItem, dispatch]);
 
   const handleCategorySelect = value => {
     console.log("🎯 Category selected:", value);
@@ -318,58 +351,94 @@ export default function LaundryScreen({ navigation, route }) {
     setShowDropdown(false);
   };
 
-  const cartItems = Object.keys(cart)?.map(k => ({ id: k, ...cart[k] }));
-
-  // Calculate totals
+  // ✅ UPDATED: Calculate totals with new cart structure
+  const cartItems = Object.values(cart); // Use Object.values instead of Object.keys
   const totalItems = cartItems.reduce((sum, it) => sum + it.qty, 0);
   const totalPrice = cartItems.reduce((sum, item) => {
     return sum + (item.price * item.qty);
   }, 0);
 
-  // ✅ FIXED: Get current price for display in ProductItem
-  const getCurrentPriceForItem = useCallback((itemId, category) => {
-    const cartItem = cart[itemId];
-    if (cartItem) {
-      return cartItem.price;
-    }
-    
-    const serviceInfo = selectedService[itemId];
-    if (serviceInfo) {
-      return serviceInfo.price;
-    }
-    
-    const defaultService = serviceCategories?.[0] || '';
-    return getPriceForServiceAndItem(defaultService, itemId, category);
-  }, [cart, selectedService, serviceCategories, getPriceForServiceAndItem]);
 
-  // ✅ FIXED: Memoized render item to prevent unnecessary re-renders
-  const renderProductItem = useCallback(({ item }) => {
-    const currentService = selectedService[item.item]?.service || serviceCategories?.[0] || '';
-    const currentPrice = getCurrentPriceForItem(item.item, item.category);
+  useEffect(() => {
+  // Create a new selectedServices map based on cart items
+  const newSelectedServices = {};
+  
+  cartItems.forEach(cartItem => {
+    const itemId = cartItem.itemId; // This is the clean item name
+    const category = cartItem.category;
+    const service = cartItem.service;
     
-    return (
-      <ProductItem
-        product={{
-          id: item.item,
-          name: item.item,
-          price: currentPrice,
-          image: item.image,
-          category: item.category
-        }}
-        qty={cart[item.item]?.qty || 0}
-        service={currentService}
-        services={dynamicServices}
-        onAdd={() => handleAdd(item)}
-        onIncrement={() => handleIncrement(item.item)}
-        onDecrement={() => handleDecrement(item.item)}
-        onChangeService={(itemId, serviceValue) => {
-          handleChangeService(itemId, serviceValue, item.category);
-        }}
-      />
-    );
-  }, [selectedService, serviceCategories, getCurrentPriceForItem, cart, dynamicServices, handleAdd, handleIncrement, handleDecrement, handleChangeService]);
+    // Only include items with quantity > 0
+    if (cartItem.qty > 0) {
+      const itemCategoryKey = getItemCategoryKey(itemId, category);
+      
+      if (!newSelectedServices[itemCategoryKey]) {
+        newSelectedServices[itemCategoryKey] = [];
+      }
+      
+      // Add service if not already included
+      if (!newSelectedServices[itemCategoryKey].includes(service)) {
+        newSelectedServices[itemCategoryKey].push(service);
+      }
+    }
+  });
+  
+  // Compare and update if different
+  if (JSON.stringify(newSelectedServices) !== JSON.stringify(selectedServices)) {
+    console.log("🔄 Syncing selectedServices with cart:", newSelectedServices);
+    setSelectedServices(newSelectedServices);
+  }
+}, [cartItems]); // Run whenever cartItems changes
 
-  // ✅ FIX: Improved loading and empty states
+
+  // ✅ FIXED: Get cart items for a specific item IN SPECIFIC CATEGORY
+const getCartItemsForItem = useCallback((itemId, itemCategory) => {
+  return cartItems.filter(item => {
+    // Match by itemId AND category
+    return item.itemId === itemId && item.category === itemCategory;
+  });
+}, [cartItems]);
+
+
+
+
+// Update the renderProductItem function:
+const renderProductItem = useCallback(({ item }) => {
+  const itemCategoryKey = getItemCategoryKey(item.item, item.category);
+  const itemServices = selectedServices[itemCategoryKey] || [];
+  
+  const cartItemsForThisItem = getCartItemsForItem(item.item, item.category);
+  
+  return (
+    <ProductItem
+      product={{
+        id: item.item,
+        name: item.item,
+        image: item.image,
+        category: item.category
+      }}
+      // Removed totalQty prop since we don't need it anymore
+      selectedServices={itemServices}
+      cartItems={cartItemsForThisItem}
+      services={dynamicServices}
+      onAdd={(service) => handleAdd(item, service)}
+      onIncrement={(service) => handleIncrement(item.item, service, item.category)}
+      onDecrement={(service) => handleDecrement(item.item, service, item.category)}
+      onChangeService={(itemId, serviceValue) => {
+        handleChangeService(itemId, serviceValue, item.category);
+      }}
+    />
+  );
+}, [
+  selectedServices, 
+  getCartItemsForItem, 
+  dynamicServices, 
+  handleAdd, 
+  handleIncrement, 
+  handleDecrement, 
+  handleChangeService
+]);
+  // ✅ FIX: Improved loading and empty states (NO CHANGES NEEDED)
   const renderContent = () => {
     if (vendorCatalogLoading) {
       return (
@@ -393,6 +462,19 @@ export default function LaundryScreen({ navigation, route }) {
         </View>
       );
     }
+
+     // ✅ NEW: Handle vendor with no active subscription
+  if (vendorCatalog?.message && vendorCatalog.message.includes("no active subscription")) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Icon name="error-outline" size={50} color={ appColors.darkBlue} />
+        <Text style={[styles.emptyText, { marginTop:10 }]}>
+          {vendorCatalog.message}
+        </Text>
+      </View>
+    );
+  }
+
 
     // ✅ FIX: Show empty state only when catalog is loaded but no products
     if (!vendorCatalogLoading && selectedProducts.length === 0 && Object.keys(catalog).length > 0) {
@@ -420,7 +502,7 @@ export default function LaundryScreen({ navigation, route }) {
         data={selectedProducts}
         keyExtractor={(item, index) => `${item.item}_${index}`}
         renderItem={renderProductItem}
-        contentContainerStyle={{ paddingBottom: windowHeight(70) }}
+        contentContainerStyle={{ paddingBottom: windowHeight(80) }}
       />
     );
   };

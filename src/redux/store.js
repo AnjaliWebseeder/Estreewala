@@ -10,6 +10,7 @@ import myOrderReducer from '../redux/slices/myOrderSlice'
 import customerReducer from "../redux/slices/customerSlice"
 import searchReducer from "../redux/slices/searchSlice"
 import notificationReducer from "../redux/slices/notificationSlice"
+import deleteAccountReducer from "../redux/slices/deleteAccountSlice"
 
 const persistConfig = {
   key: 'root',
@@ -26,7 +27,8 @@ const rootReducer = combineReducers({
   myOrder: myOrderReducer,
   customer: customerReducer,
   search: searchReducer,
-  notification:notificationReducer
+  notification:notificationReducer,
+  deleteAccount: deleteAccountReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

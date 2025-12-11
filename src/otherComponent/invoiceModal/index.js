@@ -210,10 +210,6 @@ const InvoiceModal = ({ visible, onClose, order, onDownload }) => {
         <div class="section">
           <div class="section-title">Order Details</div>
           <div class="detail-row">
-            <div class="detail-label">Order ID:</div>
-            <div>#${order?.id || 'N/A'}</div>
-          </div>
-          <div class="detail-row">
             <div class="detail-label">Status:</div>
             <div>${order?.status || 'N/A'}</div>
           </div>
@@ -401,7 +397,7 @@ const InvoiceModal = ({ visible, onClose, order, onDownload }) => {
                 <Text style={styles.sectionTitle}>Order Details</Text>
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Order ID:</Text>
-                  <Text style={styles.detailValue}>#{order?.id}</Text>
+                  <Text style={styles.detailValue}>#{'ORD-' + (order?.id || order?._id || '').slice(-5).toUpperCase()}</Text>
                 </View>
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Status:</Text>

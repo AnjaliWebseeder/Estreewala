@@ -20,22 +20,6 @@ import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
-function getTabBarStyle(route) {
-  const routeName = route.state?.routes[route.state.index]?.name;
-
-  // Hide tab bar only on ManageAddress
-  if (routeName === "ManageAddress") {
-    return { display: "none" };
-  }
-
-  // Default tab bar style
-  return {
-    height: 65,
-  };
-}
-
-
-
 const MinimalTabButton = ({
   focused,
   icon: IconComponent,
@@ -134,13 +118,32 @@ export default function BottomTab() {
             ),
           }}
         />
+
 <Tab.Screen
   name="Profile"
   component={ProfileStack}
+  listeners={({ navigation, route }) => ({
+    tabPress: (e) => {
+      // Ensure we always navigate to ProfileHome inside ProfileStack
+      // This will bring Profile tab forward and set its nested state to show ProfileHome
+      navigation.navigate('Profile', { screen: 'ProfileHome' });
+
+      // Optionally reset the nested state completely:
+      // navigation.dispatch(
+      //   CommonActions.reset({
+      //     index: 0,
+      //     routes: [
+      //       {
+      //         name: 'Profile',
+      //         state: { routes: [{ name: 'ProfileHome' }] },
+      //       },
+      //     ],
+      //   })
+      // );
+    },
+  })}
   options={({ route }) => {
     const routeName = getFocusedRouteNameFromRoute(route) ?? "ProfileHome";
-
-    // hide tab bar on these screens
     const hideOnScreens = ["ManageAddress", "MapAddressScreen"];
 
     return {

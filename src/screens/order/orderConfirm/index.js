@@ -59,7 +59,7 @@ const OrderConfirmation = ({ navigation, route }) => {
           onBackPress={() => navigation.goBack()}
           titleStyle={{ marginHorizontal: 20 }}
           containerStyle={{ justifyContent: 'flex-start' }}
-          title={`Order No. ${orderDetails.orderId}`}
+          title={`Order No. ORD-${(orderDetails.orderId).slice(-5).toUpperCase()}`}
         />
         {/* Status with custom progress circle */}
         <View style={styles.statusCard}>

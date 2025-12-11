@@ -6,19 +6,12 @@ import { styles } from './styles';
 import appColors from '../../../theme/appColors';
 import { getItemImage } from "../../../utils/data/imageMapping"; 
 
+// Update OrderItem.js to pass the correct item.id
 const OrderItem = ({ item, onUpdateQuantity, onRemoveItem }) => {
-  // Use your getItemImage function to get the correct image
   const itemImage = getItemImage(item.name, item.category);
   
-  console.log("🖼️ Image for item:", {
-    name: item.name,
-    category: item.category,
-    image: itemImage
-  });
-
   return (
     <View style={styles.itemCard}>
-      {/* Use the dynamic image from your mapping */}
       <FastImage 
         source={itemImage} 
         style={styles.itemImage} 
@@ -43,14 +36,14 @@ const OrderItem = ({ item, onUpdateQuantity, onRemoveItem }) => {
       <View style={styles.quantityContainer}>
         <TouchableOpacity 
           style={styles.quantityButton}
-          onPress={() => onUpdateQuantity(item.id, -1)}
+          onPress={() => onUpdateQuantity(-1)} // ✅ Remove item.id parameter
         >
           <Icon name="remove" size={15} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.quantityText}>{item.quantity}</Text>
         <TouchableOpacity 
           style={styles.quantityButton}
-          onPress={() => onUpdateQuantity(item.id, 1)}
+          onPress={() => onUpdateQuantity(1)} // ✅ Remove item.id parameter
         >
           <Icon name="add" size={15} color="#fff" />
         </TouchableOpacity>
@@ -58,7 +51,7 @@ const OrderItem = ({ item, onUpdateQuantity, onRemoveItem }) => {
       
       <TouchableOpacity 
         style={styles.removeItemButton}
-        onPress={() => onRemoveItem(item.id)}
+        onPress={onRemoveItem} // ✅ No need to pass item.id
       >
         <Icon style={{marginLeft:2}} name="close" size={16} color="#ff6b6b" />
       </TouchableOpacity>

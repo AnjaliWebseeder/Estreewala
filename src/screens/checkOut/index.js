@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TextInput,StatusBar} from 'react-native';
+import React, { useState, useEffect, useMemo } from 'react';
+import { View, Text, ScrollView, TextInput, StatusBar } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,9 +20,6 @@ import Header from '../../components/header';
 import appColors from '../../theme/appColors';
 import fonts from '../../theme/appFonts';
 import { fontSizes } from '../../theme/appConstant';
-import FastImage from 'react-native-fast-image';
-import { cashpayment } from '../../utils/images/images';
-import { CustomTooltip } from '../../components/tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   clearCart,
@@ -30,6 +27,7 @@ import {
   incrementQty,
   removeFromCart,
 } from '../../redux/slices/cartSlice';
+import { CustomTooltip } from '../../components/tooltip';
 
 const LaundryCheckoutScreen = ({ navigation, route }) => {
   const { laundryName, vendorId } = route.params || {};
@@ -62,24 +60,59 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
     { id: '6', time: '07:00 PM - 09:00 PM' },
   ];
 
-  // const [items, setItems] = useState([
-  //   {
-  //     id: 1,
-  //     name: 'Formal Shirt',
-  //     price: 5.0,
-  //     service: 'Wash & Iron',
-  //     quantity: 2,
-  //   },
-  // ]);
+  // Helper function to format cart items for display
+ // Update formatCartItemsForDisplay function
+const formatCartItemsForDisplay = useMemo(() => {
+  if (!cartItems || typeof cartItems !== 'object') return [];
+  
+  console.log("🛒 Raw cart items:", cartItems);
+  console.log("🔑 Cart item keys:", Object.keys(cartItems));
+  
+  // Convert cart items object to array for display
+  const cartItemsArray = Object.values(cartItems);
+  
+  // Format for display in OrderItem components
+  const formattedItems = cartItemsArray.map((item, index) => {
+    // The unique key from Redux cart is the key itself (like "Formal Shirt_man_Steam Ironing")
+    // We need to get this from the cartItems object keys
+    const cartKeys = Object.keys(cartItems);
+    const uniqueKey = cartKeys[index]; // This is the actual key in Redux
+    
+    return {
+      id: uniqueKey, // Use the actual Redux key as ID
+      uniqueKey: uniqueKey, // Pass the actual Redux key
+      name: item.name || item.itemName || item.itemId || 'Unknown Item',
+      price: item.price || 0,
+      service: item.service || 'Unknown Service',
+      quantity: item.qty || 0,
+      category: item.category || 'general',
+      itemId: item.itemId, // Original item ID
+      serviceName: item.service // Service name
+    };
+  });
+  
+  console.log("📦 Formatted display items with keys:", formattedItems.map(item => item.uniqueKey));
+  return formattedItems;
+}, [cartItems]);
 
-  const items = Object.entries(cartItems)?.map(([id, item]) => ({
-    id,
-    name: id,
-    price: item.price || 0,
-    service: item.service,
-    quantity: item.qty,
-    category:item.category    
-  }));
+  // Helper function to format cart items for API
+  const formatCartItemsForAPI = useMemo(() => {
+    if (!cartItems || typeof cartItems !== 'object') return [];
+    
+    const cartItemsArray = Object.values(cartItems);
+    
+    // Format for API payload
+    const apiFormattedItems = cartItemsArray.map(item => ({
+      item: item.name || item.itemName || item.itemId, // Item name
+      category: item.category || 'general',
+      service: item.service, // Service name
+      quantity: item.qty,    // Quantity
+      price: item.price      // Price per item
+    }));
+    
+    console.log("📡 API formatted items:", apiFormattedItems);
+    return apiFormattedItems;
+  }, [cartItems]);
 
   // Calculate delivery date based on pickup date (2 days later)
   const calculateDeliveryDate = pickupDate => {
@@ -109,6 +142,15 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
     loadAddresses();
     loadCurrentLocation();
   }, []);
+
+  // Debug cart state
+  useEffect(() => {
+    console.log("📊 Cart state update:", {
+      totalItems: Object.keys(cartItems || {}).length,
+      formattedItems: formatCartItemsForDisplay,
+      apiItems: formatCartItemsForAPI
+    });
+  }, [cartItems, formatCartItemsForDisplay, formatCartItemsForAPI]);
 
   const loadAddresses = async () => {
     try {
@@ -158,56 +200,63 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
     }
   };
 
-  // const updateQuantity = (id, change) => {
-  //   setItems(
-  //     items.map(item =>
-  //       item.id === id
-  //         ? { ...item, quantity: Math.max(1, item.quantity + change) }
-  //         : item,
-  //     ),
-  //   );
-  // };
+ const updateQuantity = (uniqueKey, change) => {
+  console.log("🔄 Updating quantity:", { uniqueKey, change });
+  
+  if (change === 1) {
+    dispatch(incrementQty(uniqueKey)); // Pass the actual Redux key
+  } else {
+    dispatch(decrementQty(uniqueKey)); // Pass the actual Redux key
+  }
+};
 
-  const updateQuantity = (id, change) => {
-    if (change === 1) dispatch(incrementQty(id));
-    else dispatch(decrementQty(id));
-  };
-
-  const removeItem = id => {
-    dispatch(removeFromCart(id));
-  };
-
-  // const removeItem = id => {
-  //   setItems(items.filter(item => item.id !== id));
-  // };
+ const removeItem = uniqueKey => {
+  console.log("🗑️ Removing item with key:", uniqueKey);
+  dispatch(removeFromCart(uniqueKey));
+};
 
   const showClearAllConfirmation = () => {
-    setConfirmationModalVisible(true);
+    // Only show confirmation if cart has items
+    if (Object.keys(cartItems || {}).length > 0) {
+      setConfirmationModalVisible(true);
+    }
   };
 
   const clearAllItems = () => {
-    // setItems([]);
-    dispatch(clearCart()); // 🧠 Redux action replaces local state clear
+    dispatch(clearCart());
     setConfirmationModalVisible(false);
   };
 
-  const calculateSubtotal = () => {
-    return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  };
-
-  const calculateTotal = () => {
-    const subtotal = calculateSubtotal();
-    const deliveryFee = items.length > 0 ? 2.5 : 0;
-    const total = subtotal + deliveryFee;
-
+  // Calculate totals
+  const { subtotal, total } = useMemo(() => {
+    let calculatedSubtotal = 0;
+    
+    if (cartItems && typeof cartItems === 'object') {
+      Object.values(cartItems).forEach(item => {
+        calculatedSubtotal += (item.price || 0) * (item.qty || 0);
+      });
+    }
+    
     return {
-      subtotal: subtotal.toFixed(2),
-      deliveryFee: deliveryFee.toFixed(2),
-      total: total.toFixed(2),
+      subtotal: calculatedSubtotal.toFixed(2),
+      total: calculatedSubtotal.toFixed(2) // No delivery fee for now
     };
+  }, [cartItems]);
+
+  const totals = {
+    subtotal: subtotal,
+    total: total,
   };
 
   const handleBookPickup = () => {
+    // Validate cart has items
+    const apiFormattedItems = formatCartItemsForAPI;
+    if (apiFormattedItems.length === 0) {
+      setTooltipText('Your cart is empty. Please add items first.');
+      setTooltipVisible(true);
+      return;
+    }
+    
     // If schedule options are shown, proceed to schedule
     if (showScheduleOptions) {
       // Validate required fields
@@ -223,19 +272,30 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
         return;
       }
 
-      //  navigation.navigate('UserDetailsScreen');
+      // Format pickup date
+      const formattedPickupDate = selectedPickupDate.toISOString().split('T')[0];
+      const formattedDeliveryDate = selectedDropDate 
+        ? selectedDropDate.toISOString().split('T')[0] 
+        : calculateDeliveryDate(selectedPickupDate).toISOString().split('T')[0];
+      
+      console.log("📦 Navigating to UserDetailsScreen with:", {
+        vendorId,
+        orderItems: apiFormattedItems,
+        totalPrice: parseFloat(total)
+      });
+      
       navigation.navigate('UserDetailsScreen', {
         vendorId: vendorId,
-        pickupDate: selectedPickupDate,
-        selectedDropDate: selectedDropDate,
-        pickupSlot: selectedPickupSlot,
+        pickupDate: formattedPickupDate,
+        selectedDropDate: formattedDeliveryDate,
+        pickupSlot: selectedPickupSlot.time,
+        deliveryTime: selectedDropSlot ? selectedDropSlot.time : timeSlots[2]?.time,
         paymentMethod: selectedPayment,
         note: orderNote,
         address: selectedAddress,
-        editingAddress: editingAddress,
+        orderItems: apiFormattedItems, // Pass API-formatted items
+        totalPrice: parseFloat(total),
         tooltipVisible: tooltipVisible,
-        tooltipText: tooltipText,
-        showScheduleOptions: showScheduleOptions,
       });
     } else {
       // Show schedule options
@@ -244,6 +304,15 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
   };
 
   const handlePlaceOrderNow = () => {
+    // Validate cart has items
+    const apiFormattedItems = formatCartItemsForAPI;
+    
+    if (apiFormattedItems.length === 0) {
+      setTooltipText('Your cart is empty. Please add items first.');
+      setTooltipVisible(true);
+      return;
+    }
+    
     // Validate required fields
     if (!selectedAddress) {
       setTooltipText('Please select a delivery address');
@@ -268,21 +337,25 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
     }
 
     setSelectedPickupSlot(closestSlot);
+    
+    // Calculate delivery date (2 days later)
+    const deliveryDate = calculateDeliveryDate(now);
+    
+    console.log("🚀 Place order now with items:", apiFormattedItems);
 
-    // Proceed to confirmation
-  navigation.navigate('UserDetailsScreen', {
-        vendorId: vendorId,
-        pickupDate: selectedPickupDate,
-        selectedDropDate: selectedDropDate,
-        pickupSlot: selectedPickupSlot,
-        paymentMethod: selectedPayment,
-        note: orderNote,
-        address: selectedAddress,
-        editingAddress: editingAddress,
-        tooltipVisible: tooltipVisible,
-        tooltipText: tooltipText,
-        showScheduleOptions: showScheduleOptions,
-      });
+    navigation.navigate('UserDetailsScreen', {
+      vendorId: vendorId,
+      pickupDate: now.toISOString().split('T')[0], // Today's date
+      pickupTime: closestSlot.time,
+      selectedDropDate: deliveryDate.toISOString().split('T')[0],
+      deliveryTime: timeSlots[2]?.time || '10:00 AM - 12:00 PM',
+      paymentMethod: selectedPayment,
+      note: orderNote,
+      address: selectedAddress,
+      orderItems: apiFormattedItems, // Pass API-formatted items
+      totalPrice: parseFloat(total),
+      tooltipVisible: tooltipVisible,
+    });
   };
 
   const handleSave = newAddress => {
@@ -296,30 +369,19 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
     setAddressModalVisible(true);
   };
 
-  // const totals = calculateTotal();
-
   const handleBrowseServices = () => {
     navigation.navigate('Main');
   };
 
-  const subtotal = items?.reduce((sum, it) => sum + it.price * it.quantity, 0);
-  const deliveryFee = 2.5; // or fetch dynamically
-  const total = subtotal ;
-
-  const totals = {
-    subtotal: subtotal.toFixed(2),
-    // deliveryFee: deliveryFee.toFixed(2),
-    total: total.toFixed(2),
-  };
+  // Check if cart is empty
+  const isCartEmpty = formatCartItemsForDisplay.length === 0;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: appColors.background }}>
-    <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />  
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />  
       <View style={styles.container}>
         {/* Header */}
-        <View
-          style={{ backgroundColor: appColors.darkBlue, paddingBottom: 10 }}
-        >
+        <View style={{ backgroundColor: appColors.darkBlue, paddingBottom: 10 }}>
           <Header
             onBackPress={() => {
               if (showScheduleOptions) {
@@ -336,34 +398,13 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
         </View>
         <View style={styles.border} />
 
-        {items.length === 0 ? (
+        {isCartEmpty ? (
           <EmptyCart onBrowseServices={handleBrowseServices} />
         ) : (
           <ScrollView
             contentContainerStyle={styles.contentContainerStyle}
             showsVerticalScrollIndicator={false}
           >
-            {/* <View style={styles.sectionStyle}>
-              <View style={styles.row}>
-                <Icon
-                  name="home"
-                  size={20}
-                  color={appColors.blue}
-                  style={styles.iconStyle}
-                />
-                <Text style={[styles.sectionTitle, { marginTop: 1 }]}>
-                  Pick up and Drop to Home
-                </Text>
-              </View>
-
-              <AddressCard
-                address={selectedAddress}
-                onPress={() => setAddressModalVisible(true)}
-                showEdit={true}
-              />
-            </View>
-            <View style={styles.horizontalBorder} /> */}
-
             {showScheduleOptions ? (
               <>
                 <View
@@ -498,8 +539,6 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
 
             <View style={styles.horizontalBorder} />
 
-            <View style={styles.horizontalBorder} />
-
             <View style={[styles.section, { paddingVertical: 4 }]}>
               <View
                 style={{
@@ -509,7 +548,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                 }}
               >
                 <Text style={[styles.sectionTitle, { marginHorizontal: 10 }]}>
-                  Order Items
+                  Order Items ({formatCartItemsForDisplay.length})
                 </Text>
                 <TouchableOpacity
                   onPress={showClearAllConfirmation}
@@ -519,15 +558,15 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                 </TouchableOpacity>
               </View>
 
-              {items?.map(item => (
-                <OrderItem
-                  key={item.id}
-                  item={item}
-                  onUpdateQuantity={updateQuantity}
-                  onRemoveItem={removeItem}
-                  category={item.category}
-                />
-              ))}
+            {formatCartItemsForDisplay.map(item => (
+  <OrderItem
+    key={item.id} // Use the unique key as React key
+    item={item}
+    onUpdateQuantity={(change) => updateQuantity(item.uniqueKey, change)} // Pass uniqueKey
+    onRemoveItem={() => removeItem(item.uniqueKey)} // Pass uniqueKey
+    category={item.category}
+  />
+))}
             </View>
 
             <View style={[styles.section, { marginHorizontal: 10 }]}>
@@ -556,36 +595,15 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
             <View
               style={[styles.section, { marginHorizontal: 10, marginTop: 10 }]}
             >
-              {/* <View style={styles.priceRow}>
-                <Text style={styles.priceLabel}>Subtotal</Text>
-                <Text style={styles.priceValue}>
-                  <Icon
-                    name="currency-rupee"
-                    size={13}
-                    color={appColors.font}
-                  />
-                {totals.subtotal}
-                </Text>
-              </View> */}
-              {/* <View style={styles.priceRow}>
-                <Text style={styles.priceLabel}>Delivery fee</Text>
-                <Text style={styles.priceValue}>
-                  <Icon
-                    name="currency-rupee"
-                    size={13}
-                    color={appColors.font}
-                  />
-                {totals.deliveryFee}
-                </Text>
-              </View> */}
               <View style={[styles.priceRow, styles.totalRow]}>
                 <Text style={styles.totalLabel}>Total</Text>
                 <Text style={styles.totalValue}>
-                  {/* ₹{totals.total} */} ₹{totals.total}
+                  ₹{totals.total}
                 </Text>
               </View>
             </View>
-            {items.length > 0 && (
+            
+            {!isCartEmpty && (
               <View style={styles.footer}>
                 <TouchableOpacity
                   style={styles.payButton}
@@ -645,8 +663,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
           title="Delete All Items"
           message="Are you sure you want to remove all items from your cart?"
         />
-
-        <CustomTooltip
+         <CustomTooltip
           visible={tooltipVisible}
           message={tooltipText}
           onClose={() => setTooltipVisible(false)}

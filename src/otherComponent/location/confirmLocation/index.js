@@ -21,7 +21,6 @@ import { styles } from './styles';
 import appColors from '../../../theme/appColors';
 import { useAuth } from '../../../utils/context/authContext';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { addAddress } from '../../../redux/slices/addressSlice'; // Import the addAddress action
 
 const ConfirmLocationScreen = ({ route }) => {
   const { selectedLocation } = route.params || {};

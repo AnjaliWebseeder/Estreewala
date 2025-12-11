@@ -20,3 +20,5 @@ export const SEARCH_VENDORS_API = `${BASE_URL}/customers/search-vendors`
 
 
 export const UPDATE_FCM_API = `${BASE_URL}/customers/update-fcm-token`
+
+export const DELETE_ACCOUNT_API = `${BASE_URL}/customer-auth/delete-account`

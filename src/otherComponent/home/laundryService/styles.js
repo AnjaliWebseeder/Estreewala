@@ -109,6 +109,7 @@ emptyText: {
   color: appColors.gray,
   fontFamily: fonts.InterRegular,
 },
+
 filterButton: {
   position: 'absolute',
   top: windowHeight(10),

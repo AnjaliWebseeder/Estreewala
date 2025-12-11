@@ -287,7 +287,7 @@ export default function Splash({ navigation }) {
           ],
         }}
       >
-        <Text style={styles.appName}>ESTREEWALA</Text>
+        <Text style={styles.appName}>ESTREEWALLA</Text>
       </Animated.View>
     </View>
   );

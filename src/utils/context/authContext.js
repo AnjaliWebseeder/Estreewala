@@ -10,9 +10,6 @@ let globalToken = null;
 let globalUserDetails = null;
 let globalTokenListeners = [];
 
-
-console.log("GLOBAL TOKEN IS")
-
 export const setGlobalAuth = (token, userDetails) => {
   globalToken = token;
   globalUserDetails = userDetails;
@@ -60,7 +57,6 @@ export const AuthProvider = ({ children }) => {
    const [isLoading, setIsLoading] = useState(true);
   const [isFirstLaunch, setIsFirstLaunch] = useState(null);
     const [userDetails, setUserDetails] = useState(null);
-
     const loadStorageData = useCallback(async () => {
   try {
     console.log('🔄 Loading storage data...');

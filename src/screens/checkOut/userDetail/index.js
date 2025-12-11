@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { placeOrder } from '../../../redux/slices/orderSlice';
 import moment from 'moment';
 import { clearCart } from '../../../redux/slices/cartSlice';
+import { useToast } from '../../../utils/context/toastContext';
 
 
 const UserDetailsScreen = ({ navigation, route }) => {
@@ -33,19 +34,11 @@ const UserDetailsScreen = ({ navigation, route }) => {
     pickupDate,
     selectedDropDate,
     pickupSlot,
-    paymentMethod,
     note,
     location,
-    editingAddress,
-    tooltipVisible,
-    tooltipText,
-    showScheduleOptions,
   } = route.params || {};
 
-  console.log("VENDOR ID IS *******************",vendorId)
-
   const cartItems = useSelector(state => state.cart.items);
-
   const totalPrice = Object.keys(cartItems).reduce((sum, key) => {
     const item = cartItems[key];
     const price = item.price || 0;
@@ -79,6 +72,7 @@ const UserDetailsScreen = ({ navigation, route }) => {
   const webViewRef = useRef(null);
   const { saveLocation, userLocation } = useAuth();
   const [address, setAddress] = useState(userLocation?.address || '');
+   const { showToast } = useToast();
 
   // Check and request location permission
   const requestLocationPermission = async () => {
@@ -337,6 +331,37 @@ const UserDetailsScreen = ({ navigation, route }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+
+// Add this validation before the API call
+const validateOrderItems = () => {
+  const cartItemsArray = Object.keys(cartItems).map(key => cartItems[key]);
+
+  const premiumServices = ['steam ironing', 'spin washing', 'steam washing', 'stain removal'];
+  const mainServices = ['ironing', 'washing', 'dry wash', 'wash & iron', 'wash and iron'];
+
+  const hasPremiumServices = cartItemsArray.some(item => 
+    premiumServices.includes(item.service?.toLowerCase())
+  );
+
+  const hasMainServices = cartItemsArray.some(item => 
+    mainServices.includes(item.service?.toLowerCase())
+  );
+
+  if (hasPremiumServices && !hasMainServices) {
+    showToast(
+      `Please select a main service (Ironing, Washing, Dry Wash, or Wash & Iron). Premium services can only be added after choosing a main service.`,
+      "info"
+    );
+    return false;
+  }
+
+  return true;
+};
+
+
+
+
+
 const handleSave = async () => {
   try {
     // 🔹 Validate all fields before proceeding
@@ -379,47 +404,21 @@ const rawPickupTime = pickupSlot?.time || formatTime(defaultPickupTimeDate);
     const pickupStartTime = rawPickupTime.split('-')[0].trim();
     const formattedDeliveryTime = deliveryMoment.format('hh:mm A');
 
-
-    // 🔹 FIX: Convert to UTC explicitly to avoid timezone confusion
-    const pickupDateTimeUTC = moment(
-      `${pickupMoment.format('YYYY-MM-DD')} ${pickupStartTime}`,
-      'YYYY-MM-DD hh:mm A'
-    ).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-
-    const deliveryDateTimeUTC = moment(
-      `${deliveryMoment.format('YYYY-MM-DD')} ${formattedDeliveryTime}`,
-      'YYYY-MM-DD hh:mm A'
-    ).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'); // C
-
-
-    console.log('🕓 Pickup UTC:', pickupDateTimeUTC);
-    console.log('🕓 Delivery UTC:', deliveryDateTimeUTC);
-
     // 🔹 Construct final payload
     const orderPayload = {
       vendorId: vendorId || '',
       items: Object.keys(cartItems).map(key => ({
-        item: key,
-        category: cartItems[key].category || 'man',
+        item: cartItems[key].itemId,
+        category: cartItems[key].category,
         service: cartItems[key].service || '',
         quantity: cartItems[key].qty || 1,
       })),
       totalPrice: totalPrice || 0,
-
-      // ✅ FIXED: Send as UTC datetime strings
-      // pickupDateTime: pickupDateTimeUTC,
-      // deliveryDateTime: deliveryDateTimeUTC,
-
-      // ✅ Optional: Keep separate fields for reference
       pickupDate: pickupMoment.format('YYYY-MM-DD'),
       pickupTime: pickupStartTime,
       deliveryDate: deliveryMoment.format('YYYY-MM-DD'),
             deliveryTime: formattedDeliveryTime,
-
-      // ✅ Notes & instructions
       instructions: note,
-
-      // ✅ Address info
       address: fullAddress,
       coordinates: {
         type: 'Point',
@@ -442,17 +441,25 @@ const rawPickupTime = pickupSlot?.time || formatTime(defaultPickupTimeDate);
       JSON.stringify(orderPayload, null, 2),
     );
 
-    // 🔹 Dispatch API call
-    const result = await dispatch(placeOrder(orderPayload)).unwrap();
-
-    // ✅ CLEAR CART AFTER SUCCESS
+   const result = await dispatch(placeOrder(orderPayload)).unwrap();
     dispatch(clearCart());
-
     navigation.replace('OrderConfirmation', { orderData: result });
   } catch (error) {
-    console.error('❌ Error placing order:', error);
-    Alert.alert('Error', error?.message || 'Failed to place order');
+  console.error('❌ Error placing order:', error);
+  const errorMessage = error?.message || error?.toString() || '';
+  if (errorMessage.includes('Premium service') && 
+      errorMessage.includes('can only be added along with a main service')) {
+    showToast(
+      errorMessage,
+      "info"
+    );
+  } else {
+    showToast(
+      error?.message || 'Failed to place order. Please try again.',
+      "error"
+    );
   }
+}
 };
 
   // Custom Modal Components

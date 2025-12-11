@@ -26,8 +26,7 @@ import { useAuth } from '../../../utils/context/authContext';
 import { getFcmToken } from '../../../utils/notification/notificationService';
 import { updateFcmToken } from '../../../redux/slices/notificationSlice';
 
-const PhoneLoginScreen = () => {
-  const navigation = useNavigation();
+const PhoneLoginScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const { 
     otpLoading, 
@@ -151,8 +150,6 @@ const handleVerifyOtp = async () => {
         >
         <View style={styles.centerView}>
           <AuthHeader
-            showBackButton={true}
-            onBackPress={() => navigation.goBack()}
             title="Sign in with Phone"
             subtitle={isOtpSent ? `Enter the OTP sent to ${selectedCountry.dialCode}${phone}` : "Enter your phone number to continue"}
           />

@@ -12,9 +12,9 @@ export const styles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 1,
     borderColor:appColors.border,
-    width:windowWidth(140)
+    width:windowWidth(150)
   },
-  text: { flex: 1, fontSize: 11.5, color: appColors.font,fontFamily:fonts.InterRegular },
+  text: { flex: 1, fontSize: 10.1, color: appColors.font,fontFamily:fonts.InterRegular },
   modalOverlay: {
     flex: 1,
     backgroundColor: "transparent",

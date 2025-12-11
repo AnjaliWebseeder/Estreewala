@@ -1,5 +1,5 @@
 // components/CustomDropdown.js
-import React, { useState, useRef } from "react";
+import React, { useState, useRef,forwardRef,useImperativeHandle } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,6 @@ import {
   TouchableWithoutFeedback,
 
 } from "react-native";
-// if you use Expo change import to: import { Ionicons } from '@expo/vector-icons';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {styles} from './styles'
 
@@ -20,17 +19,23 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const ITEM_HEIGHT = 46;
 const DROPDOWN_MAX_HEIGHT = 200;
 
-export default function CustomDropdown({
+ const CustomDropdown = forwardRef(({
   options = [],
   value,
   onChange,
   placeholder = "Select",
   style,
   dropdownStyle,
-}) {
+}, ref) => {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0, width: 160, dropUp: false, dropHeight: 0 });
   const btnRef = useRef(null);
+
+  // Expose methods via ref
+  useImperativeHandle(ref, () => ({
+    close: () => setOpen(false),
+    open: () => openDropdown()
+  }));
 
   const selected = options.find((o) => o.value === value);
 
@@ -41,13 +46,10 @@ export default function CustomDropdown({
       return;
     }
 
-    // compute desired dropdown height based on options (so we can flip if not enough space)
     const desiredHeight = Math.min(DROPDOWN_MAX_HEIGHT, options.length * ITEM_HEIGHT);
 
-    // measure absolute position on screen
     if (UIManager && UIManager.measureInWindow) {
       UIManager.measureInWindow(node, (x, y, width, height) => {
-        // space below button
         const spaceBelow = SCREEN_HEIGHT - (y + height);
         const shouldDropUp = spaceBelow < desiredHeight;
         const top = shouldDropUp ? Math.max(8, y - desiredHeight) : y + height;
@@ -56,7 +58,6 @@ export default function CustomDropdown({
         setOpen(true);
       });
     } else if (btnRef.current && btnRef.current.measureInWindow) {
-      // fallback
       btnRef.current.measureInWindow((x, y, width, height) => {
         const spaceBelow = SCREEN_HEIGHT - (y + height);
         const shouldDropUp = spaceBelow < desiredHeight;
@@ -71,6 +72,11 @@ export default function CustomDropdown({
 
   const close = () => setOpen(false);
 
+  const handleOptionSelect = (itemValue) => {
+    onChange(itemValue);
+    close();
+  };
+
   return (
     <View>
       <TouchableOpacity
@@ -82,14 +88,12 @@ export default function CustomDropdown({
         <Text numberOfLines={1} style={styles.text}>
           {selected?.label ?? placeholder}
         </Text>
-        <Ionicons name={open ? "chevron-up" : "chevron-down"} size={16} color="#333" />
+        <Ionicons name={open ? "chevron-up" : "chevron-down"} size={13} color="#333" />
       </TouchableOpacity>
 
       <Modal visible={open} transparent animationType="none" onRequestClose={close}>
-        {/* clicking outside closes */}
         <TouchableWithoutFeedback onPress={close}>
           <View style={styles.modalOverlay}>
-            {/* dropdown container positioned absolute using measured coords */}
             <View
               style={[
                 styles.dropdown,
@@ -109,10 +113,7 @@ export default function CustomDropdown({
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={styles.opt}
-                    onPress={() => {
-                      onChange(item.value);
-                      close();
-                    }}
+                    onPress={() => handleOptionSelect(item.value)}
                   >
                     <Text style={styles.optText}>{item.label}</Text>
                   </TouchableOpacity>
@@ -126,6 +127,6 @@ export default function CustomDropdown({
       </Modal>
     </View>
   );
-}
+});
 
-
+export default CustomDropdown
