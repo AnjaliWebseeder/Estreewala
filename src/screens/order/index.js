@@ -13,6 +13,7 @@ import { getOrdersByStatus, addNewOrder, refreshOrders, updateOrderStatus } from
 import { useSocket } from "../../utils/context/socketContext";
 import { useToast } from "../../utils/context/toastContext";
 import moment from "moment-timezone";
+import { showOrderNotification } from "../../utils/notification/notificationService";
 
 // Default images for vendors
 const defaultServiceImages = [service1, service2, service3, service4];
@@ -69,7 +70,7 @@ const OrdersScreen = ({ navigation, route }) => {
         updatedAt: data.updatedAt
       }));
 
-      // Show notification to user
+      
     
     };
 
@@ -274,10 +275,7 @@ const OrdersScreen = ({ navigation, route }) => {
       default:
         orders = [];
     }
-    
-
-    console.log("CCCCCCCCCCCCCCCC",completedOrders)
-    // Sort orders by creation date (newest first)
+        // Sort orders by creation date (newest first)
     const sortedOrders = [...orders].sort((a, b) => 
       new Date(b.createdAt) - new Date(a.createdAt)
     );

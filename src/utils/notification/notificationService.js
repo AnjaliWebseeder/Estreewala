@@ -1,11 +1,29 @@
 import messaging from '@react-native-firebase/messaging';
-export async function requestUserPermission() {
-  const authStatus = await messaging().requestPermission();
-  const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+import notifee, { AndroidImportance } from '@notifee/react-native';
+import { navigationRef } from "../../navigation/index"
 
-  return enabled;
+
+export async function requestUserPermission() {
+  await notifee.requestPermission(); // 🔥 REQUIRED
+  const authStatus = await messaging().requestPermission();
+  return (
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL
+  );
+}
+
+
+export async function showOrderNotification(data) {
+  await notifee.displayNotification({
+    title: 'Order Update',
+    body: `Your order is ${data.status}`,
+    android: {
+      channelId: 'default',
+      importance: AndroidImportance.HIGH,
+      pressAction: { id: 'default' },
+      smallIcon: 'ic_launcher',
+    },
+  });
 }
 
 export async function getFcmToken() {
@@ -15,22 +33,43 @@ export async function getFcmToken() {
 }
 
 export function notificationListener() {
-  // Foreground notifications
+
+  // 🔥 FOREGROUND – SHOW NOTIFICATION MANUALLY
   messaging().onMessage(async remoteMessage => {
-    console.log("Foreground message: ", remoteMessage);
+    console.log('📩 Foreground FCM:', remoteMessage);
+
+    await notifee.displayNotification({
+      title: remoteMessage.notification?.title || 'Order Update',
+      body:
+        remoteMessage.notification?.body ||
+        `Your order is ${remoteMessage.data?.status}`,
+      android: {
+        channelId: 'default',
+        importance: AndroidImportance.HIGH,
+        pressAction: { id: 'default' },
+        smallIcon: 'ic_launcher',
+      },
+    });
   });
 
-  // When app opened from quit state
+  // 🔹 App opened from killed state
   messaging()
     .getInitialNotification()
     .then(remoteMessage => {
       if (remoteMessage) {
-        console.log("Quit state message:", remoteMessage);
+        console.log('💀 Killed state FCM:', remoteMessage);
+        navigationRef.current?.navigate('Orders');
       }
     });
 
-  // When app opened from background state
+  // 🔹 App opened from background
   messaging().onNotificationOpenedApp(remoteMessage => {
-    console.log("Background message:", remoteMessage);
+    console.log('📲 Background FCM:', remoteMessage);
+    navigationRef.current?.navigate('Orders');
   });
 }
+
+
+
+
+

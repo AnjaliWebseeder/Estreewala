@@ -9,7 +9,8 @@ import { ToastProvider } from './src/utils/context/toastContext';
 import { PersistGate } from 'redux-persist/integration/react';
 import {SocketProvider} from "./src/utils/context/socketContext"
 import { requestUserPermission, getFcmToken, notificationListener } from "./src/utils/notification/notificationService"
-
+import notifee, { AndroidImportance } from '@notifee/react-native';
+import UpdateModal from "./src/otherComponent/updateModal"
 
 export default function App() {
   
@@ -19,6 +20,15 @@ export default function App() {
       notificationListener()
   },[])
 
+  useEffect(() => {
+  notifee.createChannel({
+    id: 'default',
+    name: 'Default Channel',
+    importance: AndroidImportance.HIGH,
+  });
+}, []);
+
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -26,6 +36,7 @@ export default function App() {
           <AuthProvider>
             <DrawerProvider>
               <SocketProvider>
+                <UpdateModal />
               <NavigationContainer >
                 <Navigation />
               </NavigationContainer>
