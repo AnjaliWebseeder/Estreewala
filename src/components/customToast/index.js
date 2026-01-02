@@ -1,8 +1,13 @@
-import  { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Text, StyleSheet, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const CustomToast = ({ message, type = 'success', duration = 3000, onHide }) => {
+const CustomToast = ({
+  message,
+  type = 'success',
+  duration = 3000,
+  onHide,
+}) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(100)).current;
 
@@ -18,7 +23,7 @@ const CustomToast = ({ message, type = 'success', duration = 3000, onHide }) => 
         toValue: 0,
         duration: 300,
         useNativeDriver: true,
-      })
+      }),
     ]).start();
 
     // Auto hide after duration
@@ -33,7 +38,7 @@ const CustomToast = ({ message, type = 'success', duration = 3000, onHide }) => 
           toValue: 100,
           duration: 300,
           useNativeDriver: true,
-        })
+        }),
       ]).start(() => {
         onHide();
       });
@@ -44,34 +49,44 @@ const CustomToast = ({ message, type = 'success', duration = 3000, onHide }) => 
 
   const getBackgroundColor = () => {
     switch (type) {
-    case 'success': return "#2ECC71";
-      case 'error': return '#F44336';
-      case 'warning': return '#FF9800';
-      case 'info': return '#232425ff';
-      default: return '#4CAF50';
+      case 'success':
+        return '#2ECC71';
+      case 'error':
+        return '#F44336';
+      case 'warning':
+        return '#FF9800';
+      case 'info':
+        return '#232425ff';
+      default:
+        return '#4CAF50';
     }
   };
 
   const getIcon = () => {
     switch (type) {
-      case 'success': return 'check-circle';
-      case 'error': return 'close-circle';
-      case 'warning': return 'alert-circle';
-      case 'info': return 'information';
-      default: return 'check-circle';
+      case 'success':
+        return 'check-circle';
+      case 'error':
+        return 'close-circle';
+      case 'warning':
+        return 'alert-circle';
+      case 'info':
+        return 'information';
+      default:
+        return 'check-circle';
     }
   };
 
   return (
-    <Animated.View 
+    <Animated.View
       style={[
         styles.toast,
-        type === "info" && { paddingVertical: 10 },
-        { 
+        type === 'info' && { paddingVertical: 10 },
+        {
           backgroundColor: getBackgroundColor(),
           opacity: fadeAnim,
-          transform: [{ translateY: slideAnim }]
-        }
+          transform: [{ translateY: slideAnim }],
+        },
       ]}
     >
       <Icon style={styles.icon} name={getIcon()} size={20} color="#FFF" />
@@ -83,7 +98,7 @@ const CustomToast = ({ message, type = 'success', duration = 3000, onHide }) => 
 const styles = StyleSheet.create({
   toast: {
     position: 'absolute',
-    bottom: 30, // Position above bottom navigation
+    bottom: 45, // Position above bottom navigation
     left: 10,
     right: 10,
     flexDirection: 'row',
@@ -105,9 +120,9 @@ const styles = StyleSheet.create({
     marginLeft: 7,
     flex: 1,
   },
-  icon:{
-    marginLeft:5
-  }
+  icon: {
+    marginLeft: 5,
+  },
 });
 
 export default CustomToast;
