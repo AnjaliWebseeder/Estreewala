@@ -1,19 +1,32 @@
 import React, { useState } from 'react';
-import { ScrollView, TouchableOpacity, Text, Alert, View, StatusBar } from 'react-native';
+import {
+  ScrollView,
+  TouchableOpacity,
+  Text,
+  Alert,
+  View,
+  StatusBar,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerCustomer, resetRegisterState } from "../../../redux/slices/authSlice"
+import {
+  registerCustomer,
+  resetRegisterState,
+} from '../../../redux/slices/authSlice';
 import AuthHeader from '../../../components/auth/authHeader';
 import InputField from '../../../components/auth/inputField';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
-import {useToast} from "../../../utils/context/toastContext"
+import { useToast } from '../../../utils/context/toastContext';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { registerLoading, registerError, registerSuccess } = useSelector(state => state.auth);
-  
+  const { registerLoading, registerError, registerSuccess } = useSelector(
+    state => state.auth,
+  );
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -28,107 +41,124 @@ const SignUpScreen = () => {
 
   const validateForm = () => {
     if (!name.trim()) {
-      Alert.alert('Error', 'Please enter your full name');
+      showToast('Please enter your full name', 'error');
       return false;
     }
+
     if (!email.trim()) {
-      Alert.alert('Error', 'Please enter your email address');
+      showToast('Please enter your email address', 'error');
       return false;
     }
+
     if (!/^\S+@\S+\.\S+$/.test(email)) {
-      Alert.alert('Error', 'Please enter a valid email address');
+      showToast('Please enter a valid email address', 'error');
       return false;
     }
+
     if (!phone.trim()) {
-      Alert.alert('Error', 'Please enter your phone number');
+      showToast('Please enter your phone number', 'error');
       return false;
     }
-    if (!/^\d{10}$/.test(phone)) {
-      Alert.alert('Error', 'Phone number must be exactly 10 digits');
+
+    if (!/^[6-9]\d{9}$/.test(phone)) {
+      showToast('Please enter a valid 10-digit Indian mobile number', 'error');
       return false;
     }
+
     return true;
   };
 
   const handleSignUp = async () => {
     if (!validateForm()) return;
+
     try {
-      await dispatch(registerCustomer({
-        name: name.trim(),
-        email: email.trim(),
-        phone: phone.trim()
-      })).unwrap();
-      
- // Success is handled in useEffect
+      await dispatch(
+        registerCustomer({
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+        }),
+      ).unwrap();
+
       navigation.navigate('PhoneLogin');
-     
     } catch (error) {
-      showToast(error, "error");
-      // Error is handled in useEffect via registerError
+      showToast(error || 'Registration failed', 'error');
       console.log('Registration error:', error);
     }
   };
 
   const isEmailValid = /^\S+@\S+\.\S+$/.test(email.trim());
-const isPhoneValid = /^\d{10}$/.test(phone.trim());
-const isFormValid = name.trim() && isEmailValid && isPhoneValid;
+  const isPhoneValid = /^\d{10}$/.test(phone.trim());
+  const isFormValid = name.trim() && isEmailValid && isPhoneValid;
 
   return (
     <SafeAreaView style={styles.container}>
-       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}
+      <StatusBar
+        barStyle="dark-content"
+        translucent
+        backgroundColor="transparent"
+      />
+
+      <KeyboardAwareScrollView
+        // contentContainerStyle={styles.contentContainerStyle}
+        keyboardShouldPersistTaps="handled"
+        extraScrollHeight={40}
+        enableOnAndroid
       >
-        <AuthHeader
-          title="Sign Up"
-          subtitle="Join us to get started"
-          showBackButton={true}
-          onBackPress={() => navigation.goBack()}
-        />
-
-        <View style={{marginHorizontal:15}}>
-          <InputField
-            icon="person-outline"
-            placeholder="Full Name"
-            value={name}
-            onChangeText={setName}
-            autoCapitalize="words"
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <AuthHeader
+            title="Sign Up"
+            subtitle="Join us to get started"
+            showBackButton={true}
+            onBackPress={() => navigation.goBack()}
           />
 
-          <InputField
-            icon="mail-outline"
-            placeholder="Email address"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
+          <View style={{ marginHorizontal: 15 }}>
+            <InputField
+              icon="person-outline"
+              placeholder="Full Name"
+              value={name}
+              onChangeText={setName}
+              autoCapitalize="words"
+            />
 
-          <InputField
-            icon="call-outline"
-            placeholder="Phone Number"
-            value={phone}
-            onChangeText={setPhone}
-            keyboardType="phone-pad"
-            maxLength={10}
-          />
+            <InputField
+              icon="mail-outline"
+              placeholder="Email address"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
 
-          <TouchableOpacity
-            style={[
-              styles.submitButton,
-              (!isFormValid || registerLoading) && styles.disabledButton,
-            ]}
-            onPress={handleSignUp}
-            disabled={!isFormValid || registerLoading}
-          >
-            <Text style={styles.submitButtonText}>
-              {registerLoading ? 'Creating Account...' : 'Sign Up'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+            <InputField
+              icon="call-outline"
+              placeholder="Phone Number"
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="phone-pad"
+              maxLength={10}
+            />
+
+            <TouchableOpacity
+              style={[
+                styles.submitButton,
+                registerLoading && styles.disabledButton,
+              ]}
+              onPress={handleSignUp}
+              disabled={registerLoading}
+            >
+              <Text style={styles.submitButtonText}>
+                {registerLoading ? 'Creating Account...' : 'Sign Up'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 };

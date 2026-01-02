@@ -1,18 +1,23 @@
-import React, { useState, useRef, useEffect,useContext } from 'react';
-import { 
-  View, 
-  TouchableOpacity, 
-  Text, 
-  TextInput, 
-  Animated, 
-  KeyboardAvoidingView, 
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  TextInput,
+  Animated,
+  KeyboardAvoidingView,
   Platform,
   StatusBar,
-  ScrollView
+  ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendOtp, verifyOtp, resetOtpState, resetVerifyState } from "../../../redux/slices/authSlice"
+import {
+  sendOtp,
+  verifyOtp,
+  resetOtpState,
+  resetVerifyState,
+} from '../../../redux/slices/authSlice';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AuthHeader from '../../../components/auth/authHeader';
 import OtpInput from './otpInput/index';
@@ -21,30 +26,28 @@ import { styles } from './styles';
 import { countries } from '../../../utils/data';
 import appColors from '../../../theme/appColors';
 import AuthFooter from '../../../components/auth/authFooter';
-import {useToast} from "../../../utils/context/toastContext"
+import { useToast } from '../../../utils/context/toastContext';
 import { useAuth } from '../../../utils/context/authContext';
 import { getFcmToken } from '../../../utils/notification/notificationService';
 import { updateFcmToken } from '../../../redux/slices/notificationSlice';
 
-const PhoneLoginScreen = ({navigation}) => {
+const PhoneLoginScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { 
-    otpLoading, 
-    otpSent, 
-    verifyLoading, 
-  } = useSelector(state => state.auth);
-  
+  const { otpLoading, otpSent, verifyLoading } = useSelector(
+    state => state.auth,
+  );
+
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [focusedField, setFocusedField] = useState(null);
   const [resendTimer, setResendTimer] = useState(30);
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const [isChecked, setIsChecked] = useState(false);
-   const [isOtpSent, setIsOtpSent] = useState(false);
+  const [isOtpSent, setIsOtpSent] = useState(false);
   const phoneInputRef = useRef();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const { showToast } = useToast();
-const { login,userToken } = useAuth();
+  const { login, userToken } = useAuth();
   // Clear states when component unmounts
   useEffect(() => {
     return () => {
@@ -66,8 +69,6 @@ const { login,userToken } = useAuth();
     }
   }, [otpSent, fadeAnim]);
 
-
-
   // Countdown timer for resend OTP
   useEffect(() => {
     let timer;
@@ -83,11 +84,9 @@ const { login,userToken } = useAuth();
     try {
       await dispatch(sendOtp({ phone: phone })).unwrap();
     } catch (error) {
-       showToast(error || 'Failed to send OTP', "error");
+      showToast(error || 'Failed to send OTP', 'error');
     }
   };
-
-
 
   const handleResendOtp = () => {
     if (resendTimer === 0) {
@@ -95,178 +94,201 @@ const { login,userToken } = useAuth();
     }
   };
 
-   const saveFcmTokenAfterLogin = () => async (dispatch) => {
-  try {
-    const token = await getFcmToken();
-    if (!token) return;
+  const saveFcmTokenAfterLogin = () => async dispatch => {
+    try {
+      const token = await getFcmToken();
+      if (!token) return;
 
-    await dispatch(updateFcmToken(token));
-  } catch (error) {
-    console.log("❌ Error saving FCM Token:", error);
-  }
-};
-
-
-const handleVerifyOtp = async () => {
-  try {
-    const result = await dispatch(verifyOtp({ phone, otp })).unwrap();
-
-    if (result.token && result.customer) {
-      console.log("TOKEN IS", result.token, result.customer);
-
-      // Login user
-      await login(result.token, result.customer);
-
-      // Save FCM Token
-      await dispatch(saveFcmTokenAfterLogin());
-
-      // Navigate to home
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Main' }],
-      });
-    } else {
-      console.warn("⚠️ Missing token or customer info");
-      showToast('Login failed. Please try again.', "error");
+      await dispatch(updateFcmToken(token));
+    } catch (error) {
+      console.log('❌ Error saving FCM Token:', error);
     }
-  } catch (err) {
-    console.error('Error verifying OTP:', err);
-    showToast(err || 'Wrong OTP, please try again!', "error");
-  }
-};
+  };
 
+  const handleVerifyOtp = async () => {
+    try {
+      const result = await dispatch(verifyOtp({ phone, otp })).unwrap();
+
+      if (result.token && result.customer) {
+        console.log('TOKEN IS', result.token, result.customer);
+
+        // Login user
+        await login(result.token, result.customer);
+
+        // Save FCM Token
+        await dispatch(saveFcmTokenAfterLogin());
+
+        // Navigate to home
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
+      } else {
+        console.warn('⚠️ Missing token or customer info');
+        showToast('Login failed. Please try again.', 'error');
+      }
+    } catch (err) {
+      console.error('Error verifying OTP:', err);
+      showToast(err || 'Wrong OTP, please try again!', 'error');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-      <KeyboardAvoidingView 
+      <StatusBar
+        barStyle="dark-content"
+        translucent
+        backgroundColor="transparent"
+      />
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
-         <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-        <View style={styles.centerView}>
-          <AuthHeader
-            title="Sign in with Phone"
-            subtitle={isOtpSent ? `Enter the OTP sent to ${selectedCountry.dialCode}${phone}` : "Enter your phone number to continue"}
-          />
-          <View style={styles.mainView}>
-            <View style={styles.mainContainer}/>
-            {!isOtpSent ? (
-              <>
-                <View style={styles.phoneInputContainer}>
+          <View style={styles.centerView}>
+            <AuthHeader
+              title="Sign in with Phone"
+              subtitle={
+                isOtpSent
+                  ? `Enter the OTP sent to ${selectedCountry.dialCode}${phone}`
+                  : 'Enter your phone number to continue'
+              }
+            />
+            <View style={styles.mainView}>
+              <View style={styles.mainContainer} />
+              {!isOtpSent ? (
+                <>
+                  <View style={styles.phoneInputContainer}>
+                    <TouchableOpacity
+                      activeOpacity={0.9}
+                      style={[
+                        styles.countryCodeContainer,
+                        focusedField === 'country' && styles.focusedInput,
+                      ]}
+                      onFocus={() => setFocusedField('country')}
+                      onBlur={() => setFocusedField(null)}
+                    >
+                      <Text style={styles.flag}>{selectedCountry.flag}</Text>
+                      <Text style={styles.countryCodeText}>
+                        {selectedCountry.dialCode}
+                      </Text>
+                      <Ionicons name="chevron-down" size={16} color="#666" />
+                    </TouchableOpacity>
+
+                    <TextInput
+                      ref={phoneInputRef}
+                      style={[
+                        styles.phoneInput,
+                        focusedField === 'phone' && styles.focusedInput,
+                      ]}
+                      placeholder="Phone Number"
+                      placeholderTextColor="#999"
+                      value={phone}
+                      onChangeText={setPhone}
+                      keyboardType="phone-pad"
+                      onFocus={() => setFocusedField('phone')}
+                      onBlur={() => setFocusedField(null)}
+                      maxLength={10}
+                    />
+                  </View>
+
                   <TouchableOpacity
-                    activeOpacity={0.9}
                     style={[
-                      styles.countryCodeContainer,
-                      focusedField === 'country' && styles.focusedInput,
+                      styles.submitButton,
+                      phone.length === 10 && isChecked && !otpLoading
+                        ? styles.activeButton
+                        : styles.inactiveButton,
                     ]}
-                    onFocus={() => setFocusedField('country')}
-                    onBlur={() => setFocusedField(null)}
+                    onPress={handleSendOtp}
+                    disabled={phone.length < 10 || !isChecked || otpLoading}
                   >
-                    <Text style={styles.flag}>{selectedCountry.flag}</Text>
-                    <Text style={styles.countryCodeText}>{selectedCountry.dialCode}</Text>
-                    <Ionicons name="chevron-down" size={16} color="#666" />
+                    <Text
+                      style={[
+                        styles.submitButtonText,
+                        {
+                          color:
+                            phone.length === 10 && isChecked
+                              ? appColors.white
+                              : '#7a7a7a',
+                        },
+                      ]}
+                    >
+                      {otpLoading ? 'Sending OTP...' : 'Send OTP'}
+                    </Text>
                   </TouchableOpacity>
 
-                  <TextInput
-                    ref={phoneInputRef}
-                    style={[
-                      styles.phoneInput,
-                      focusedField === 'phone' && styles.focusedInput,
-                    ]}
-                    placeholder="Phone Number"
-                    placeholderTextColor="#999"
-                    value={phone}
-                    onChangeText={setPhone}
-                    keyboardType="phone-pad"
-                    onFocus={() => setFocusedField('phone')}
-                    onBlur={() => setFocusedField(null)}
-                    maxLength={10}
-                  />
-                </View>
-
-                <TouchableOpacity
-                  style={[
-                    styles.submitButton,
-                    phone.length === 10 && isChecked && !otpLoading
-                      ? styles.activeButton
-                      : styles.inactiveButton,
-                  ]}
-                  onPress={handleSendOtp}
-                  disabled={phone.length < 10 || !isChecked || otpLoading}
-                >
-                  <Text
-                    style={[
-                      styles.submitButtonText,
-                      { color: phone.length === 10 && isChecked ? appColors.white : '#7a7a7a' },
-                    ]}
+                  <TouchableOpacity
+                    style={styles.checkboxContainer}
+                    activeOpacity={0.8}
+                    onPress={() => setIsChecked(!isChecked)}
                   >
-                    {otpLoading ? 'Sending OTP...' : 'Send OTP'}
-                  </Text>
-                </TouchableOpacity>
+                    <Ionicons
+                      name={isChecked ? 'checkbox' : 'square-outline'}
+                      size={18}
+                      color={isChecked ? appColors.primary : '#999'}
+                    />
+                    <View style={styles.termsContainer}>
+                      <Text style={styles.termsText}>
+                        I agree to the{' '}
+                        <Text style={styles.highlightText}>
+                          Terms of Service
+                        </Text>{' '}
+                        and{' '}
+                        <Text style={styles.highlightText}>Privacy Policy</Text>
+                        .
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
 
-                <TouchableOpacity 
-                  style={styles.checkboxContainer} 
-                  activeOpacity={0.8} 
-                  onPress={() => setIsChecked(!isChecked)}
-                >
-                  <Ionicons
-                    name={isChecked ? "checkbox" : "square-outline"}
-                    size={18}
-                    color={isChecked ? appColors.primary : "#999"}
+                  <AuthFooter
+                    text="Don't have an account?"
+                    buttonText="Sign Up"
+                    onPress={() => navigation.navigate('SignUp')}
                   />
-                  <View style={styles.termsContainer}>
-                    <Text style={styles.termsText}>
-                      I agree to the{' '}
-                      <Text style={styles.highlightText}>Terms of Service</Text> and{' '}
-                      <Text style={styles.highlightText}>Privacy Policy</Text>.
+                </>
+              ) : (
+                <Animated.View style={{ opacity: fadeAnim }}>
+                  <OtpInput code={otp} setCode={setOtp} maxLength={4} />
+
+                  <TouchableOpacity
+                    style={[
+                      styles.submitButton,
+                      otp.length === 4 && !verifyLoading
+                        ? styles.activeButton
+                        : styles.inactiveButton,
+                    ]}
+                    onPress={handleVerifyOtp}
+                    disabled={otp.length !== 4 || verifyLoading}
+                  >
+                    <Text style={styles.submitButtonText}>
+                      {verifyLoading ? 'Verifying...' : 'Verify OTP'}
                     </Text>
-                  </View>
-                </TouchableOpacity>
-                
-                <AuthFooter
-                  text="Don't have an account?"
-                  buttonText="Sign Up"
-                  onPress={() => navigation.navigate('SignUp')}
-                />
-              </>
-            ) : (
-              <Animated.View style={{ opacity: fadeAnim }}>
-                <OtpInput
-                  code={otp}
-                  setCode={setOtp}
-                  maxLength={6}
-                />
+                  </TouchableOpacity>
 
-                <TouchableOpacity 
-                  style={[styles.submitButton, otp.length === 6 && !verifyLoading ? styles.activeButton : styles.inactiveButton]} 
-                  onPress={handleVerifyOtp}
-                  disabled={otp.length !== 6 || verifyLoading}
-                >
-                  <Text style={styles.submitButtonText}>
-                    {verifyLoading ? 'Verifying...' : 'Verify OTP'}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity 
-                  style={[styles.resendOtp, (resendTimer > 0 || otpLoading) && styles.disabledResend]}
-                  onPress={handleResendOtp}
-                  disabled={resendTimer > 0 || otpLoading}
-                >
-                  <Text style={styles.resendOtpText}>
-                    {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
-                  </Text>
-                </TouchableOpacity>
-              </Animated.View>
-            )}
+                  <TouchableOpacity
+                    style={[
+                      styles.resendOtp,
+                      (resendTimer > 0 || otpLoading) && styles.disabledResend,
+                    ]}
+                    onPress={handleResendOtp}
+                    disabled={resendTimer > 0 || otpLoading}
+                  >
+                    <Text style={styles.resendOtpText}>
+                      {resendTimer > 0
+                        ? `Resend OTP in ${resendTimer}s`
+                        : 'Resend OTP'}
+                    </Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              )}
+            </View>
           </View>
-        </View>
         </ScrollView>
-      </KeyboardAvoidingView> 
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
