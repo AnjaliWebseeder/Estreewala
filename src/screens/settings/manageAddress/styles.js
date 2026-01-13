@@ -1,64 +1,67 @@
 import appColors from "../../../theme/appColors";
 import fonts from "../../../theme/appFonts";
-
-const { StyleSheet } = require("react-native");
+import { windowHeight, windowWidth, fontSizes } from "../../../theme/appConstant";
+const { StyleSheet, useWindowDimensions } = require("react-native");
 
 export const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: appColors.background },
   card: {
     backgroundColor: appColors.menuCard,
     borderRadius: 10,
-    padding: 12,
-    marginBottom: 12,
-   borderColor:appColors.border,
-   borderWidth:0.7,
-   borderRadius:10
+    paddingHorizontal: windowWidth(12),
+    paddingVertical: windowHeight(5),
+    marginBottom: windowHeight(12),
+    borderColor: appColors.border,
+    borderWidth: 0.7,
+    borderRadius: 10
   },
   selectedCard: {
     borderColor: appColors.font,
     backgroundColor: appColors.blueLight + '20',
   },
-  row: { 
-    flexDirection: "row", 
+  row: {
+    flexDirection: "row",
     alignItems: "center",
   },
   addressDetails: {
     flex: 1,
-    marginLeft: 10,
+    marginLeft: windowWidth(7),
   },
   addressHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: windowHeight(4),
   },
-  title: { 
-    fontSize: 16, 
-    fontWeight: "600", 
+  title: {
+    fontSize: fontSizes.FONT15,
+    fontWeight: "600",
     color: appColors.font,
     fontFamily: fonts.InterMedium,
-    marginRight: 8,
+    marginRight: windowWidth(8),
   },
-  details: { 
-    fontSize: 13, 
-    color: appColors.subTitle, 
+  details: {
+    fontSize: fontSizes.FONT15,
+    color: appColors.subTitle,
     fontFamily: fonts.InterRegular,
-    lineHeight: 25,
+    lineHeight: windowHeight(18)
   },
-  iconBtn: { 
-    marginLeft: 10,
-    padding: 4,
+  iconBtn: {
+    marginLeft: windowWidth(7),
+    paddingHorizontal: windowWidth(4),
+    paddingVertical: windowHeight(4),
   },
   locationIcon: {
-    marginLeft: 8,
+    marginLeft: windowWidth(8),
   },
 
   // Radio Button Styles
   radioButton: {
-    padding: 4,
+    paddingHorizontal: windowWidth(5),
+    paddingVertical: windowHeight(5),
   },
   radioOuter: {
-    height: 15,
-    width: 15,
+    height: windowHeight(15),
+    width: windowWidth(25),
     borderRadius: 10,
     borderWidth: 1.2,
     borderColor: appColors.border,
@@ -69,38 +72,57 @@ export const styles = StyleSheet.create({
     borderColor: appColors.font,
   },
   radioInner: {
-    height: 6,
-    width: 6,
+    height: windowHeight(9),
+    width: windowWidth(15),
     borderRadius: 5,
     backgroundColor: appColors.font,
   },
 
   // Default Badge
   defaultBadge: {
-    backgroundColor: appColors.greenLight,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
+    backgroundColor: "#c5f0d0",
+    paddingHorizontal: windowWidth(10),
+    paddingVertical: windowHeight(2),
+    borderRadius: 10,
   },
   defaultText: {
-    color: appColors.green,
-    fontSize: 10,
+    color: "green",
+    fontSize: fontSizes.FONT10,
     fontFamily: fonts.InterSemiBold,
   },
 
-  // Set Default Button
-  setDefaultBtn: {
-    marginTop: 6,
-    paddingTop: 0,
-    backgroundColor: appColors.blueLight,
-    borderRadius: 6,
-    alignItems: "flex-end",
-  },
-  setDefaultText: {
-    color: appColors.blue,
-    fontSize: 11,
-    fontFamily: fonts.InterRegular,
-  },
+ // Set Default Button (Stylish)
+setDefaultBtn: {
+  marginTop: windowHeight(6),
+  flexDirection: "row",
+  alignItems: "center",
+
+  paddingVertical: windowHeight(1),
+  paddingHorizontal: windowWidth(10),
+
+  backgroundColor: "#e7f3f6", 
+  borderRadius: 20,
+
+  alignSelf: "flex-end",
+
+  borderWidth: 1,
+  borderColor: "#0a8ba5",
+
+  // subtle elevation
+  shadowColor: "#0a8ba5",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.18,
+  shadowRadius: 4,
+  elevation: 2,
+},
+
+setDefaultText: {
+  color: "#0a8ba5",
+  fontSize: fontSizes.FONT12,
+  fontFamily: fonts.InterSemiBold,
+  letterSpacing: 0.4,
+},
+
 
   addBtn: {
     flexDirection: "row",
@@ -108,13 +130,14 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     borderWidth: 1,
     borderColor: appColors.border,
-    padding: 12,
-    marginHorizontal: 16,
+    paddingHorizontal: windowWidth(12),
+    paddingVertical: windowHeight(12),
+    marginHorizontal: windowWidth(16),
     borderRadius: 10,
-    marginBottom: 12,
+    marginBottom: windowHeight(12),
   },
   addBtnText: {
-    marginLeft: 6,
+    marginLeft: windowWidth(6),
     fontSize: 15,
     color: appColors.blue,
     fontFamily: fonts.InterMedium
@@ -122,32 +145,32 @@ export const styles = StyleSheet.create({
 
   applyBtn: {
     backgroundColor: appColors.blue,
-    paddingHorizontal: 14,
-    marginHorizontal: 16,
+    paddingHorizontal: windowWidth(14),
+    marginHorizontal: windowWidth(16),
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: windowHeight(20),
     alignItems: "center",
-    paddingVertical:12
+    paddingVertical: windowHeight(12)
   },
   applyBtnDisabled: {
     backgroundColor: appColors.grayLight,
   },
-  applyBtnText: { 
-    color: appColors.white, 
-    fontSize: 16,  
-    fontFamily: fonts.InterMedium 
+  applyBtnText: {
+    color: appColors.white,
+    fontSize: 16,
+    fontFamily: fonts.InterMedium
   },
-  
+
   currentLocationBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: windowWidth(16),
     backgroundColor: appColors.blueLight,
     borderBottomWidth: 1,
     borderBottomColor: appColors.darkBlue,
-    paddingBottom:16,
-    paddingTop:2
+    paddingBottom: windowHeight(16),
+    paddingTop: windowHeight(2)
   },
   currentLocationBtnDisabled: {
     opacity: 0.7,
@@ -157,12 +180,12 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   locationUnavailableText: {
-  fontSize: 12,
-  color: '#FF3B30',
-  marginTop: 4,
-},
+    fontSize: 12,
+    color: '#FF3B30',
+    marginTop: 4,
+  },
   currentLocationText: {
-    marginLeft: 12,
+    marginLeft: windowWidth(12),
     fontSize: 16,
     color: appColors.blue,
     fontFamily: fonts.InterRegular,
@@ -173,13 +196,14 @@ export const styles = StyleSheet.create({
   emptyState: {
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 40,
+    paddingVertical: windowHeight(40),
+    paddingHorizontal: windowWidth(40)
   },
   emptyStateText: {
     fontSize: 18,
     fontFamily: fonts.InterRegular,
     color: appColors.font,
-    marginTop: 16,
+    marginTop: windowHeight(16),
     marginBottom: 8,
   },
   emptyStateSubtext: {
@@ -187,30 +211,69 @@ export const styles = StyleSheet.create({
     color: appColors.subTitle,
     textAlign: 'center',
     fontFamily: fonts.InterRegular,
-    lineHeight: 27
+    lineHeight: windowHeight(27)
   },
   addNewButton: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  backgroundColor: appColors.white,
-  paddingHorizontal: 16,
-  paddingVertical:14,
-  marginBottom:20,
-  marginHorizontal: 16,
-  marginTop: 8,
-  borderRadius: 8,
-  borderWidth: 1,
-  borderColor: appColors.primary,
-  borderStyle: 'dashed',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: appColors.white,
+    paddingHorizontal: windowWidth(16),
+    paddingVertical: windowHeight(14),
+    marginBottom: windowHeight(20),
+    marginHorizontal: windowWidth(16),
+    marginTop: windowHeight(8),
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: appColors.primary,
+    borderStyle: 'dashed',
+  },
+  addNewButtonText: {
+    marginLeft: windowWidth(8),
+    fontSize: 16,
+    color: appColors.primary,
+    fontWeight: '500',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  modalOverlay: {
+  flex: 1,
+  backgroundColor: "rgba(0,0,0,0.4)",
+  justifyContent: "flex-end",
 },
-addNewButtonText: {
-  marginLeft: 8,
+
+modalContainer: {
+  backgroundColor: "#fff",
+  padding: 20,
+  borderTopLeftRadius: 20,
+  borderTopRightRadius: 20,
+},
+
+modalTitle: {
   fontSize: 16,
-  color: appColors.primary,
-  fontWeight: '500',
+  fontWeight: "600",
+  marginBottom: 12,
+  color: "#111827",
 },
-actionButtons: {
-  flexDirection: 'row',
-  alignItems: 'center',
+
+modalAddress: {
+  fontSize: 14,
+  color: "#374151",
+  lineHeight: 20,
 },
+
+modalCloseBtn: {
+  marginTop: 20,
+  paddingVertical: 12,
+  borderRadius: 10,
+  backgroundColor: "#2563EB",
+  alignItems: "center",
+},
+
+modalCloseText: {
+  color: "#fff",
+  fontWeight: "600",
+},
+
 });

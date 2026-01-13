@@ -6,7 +6,7 @@ export function HomeIcon({ color = "#000" }) {
     <Svg
       width={19}
       height={19}
-     viewBox="0 0 512 512"
+      viewBox="0 0 512 512"
       fill="none"
     >
       <G>
@@ -16,9 +16,6 @@ export function HomeIcon({ color = "#000" }) {
         />
       </G>
     </Svg>
-
-
-
 
   );
 }

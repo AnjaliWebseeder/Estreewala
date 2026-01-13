@@ -1,102 +1,103 @@
 import { StyleSheet } from 'react-native';
-import { windowHeight } from '../../../theme/appConstant';
+import { windowHeight, windowWidth, fontSizes } from '../../../theme/appConstant';
 import fonts from '../../../theme/appFonts';
 import appColors from '../../../theme/appColors';
 
 export const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor:  appColors.background},
+  container: {
+    flex: 1,
+    backgroundColor: appColors.background,
+  },
   content: {
-    paddingHorizontal: 20,
+    paddingHorizontal: windowWidth(20),
   },
   helpTitle: {
-    fontSize: 17,
-    fontFamily:fonts.InterSemiBold,
+    fontSize: fontSizes.FONT21,
+    fontFamily: fonts.InterSemiBold,
     color: appColors.font,
-    marginBottom: 5,
-   
+    marginBottom: windowHeight(5),
   },
   helpSubText: {
-    fontSize: 14,
-     fontFamily:fonts.InterRegular,
-    color:appColors.font,
-    marginBottom: 23,
-    lineHeight:25
+    fontSize: fontSizes.FONT18,
+    fontFamily: fonts.InterRegular,
+    color: appColors.font,
+    marginBottom: windowHeight(23),
+    lineHeight: windowHeight(15),
   },
   cardBox: {
     backgroundColor: appColors.menuCard,
-    borderRadius: 12,
-    padding: 14,
+    borderRadius: windowWidth(12),
+    padding: windowWidth(14),
     shadowColor: '#000',
     shadowOpacity: 0.05,
-    shadowRadius: 6,
+    shadowRadius: windowWidth(6),
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
-    marginBottom: 16,
-    borderColor:appColors.darkBlue,
-    borderWidth:1
+    marginBottom: windowHeight(16),
+    borderColor: appColors.darkBlue,
+    borderWidth: 1,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: windowHeight(4),
   },
   cardTitle: {
-    fontSize: 14,
-   fontFamily:fonts.InterRegular,
+    fontSize: fontSizes.FONT17,
+    fontFamily: fonts.InterRegular,
     color: appColors.font,
-    marginLeft: 8,
+    marginLeft: windowWidth(8),
   },
   cardValue: {
-    fontSize: 14,
+    fontSize: fontSizes.FONT20,
     fontFamily: fonts.InterRegular,
-    color:appColors.blue,
-    marginLeft: 28,
+    color: appColors.blue,
+    marginLeft: windowWidth(28),
   },
   messageRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
-    
+    marginBottom: windowHeight(8),
   },
   messageLabel: {
-    fontSize: 14,
-fontFamily:fonts.InterRegular,
-    marginLeft: 6,
+    fontSize: fontSizes.FONT14,
+    fontFamily: fonts.InterRegular,
+    marginLeft: windowWidth(6),
     color: '#000',
   },
   textInput: {
-    borderColor:appColors.darkBlue,
+    borderColor: appColors.darkBlue,
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: windowWidth(10),
     backgroundColor: appColors.menuCard,
-    padding: 12,
-fontFamily:fonts.InterRegular,
-    fontSize: 14,
+    padding: windowWidth(12),
+    fontFamily: fonts.InterRegular,
+    fontSize: fontSizes.FONT14,
     minHeight: windowHeight(100),
-    color:appColors.black
+    color: appColors.black,
   },
   charCount: {
     textAlign: 'right',
-    fontSize: 12,
-    color:appColors.font,
-    marginTop: 4,
-fontFamily:fonts.InterRegular,
+    fontSize: fontSizes.FONT12,
+    color: appColors.font,
+    marginTop: windowHeight(4),
+    fontFamily: fonts.InterRegular,
   },
   submitBtn: {
     backgroundColor: appColors.blue,
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginTop: 20,
+    paddingVertical: windowHeight(10),
+    borderRadius: windowWidth(10),
+    marginTop: windowHeight(20),
     alignItems: 'center',
-  margin:20,
-  bottom:windowHeight(20)
+    marginHorizontal: windowWidth(20),
+    marginBottom: windowHeight(20),
   },
   submitText: {
-    color:appColors.white,
-  fontFamily:fonts.InterMedium,
-    fontSize: 16,
+    color: appColors.white,
+    fontFamily: fonts.InterMedium,
+    fontSize: fontSizes.FONT16,
   },
   disabledBtn: {
-  backgroundColor: '#cccccc',
-},
+    backgroundColor: '#cccccc',
+  },
 });

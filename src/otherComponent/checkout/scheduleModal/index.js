@@ -39,6 +39,11 @@ export const ScheduleModal = ({
     setShowDatePicker(true);
   };
 
+const handleSlotSelect = slot => {
+  onSlotSelect(slot);   // ✅ parent me state set
+  onClose();            // ✅ modal close
+};
+
   return (
     <Modal visible={visible} animationType={"none"} transparent>
       <View style={modalStyles.modalContainer}>
@@ -84,7 +89,7 @@ export const ScheduleModal = ({
                     modalStyles.timeSlot,
                     selectedSlot?.id === item.id && modalStyles.timeSlotSelected
                   ]}
-                  onPress={() => onSlotSelect(item)}
+                 onPress={() => handleSlotSelect(item)}
                 >
                   <Text style={[
                     modalStyles.timeSlotText,

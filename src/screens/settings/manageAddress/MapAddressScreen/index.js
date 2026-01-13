@@ -7,73 +7,116 @@ import {
   ScrollView,
   PermissionsAndroid,
   Platform,
-  StatusBar
+  StatusBar,
+  TextInput
 } from 'react-native';
 import WebView from 'react-native-webview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Geolocation from 'react-native-geolocation-service';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
-import { 
-  getAddresses, 
-  addAddress, 
-  updateAddress, 
-  deleteAddress 
+import {
+  getAddresses,
+  addAddress,
+  updateAddress,
+  deleteAddress
 } from "../../../../redux/slices/addressSlice"
 import Header from "../../../../components/header"
 import { styles } from "./styles";
 import appColors from '../../../../theme/appColors';
-import {useToast} from "../../../../utils/context/toastContext"
+import { useToast } from "../../../../utils/context/toastContext"
 import { useAuth } from '../../../../utils/context/authContext';
 
 const MapAddressScreen = ({ navigation, route }) => {
+  const scrollRef = useRef(null);
   const dispatch = useDispatch();
   const { showToast } = useToast();
   const { userLocation } = useAuth();
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+
+  console.log("userLocation", userLocation);
   const { addresses, addressesLoading } = useSelector(state => state.address);
   const { editingAddress } = route.params || {};
+  const isEditMode = !!editingAddress;
 
   const webViewRef = useRef(null);
   // State for address form
   const [addressType, setAddressType] = useState(editingAddress?.type || 'Home');
-  const [addressText, setAddressText] = useState(editingAddress?.location?.address || '');
+  const [addressLine1, setAddressLine1] = useState(editingAddress?.addressLine1 || '');
+  const [addressLine2, setAddressLine2] = useState(editingAddress?.addressLine2 || '');
+  const [city, setCity] = useState(editingAddress?.city || '');
+  const [stateName, setStateName] = useState(editingAddress?.state || '');
+  const [pincode, setPincode] = useState(editingAddress?.pincode || '');
   const [isDefault, setIsDefault] = useState(editingAddress?.isDefault || false);
-  
-  // State for map and location - FIXED: Store coordinates as [longitude, latitude] for API
-  const [coordinates, setCoordinates] = useState(() => {
-    // Priority: editing address -> userLocation -> default Vadodara
-    if (editingAddress?.location?.coordinates) {
-      return editingAddress.location.coordinates;
-    } else if (userLocation?.longitude && userLocation?.latitude) {
-      return [userLocation.longitude, userLocation.latitude]; // [lng, lat] for API
-    } else {
-      return [73.2036246, 22.2917228]; // Default to Vadodara [lng, lat]
-    }
-  });
-  
   const [isMapLoading, setIsMapLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [hasLocationPermission, setHasLocationPermission] = useState(false);
   const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
 
+  const normalizeCoordinates = (coords) => {
+    if (!coords || coords.length !== 2) return null;
+    const [a, b] = coords;
+    if (a >= -90 && a <= 90 && b >= -180 && b <= 180) return [a, b]; // lat,lng
+    return [b, a]; // swap if seems like lng,lat
+  };
+
+  const [coordinates, setCoordinates] = useState(() => {
+    if (editingAddress?.coordinates?.length === 2) {
+      return normalizeCoordinates(editingAddress.coordinates);
+    }
+    if (userLocation?.coordinates?.length === 2) {
+      // Assuming [lng, lat] or [long, lat]
+      const [lng, lat] = normalizeCoordinates(userLocation.coordinates);
+      return [lng, lat];
+    }
+    return null;
+  });
+
+
+  useEffect(() => {
+    if (hasLocationPermission && !coordinates) {
+      useCurrentLocation();
+    }
+  }, [hasLocationPermission]);
+
+
+  useEffect(() => {
+    if (coordinates?.length === 2) {
+      const [lng, lat] = coordinates;
+
+      // 🔥 auto reverse geocode when coordinates are set
+      reverseGeocodeCoordinates(lat, lng);
+    }
+  }, [coordinates]);
+
+
+
   // Initialize with editing address or user location
   useEffect(() => {
-    console.log("🔄 Initializing with coordinates:", coordinates);
-    
     if (editingAddress) {
+      const coords = normalizeCoordinates(editingAddress.coordinates);
+
+      if (coords) {
+        setCoordinates(coords);
+      } else if (userLocation?.latitude && userLocation?.longitude) {
+        setCoordinates([userLocation.longitude, userLocation.latitude]);
+      }
+
       setAddressType(editingAddress.type);
-      setAddressText(editingAddress.location.address);
-      setCoordinates(editingAddress.location.coordinates);
+      setAddressLine1(editingAddress.addressLine1 || '');
+      setAddressLine2(editingAddress.addressLine2 || '');
+      setCity(editingAddress.city || '');
+      setStateName(editingAddress.state || '');
+      setPincode(editingAddress.pincode || '');
       setIsDefault(editingAddress.isDefault);
-    } else if (userLocation?.longitude && userLocation?.latitude) {
-      // Set initial coordinates from userLocation if no editing address
+    } else if (userLocation?.latitude && userLocation?.longitude) {
       setCoordinates([userLocation.longitude, userLocation.latitude]);
-      setAddressText(userLocation.address || '');
     }
-    
-    // Request location permission
+
     requestLocationPermission();
   }, [editingAddress, userLocation]);
+
+
 
   // Request location permission
   const requestLocationPermission = async () => {
@@ -107,37 +150,22 @@ const MapAddressScreen = ({ navigation, route }) => {
   // Manual reverse geocoding function - IMPROVED
   const reverseGeocodeCoordinates = async (lat, lng) => {
     if (isReverseGeocoding) return;
-    
+
     setIsReverseGeocoding(true);
     try {
-      console.log('🔍 Manual reverse geocoding:', lat, lng);
-      
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
-        {
-          headers: {
-            'User-Agent': 'YourApp/1.0'
-          }
-        }
+        { headers: { 'User-Agent': 'YourApp/1.0' } }
       );
-      
+
       if (response.ok) {
         const data = await response.json();
-        if (data && data.display_name) {
-          console.log('📫 Got address from manual geocoding:', data.display_name);
-          setAddressText(data.display_name);
-        } else {
-          // If no proper address found, create a basic one from coordinates
-          const basicAddress = `Location near ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-          setAddressText(basicAddress);
-          showToast("Location Set", "Coordinates saved, you can edit the address manually", "info");
+        if (data?.address) {
+          parseNominatimAddress(data);
         }
       }
-    } catch (error) {
-      console.error('❌ Manual geocoding error:', error);
-      // Fallback to coordinates if geocoding fails
-      const fallbackAddress = `Location at ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-      setAddressText(fallbackAddress);
+    } catch (e) {
+      console.error("Reverse geocoding failed", e);
     } finally {
       setIsReverseGeocoding(false);
     }
@@ -146,11 +174,63 @@ const MapAddressScreen = ({ navigation, route }) => {
   // Fixed Map HTML - Improved with better geocoding
   const getMapHtml = () => {
     // Convert coordinates from [lng, lat] to [lat, lng] for map display
-    const mapLat = coordinates[1] || 22.2917228; // latitude
-    const mapLng = coordinates[0] || 73.2036246; // longitude
-    
-    console.log("🗺️ Creating map with coordinates - Lat:", mapLat, "Lng:", mapLng);
-    
+    const mapLat = coordinates?.[1];
+    const mapLng = coordinates?.[0];
+
+    if (mapLat == null || mapLng == null) {
+      return `
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    font-family: Arial, sans-serif;
+  }
+  .box {
+    text-align: center;
+    padding: 20px;
+  }
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 4px solid #e0e0e0;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+  <div class="box">
+    ${hasLocationPermission
+          ? `
+          <div class="spinner"></div>
+          <h3>Fetching your current location…</h3>
+          <p>Please wait while we find you on the map</p>
+        `
+          : `
+          <h3>📍 Location Required</h3>
+          <p>Please allow location access to continue</p>
+        `
+        }
+  </div>
+</body>
+</html>
+`;
+    }
+
     return `
     <!DOCTYPE html>
     <html>
@@ -159,7 +239,7 @@ const MapAddressScreen = ({ navigation, route }) => {
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
       <style>
         * { margin: 0; padding: 0; }
-        html, body { width: 100%; height: 100%; overflow: hidden; }
+        html, body { width: 100%; height: 80%; overflow: hidden; }
         #map { width: 100%; height: 100%; }
         .leaflet-container { background: #f8f9fa; font: inherit; }
         .custom-marker {
@@ -366,10 +446,11 @@ const MapAddressScreen = ({ navigation, route }) => {
                 console.log('📫 Got address:', data.display_name);
                 
                 // Send address to React Native
-                window.ReactNativeWebView.postMessage(JSON.stringify({
-                  type: 'ADDRESS',
-                  address: data.display_name
-                }));
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+  type: 'ADDRESS',
+  raw: data
+}));
+
                 
                 // Update popup with address
                 marker.bindPopup(
@@ -454,40 +535,78 @@ const MapAddressScreen = ({ navigation, route }) => {
     `;
   };
 
-  // Handle messages from WebView - IMPROVED
+  const parseNominatimAddress = (data) => {
+    if (isEditMode) return;
+
+    const addr = data.address || {};
+
+    const line1Parts = [
+      addr.house_number,
+      addr.building,
+      addr.road,
+      addr.county,
+      addr.suburb,
+      addr.neighbourhood,
+      addr.locality
+    ].filter(Boolean);
+
+    const line1 = line1Parts.join(', ');
+
+    const line2Parts = [
+      addr.suburb,
+      addr.neighbourhood,
+      addr.locality,
+    ].filter(Boolean);
+
+    const line2 = line2Parts.join(', ');
+
+    const city =
+      addr.city ||
+      addr.town ||
+      addr.village ||
+      addr.county ||
+      '';
+
+    const state = addr.state || '';
+    const pincode = addr.postcode || '';
+
+    setAddressLine1(line1);
+    setAddressLine2(line2);
+    setCity(city);
+    setStateName(state);
+    setPincode(pincode);
+  };
+
   const handleWebViewMessage = (event) => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
       console.log('📨 WebView message:', data);
-      
+
       switch (data.type) {
         case 'COORDINATES':
-          // Coordinates come as [lng, lat] from map, store as [lng, lat] for API
           setCoordinates(data.coordinates);
           console.log('📍 Coordinates updated:', data.coordinates);
-          // Trigger manual geocoding as fallback
           setTimeout(() => {
             reverseGeocodeCoordinates(data.coordinates[1], data.coordinates[0]);
           }, 1000);
           break;
-          
+
         case 'ADDRESS':
-          setAddressText(data.address);
-          console.log('📫 Address updated:', data.address);
+          if (data.raw) {
+            parseNominatimAddress(data.raw);
+          }
           break;
-          
+
         case 'ADDRESS_NOT_FOUND':
           console.log('📍 Address not found for coordinates:', data.coordinates);
-          // Use manual geocoding as fallback
           reverseGeocodeCoordinates(data.coordinates[1], data.coordinates[0]);
           break;
-          
+
         case 'GEOCODING_ERROR':
           console.error('❌ Geocoding failed for coordinates:', data.coordinates);
-          // Use manual geocoding as fallback
           reverseGeocodeCoordinates(data.coordinates[1], data.coordinates[0]);
           break;
-          
+
         case 'ERROR':
           console.error('❌ Map error:', data.error);
           showToast("Map Error", "Failed to load map. Please try again.", "error");
@@ -498,59 +617,31 @@ const MapAddressScreen = ({ navigation, route }) => {
     }
   };
 
-  // Use current location - FIXED: Correct coordinate handling
   const useCurrentLocation = () => {
-    // Use stored userLocation first (faster)
-    if (userLocation?.latitude && userLocation?.longitude) {
-      console.log('🎯 Using stored user location - Lat:', userLocation.latitude, 'Lng:', userLocation.longitude);
-      
-      // Store as [lng, lat] for API
-      const newCoordinates = [userLocation.longitude, userLocation.latitude];
-      setCoordinates(newCoordinates);
-      
-      // Send to WebView as [lat, lng] for map display
-      const jsCode = `setCurrentLocation(${userLocation.latitude}, ${userLocation.longitude});`;
-      webViewRef.current?.injectJavaScript(jsCode);
-      
-      setAddressText(userLocation.address || '');
-      return;
-    }
-
-    // Fallback to GPS if no stored location
     if (!hasLocationPermission) {
-      showToast("Location permission is required to use this feature", "error");
+      showToast("Location permission is required", "error");
       requestLocationPermission();
       return;
     }
 
+    setIsFetchingLocation(true); // ✅ START FETCHING
+
     Geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        console.log('📍 GPS Current location - Lat:', latitude, 'Lng:', longitude);
-        
-        // Store as [lng, lat] for API
+
         const newCoordinates = [longitude, latitude];
         setCoordinates(newCoordinates);
-        
-        // Send to WebView as [lat, lng] for map display
-        const jsCode = `setCurrentLocation(${latitude}, ${longitude});`;
+        reverseGeocodeCoordinates(latitude, longitude);
+
+        const jsCode = `setCurrentLocation(${latitude}, ${longitude}); true;`;
         webViewRef.current?.injectJavaScript(jsCode);
-        
- 
+
+        setIsFetchingLocation(false); // ✅ DONE
       },
       (error) => {
-        console.error('❌ Location error:', error);
-        let errorMessage = "Unable to get current location";
-        
-        if (error.code === error.PERMISSION_DENIED) {
-          errorMessage = "Location permission denied. Please enable in settings.";
-        } else if (error.code === error.POSITION_UNAVAILABLE) {
-          errorMessage = "Location unavailable. Please check your GPS.";
-        } else if (error.code === error.TIMEOUT) {
-          errorMessage = "Location request timeout. Please try again.";
-        }
-        
-        showToast( errorMessage, "error");
+        setIsFetchingLocation(false); // ❌ ERROR CASE
+        showToast("Unable to fetch location", "error");
       },
       {
         enableHighAccuracy: true,
@@ -560,15 +651,15 @@ const MapAddressScreen = ({ navigation, route }) => {
     );
   };
 
-  // Validate form
+
   const validateForm = () => {
-    if (!addressText.trim()) {
-      return false;
-    }
+    if (!addressLine1) return false;
+    if (!city) return false;
+    if (!stateName) return false;
+    if (!pincode) return false;
     return true;
   };
 
-  // Save address
   const handleSaveAddress = async () => {
     if (!validateForm()) return;
 
@@ -577,29 +668,28 @@ const MapAddressScreen = ({ navigation, route }) => {
     try {
       const addressData = {
         type: addressType,
-        location: {
-          address: addressText, // Use the automatically updated address
-          coordinates: coordinates, // [lng, lat] format for API
-        },
-        isDefault: isDefault,
+        addressLine1,
+        addressLine2,
+        city,
+        state: stateName,
+        pincode,
+        coordinates,
+        isDefault
       };
 
       console.log("💾 Saving address:", addressData);
 
       if (editingAddress) {
-        // Update existing address
-        await dispatch(updateAddress({ 
-          id: editingAddress._id, 
-          addressData 
+        await dispatch(updateAddress({
+          id: editingAddress._id,
+          addressData
         })).unwrap();
       } else {
-        // Add new address
         await dispatch(addAddress(addressData)).unwrap();
       }
 
-      // Navigate back
       navigation.goBack();
-      
+
     } catch (error) {
       console.error("❌ Error saving address:", error);
       showToast("Error", error?.message || "Failed to save address", "error");
@@ -608,152 +698,193 @@ const MapAddressScreen = ({ navigation, route }) => {
     }
   };
 
-  // Address type options
   const addressTypes = ['Home', 'Work', 'Other'];
 
   return (
     <SafeAreaView style={styles.container}>
-    <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />  
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <Header
         title={editingAddress ? "Edit Address" : "Add New Address"}
         onBackPress={() => navigation.goBack()}
       />
 
-      {/* Map Section - Increased Height */}
-      <View style={styles.mapContainer}>
-        <WebView
-          ref={webViewRef}
-          style={styles.map}
-          source={{ html: getMapHtml() }}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-          onMessage={handleWebViewMessage}
-          onLoadEnd={() => {
-            setIsMapLoading(false);
-            console.log('✅ WebView loaded successfully at your location');
-          }}
-          onError={(syntheticEvent) => {
-            const { nativeEvent } = syntheticEvent;
-            console.warn('❌ WebView error: ', nativeEvent);
-            setIsMapLoading(false);
-          }}
-          onHttpError={(syntheticEvent) => {
-            const { nativeEvent } = syntheticEvent;
-            console.warn('❌ WebView HTTP error: ', nativeEvent);
-          }}
-          renderLoading={() => (
-            <View style={styles.mapLoadingContainer}>
+      <ScrollView
+        ref={scrollRef}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.mapContainer}>
+          <WebView
+            ref={webViewRef}
+            style={styles.map}
+            key={coordinates ? coordinates.join(',') : 'fetching'}
+            source={{ html: getMapHtml() }}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            onMessage={handleWebViewMessage}
+            onLoadEnd={() => {
+              setIsMapLoading(false);
+              console.log('✅ WebView loaded successfully at your location');
+            }}
+            onError={(syntheticEvent) => {
+              const { nativeEvent } = syntheticEvent;
+              console.warn('WebView error: ', nativeEvent);
+              setIsMapLoading(false);
+            }}
+            onHttpError={(syntheticEvent) => {
+              const { nativeEvent } = syntheticEvent;
+              console.warn('WebView HTTP error: ', nativeEvent);
+            }}
+            renderLoading={() => (
+              <View style={styles.mapLoadingContainer}>
+                <ActivityIndicator size="large" color={appColors.blue} />
+                <Text style={styles.loadingText}>Loading map at your location...</Text>
+              </View>
+            )}
+            startInLoadingState={true}
+            mixedContentMode="compatibility"
+          />
+
+          <TouchableOpacity
+            style={styles.currentLocationButton}
+            onPress={useCurrentLocation}
+          >
+            <Icon name="my-location" size={20} color={appColors.blue} />
+          </TouchableOpacity>
+
+          {isMapLoading && (
+            <View style={styles.mapLoadingOverlay}>
               <ActivityIndicator size="large" color={appColors.blue} />
               <Text style={styles.loadingText}>Loading map at your location...</Text>
             </View>
           )}
-          startInLoadingState={true}
-          mixedContentMode="compatibility"
-        />
+        </View>
 
-        {/* Current Location Button */}
-        <TouchableOpacity
-          style={styles.currentLocationButton}
-          onPress={useCurrentLocation}
-        >
-          <Icon name="my-location" size={20} color={appColors.blue} />
-        </TouchableOpacity>
+        <View style={styles.formContainer}>
+          <Text style={styles.sectionTitle}>Address Details</Text>
 
-        {/* Map Loading Overlay */}
-        {isMapLoading && (
-          <View style={styles.mapLoadingOverlay}>
-            <ActivityIndicator size="large" color={appColors.blue} />
-            <Text style={styles.loadingText}>Loading map at your location...</Text>
+          <View style={styles.selectedAddressContainer}>
+
+            <Text style={styles.selectedAddressLabel}>House / Flat / Road</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="House / Flat / Road"
+              placeholderTextColor={"gray"}
+              value={addressLine1}
+              onChangeText={setAddressLine1}
+            />
+
+            <Text style={styles.selectedAddressLabel}>Area / Landmark (Optional)</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Area / Landmark (Optional)"
+              placeholderTextColor={"gray"}
+              value={addressLine2}
+              onChangeText={setAddressLine2}
+            />
+
+            <Text style={styles.selectedAddressLabel}>City</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="City"
+              placeholderTextColor={"gray"}
+              value={city}
+              onChangeText={setCity}
+            />
+
+            <Text style={styles.selectedAddressLabel}>State</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="State"
+              placeholderTextColor={"gray"}
+              value={stateName}
+              onChangeText={setStateName}
+            />
+
+            <Text style={styles.selectedAddressLabel}>Pincode</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Pincode"
+              placeholderTextColor={"gray"}
+              keyboardType="number-pad"
+              value={pincode}
+              onChangeText={setPincode}
+              maxLength={6}
+            />
+
+            {isReverseGeocoding && (
+              <View style={styles.geocodingIndicator}>
+                <ActivityIndicator size="small" color={appColors.blue} />
+                <Text style={styles.geocodingText}>Fetching address from map…</Text>
+              </View>
+            )}
           </View>
-        )}
-      </View>
 
-      {/* Address Form Section */}
-      <ScrollView 
-        style={styles.formContainer}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.formContent}
-      >
-        <Text style={styles.sectionTitle}>Address Details</Text>
+          <View style={styles.fieldContainer}>
+            <Text style={styles.fieldLabel}>Address Type</Text>
+            <View style={styles.addressTypeContainer}>
+              {addressTypes.map((type) => (
+                <TouchableOpacity
+                  key={type}
+                  style={[
+                    styles.addressTypeOption,
+                    addressType === type && styles.addressTypeOptionSelected
+                  ]}
+                  onPress={() => setAddressType(type)}
+                >
+                  <Text
+                    style={[
+                      styles.addressTypeText,
+                      addressType === type && styles.addressTypeTextSelected
+                    ]}
+                  >
+                    {type}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
 
-        {/* Selected Address Display */}
-        <View style={styles.selectedAddressContainer}>
-          <Text style={styles.selectedAddressLabel}>Selected Location:</Text>
-          <Text style={styles.selectedAddressText}>
-            {addressText || 'Select a location on the map by dragging the marker or tapping anywhere'}
-          </Text>
-          {/* <Text style={styles.coordinatesText}>
-            Coordinates: {coordinates[1]?.toFixed(6) || 'N/A'} (Lat), {coordinates[0]?.toFixed(6) || 'N/A'} (Lng)
-          </Text> */}
-          {isReverseGeocoding && (
-            <View style={styles.geocodingIndicator}>
-              <ActivityIndicator size="small" color={appColors.blue} />
-              <Text style={styles.geocodingText}>Updating address...</Text>
+          {!editingAddress?.isDefault && (
+            <View style={styles.fieldContainer}>
+              <TouchableOpacity
+                style={styles.checkboxOption}
+                onPress={() => setIsDefault(!isDefault)}
+              >
+                <View style={[
+                  styles.checkbox,
+                  isDefault && styles.checkboxSelected
+                ]}>
+                  {isDefault && <Icon name="check" size={16} color="white" />}
+                </View>
+                <Text style={styles.checkboxText}>Set as default address</Text>
+              </TouchableOpacity>
             </View>
           )}
+
+          <TouchableOpacity
+            style={[
+              styles.saveButton,
+              (!addressLine1 || !city || !stateName || !pincode || isSaving) &&
+              styles.saveButtonDisabled
+            ]}
+            onPress={handleSaveAddress}
+            disabled={!addressLine1 || !city || !stateName || !pincode || isSaving}
+          >
+            {isSaving ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <Text style={styles.saveButtonText}>
+                {editingAddress ? 'Update Address' : 'Save Address'}
+              </Text>
+            )}
+          </TouchableOpacity>
         </View>
-
-        {/* Address Type Selection */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Address Type</Text>
-          <View style={styles.addressTypeContainer}>
-            {addressTypes.map((type) => (
-              <TouchableOpacity
-                key={type}
-                style={[
-                  styles.addressTypeOption,
-                  addressType === type && styles.addressTypeOptionSelected
-                ]}
-                onPress={() => setAddressType(type)}
-              >
-                <Text
-                  style={[
-                    styles.addressTypeText,
-                    addressType === type && styles.addressTypeTextSelected
-                  ]}
-                >
-                  {type}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {/* Set as Default */}
-        {!editingAddress?.isDefault && (
-          <View style={styles.fieldContainer}>
-            <TouchableOpacity
-              style={styles.checkboxOption}
-              onPress={() => setIsDefault(!isDefault)}
-            >
-              <View style={[
-                styles.checkbox,
-                isDefault && styles.checkboxSelected
-              ]}>
-                {isDefault && <Icon name="check" size={16} color="white" />}
-              </View>
-              <Text style={styles.checkboxText}>Set as default address</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {/* Save Button */}
-        <TouchableOpacity
-          style={[
-            styles.saveButton,
-            (!addressText || isSaving) && styles.saveButtonDisabled
-          ]}
-          onPress={handleSaveAddress}
-          disabled={!addressText || isSaving}
-        >
-          {isSaving ? (
-            <ActivityIndicator size="small" color="white" />
-          ) : (
-            <Text style={styles.saveButtonText}>
-              {editingAddress ? 'Update Address' : 'Save Address'}
-            </Text>
-          )}
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );

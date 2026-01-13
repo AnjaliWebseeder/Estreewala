@@ -1,12 +1,23 @@
-# Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in /usr/local/Cellar/android-sdk/24.3.3/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the proguardFiles
-# directive in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# React Native
+-keep class com.facebook.react.** { *; }
+-keep class com.facebook.hermes.** { *; }
+-dontwarn com.facebook.react.**
 
-# Add any project specific keep options here:
+# Firebase
+-keep class com.google.firebase.** { *; }
+-dontwarn com.google.firebase.**
 
+# Vector Icons
+-keep class com.oblador.vectoricons.** { *; }
 
+# HTML to PDF / PDFBox
+-keep class com.tom_roush.pdfbox.** { *; }
+-dontwarn com.tom_roush.pdfbox.**
+-dontwarn com.gemalto.jp2.**
+
+# Kotlin
+-keep class kotlin.Metadata { *; }
+
+# Gson
+-keepattributes Signature
+-keepattributes *Annotation*

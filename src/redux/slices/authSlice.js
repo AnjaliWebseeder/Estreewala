@@ -1,151 +1,75 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { CUSTOMER_REGISTER, SEND_OTP, VERIFY_OTP, UPDATE_PROFILE } from "../../services/api"
+import { SEND_OTP, VERIFY_OTP, UPDATE_PROFILE } from "../../services/api";
 
-
-// Register Customer
-export const registerCustomer = createAsyncThunk(
-  "auth/registerCustomer",
-  async (userData, { rejectWithValue }) => {
-    try {
-      console.log("📝 Registering customer:", userData);
-      
-      const payload = {
-        name: userData.name,
-        email: userData.email,
-        phone: userData.phone,
-        role: "customer" // static as requested
-      };
-
-      const response = await axios.post(CUSTOMER_REGISTER, payload, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        timeout: 10000,
-      });
-
-      console.log("✅ Customer Registration Response:", response.data);
-      return response.data;
-      
-    } catch (error) {
-      console.log("❌ Customer Registration Error:", error);
-      
-      let errorMessage = "Registration failed, please try again";
-      
-      if (error.response) {
-        errorMessage = error.response.data?.message || error.response.data?.error || errorMessage;
-      } else if (error.request) {
-        errorMessage = "No response from server. Please check your connection.";
-      } else {
-        errorMessage = error.message || errorMessage;
-      }
-      
-      return rejectWithValue(errorMessage);
-    }
-  }
-);
-
-// Send OTP
+/* ================= SEND OTP ================= */
 export const sendOtp = createAsyncThunk(
   "auth/sendOtp",
-  async (phoneData, { rejectWithValue }) => {
+  async ({ phone }, { rejectWithValue }) => {
     try {
-      console.log("📱 Sending OTP to:", phoneData.phone);
-      
-      const response = await axios.post(SEND_OTP, phoneData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        timeout: 10000,
-      });
+      console.log("📱 SEND OTP REQUEST:", phone);
 
-      console.log("✅ Send OTP Response:", response.data);
-      return response.data;
-      
-    } catch (error) {
-      console.log("❌ Send OTP Error:", error);
-      
-      let errorMessage = "Failed to send OTP, please try again";
-      
-      if (error.response) {
-        errorMessage = error.response.data?.message || error.response.data?.error || errorMessage;
-      } else if (error.request) {
-        errorMessage = "No response from server. Please check your connection.";
-      } else {
-        errorMessage = error.message || errorMessage;
-      }
-      
-      return rejectWithValue(errorMessage);
+      const res = await axios.post(
+        SEND_OTP,
+        { phone },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      console.log("✅ SEND OTP RESPONSE:", res.data);
+      return { phone, ...res.data };
+    } catch (err) {
+      console.log("❌ SEND OTP ERROR:", err.response?.data || err.message);
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to send OTP"
+      );
     }
   }
 );
 
-// Verify OTP
+/* ================= VERIFY OTP ================= */
 export const verifyOtp = createAsyncThunk(
   "auth/verifyOtp",
-  async (otpData, { rejectWithValue }) => {
+  async ({ phone, otp }, { rejectWithValue }) => {
     try {
-      console.log("🔐 Verifying OTP for:", otpData.phone);
-      
-      const response = await axios.post(VERIFY_OTP, otpData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        timeout: 10000,
-      });
+      console.log("🔐 VERIFY OTP REQUEST:", { phone, otp });
 
-      console.log("✅ Verify OTP Response:", response.data);
-      return response.data;
-      
-    } catch (error) {
-      console.log("❌ Verify OTP Error:", error);
-      
-      let errorMessage = "OTP verification failed";
-      
-      if (error.response) {
-        errorMessage = error.response.data?.message || error.response.data?.error || errorMessage;
-      } else if (error.request) {
-        errorMessage = "No response from server. Please check your connection.";
-      } else {
-        errorMessage = error.message || errorMessage;
-      }
-      
-      return rejectWithValue(errorMessage);
+      const res = await axios.post(
+        VERIFY_OTP,
+        { phone, otp },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      console.log("✅ VERIFY OTP RESPONSE:", res.data);
+      return res.data;
+    } catch (err) {
+      console.log("❌ VERIFY OTP ERROR:", err.response?.data || err.message);
+      return rejectWithValue(
+        err.response?.data?.message || "Invalid OTP"
+      );
     }
   }
 );
 
-// Update Profile
+/* ================= UPDATE PROFILE ================= */
 export const updateProfile = createAsyncThunk(
   "auth/updateProfile",
   async (profileData, { rejectWithValue }) => {
     try {
-      console.log("👤 Updating profile:", profileData);
-      
-      const response = await axios.post(UPDATE_PROFILE, profileData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        timeout: 10000,
-      });
+      console.log("👤 UPDATE PROFILE REQUEST:", profileData);
 
-      console.log("✅ Update Profile Response:", response.data);
-      return response.data;
-      
-    } catch (error) {
-      console.log("❌ Update Profile Error:", error);
-      
-      let errorMessage = "Profile update failed";
-      
-      if (error.response) {
-        errorMessage = error.response.data?.message || error.response.data?.error || errorMessage;
-      } else if (error.request) {
-        errorMessage = "No response from server. Please check your connection.";
-      } else {
-        errorMessage = error.message || errorMessage;
-      }
-      
-      return rejectWithValue(errorMessage);
+      const res = await axios.post(
+        UPDATE_PROFILE,
+        profileData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      console.log("✅ UPDATE PROFILE RESPONSE:", res.data);
+      return res.data;
+    } catch (err) {
+      console.log("❌ UPDATE PROFILE ERROR:", err.response?.data || err.message);
+      return rejectWithValue(
+        err.response?.data?.message || "Profile update failed"
+      );
     }
   }
 );
@@ -153,65 +77,50 @@ export const updateProfile = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    // Registration
-    registerLoading: false,
-    registerSuccess: false,
-    registerError: null,
-    
-    // OTP
+    phone: null,
+
     otpLoading: false,
     otpSent: false,
     otpError: null,
-    
-    // Verification
+
     verifyLoading: false,
     verifySuccess: false,
     verifyError: null,
-    
-    // Profile
+
     profileLoading: false,
     profileSuccess: false,
     profileError: null,
-    
-    // User Data
+
     user: null,
     token: null,
     isAuthenticated: false,
   },
+
   reducers: {
-    // Reset states
-    resetRegisterState: (state) => {
-      state.registerLoading = false;
-      state.registerSuccess = false;
-      state.registerError = null;
-    },
     resetOtpState: (state) => {
       state.otpLoading = false;
       state.otpSent = false;
       state.otpError = null;
+      state.verifyLoading = false;
+      state.verifySuccess = false;
+      state.verifyError = null;
     },
+
     resetVerifyState: (state) => {
       state.verifyLoading = false;
       state.verifySuccess = false;
       state.verifyError = null;
     },
+
+
     resetProfileState: (state) => {
       state.profileLoading = false;
       state.profileSuccess = false;
       state.profileError = null;
     },
-    clearAllErrors: (state) => {
-      state.registerError = null;
-      state.otpError = null;
-      state.verifyError = null;
-      state.profileError = null;
-    },
-    setCredentials: (state, action) => {
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-      state.isAuthenticated = true;
-    },
+
     logout: (state) => {
+      state.phone = null;
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
@@ -219,99 +128,67 @@ const authSlice = createSlice({
       state.verifySuccess = false;
     },
   },
+
   extraReducers: (builder) => {
     builder
-      // Register Customer
-      .addCase(registerCustomer.pending, (state) => {
-        state.registerLoading = true;
-        state.registerError = null;
-        state.registerSuccess = false;
-      })
-      .addCase(registerCustomer.fulfilled, (state, action) => {
-        state.registerLoading = false;
-        state.registerSuccess = true;
-        state.registerError = null;
-        state.user = action.payload.customer;
-        state.token = action.payload.token;
-        state.isAuthenticated = true;
-        console.log("CUSTOMER REGISTERED SUCCESSFULLY => ", action.payload);
-      })
-      .addCase(registerCustomer.rejected, (state, action) => {
-        state.registerLoading = false;
-        state.registerSuccess = false;
-        state.registerError = action.payload;
-        console.log("CUSTOMER REGISTRATION FAILED => ", action.payload);
-      })
-      // Send OTP
+      /* ===== SEND OTP ===== */
       .addCase(sendOtp.pending, (state) => {
         state.otpLoading = true;
         state.otpError = null;
-        state.otpSent = false;
       })
       .addCase(sendOtp.fulfilled, (state, action) => {
         state.otpLoading = false;
         state.otpSent = true;
-        state.otpError = null;
-        console.log("OTP SENT SUCCESSFULLY => ", action.payload);
+        state.phone = action.payload.phone;
+        console.log("📞 OTP SENT TO:", state.phone);
       })
       .addCase(sendOtp.rejected, (state, action) => {
         state.otpLoading = false;
-        state.otpSent = false;
         state.otpError = action.payload;
-        console.log("OTP SENDING FAILED => ", action.payload);
       })
-      // Verify OTP
+
+      /* ===== VERIFY OTP ===== */
       .addCase(verifyOtp.pending, (state) => {
         state.verifyLoading = true;
         state.verifyError = null;
-        state.verifySuccess = false;
       })
       .addCase(verifyOtp.fulfilled, (state, action) => {
         state.verifyLoading = false;
         state.verifySuccess = true;
-        state.verifyError = null;
-        state.user = action.payload.customer;
+        state.user = action.payload.user || action.payload.customer;
         state.token = action.payload.token;
         state.isAuthenticated = true;
         state.otpSent = false;
-        console.log("OTP VERIFIED SUCCESSFULLY => ", action.payload);
+        console.log("🎉 LOGIN SUCCESS");
       })
       .addCase(verifyOtp.rejected, (state, action) => {
         state.verifyLoading = false;
-        state.verifySuccess = false;
         state.verifyError = action.payload;
-        console.log("OTP VERIFICATION FAILED => ", action.payload);
       })
-      // Update Profile
+
+      /* ===== UPDATE PROFILE ===== */
       .addCase(updateProfile.pending, (state) => {
         state.profileLoading = true;
         state.profileError = null;
-        state.profileSuccess = false;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.profileLoading = false;
         state.profileSuccess = true;
-        state.profileError = null;
         state.user = { ...state.user, ...action.payload.user };
-        console.log("PROFILE UPDATED SUCCESSFULLY => ", action.payload);
+        console.log("👤 PROFILE UPDATED");
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.profileLoading = false;
-        state.profileSuccess = false;
         state.profileError = action.payload;
-        console.log("PROFILE UPDATE FAILED => ", action.payload);
       });
   },
 });
 
-export const { 
-  resetRegisterState, 
-  resetOtpState, 
-  resetVerifyState, 
-  resetProfileState, 
-  clearAllErrors,
-  setCredentials,
-  logout 
+export const {
+  resetOtpState,
+  resetProfileState,
+  resetVerifyState,
+  logout,
 } = authSlice.actions;
 
 export default authSlice.reducer;

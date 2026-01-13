@@ -17,12 +17,12 @@ export const SocketProvider = ({ children }) => {
   const { userDetails, userToken } = useAuth();
 
   useEffect(() => {
-    console.log('🔧 SocketProvider - Auth check:', { 
-      hasToken: !!userToken, 
+    console.log('🔧 SocketProvider - Auth check:', {
+      hasToken: !!userToken,
       hasUserDetails: !!userDetails,
-      userDetails 
+      userDetails
     });
-    
+
     if (userToken && userDetails) {
       console.log('✅ Conditions met - initializing socket');
       initializeSocket();
@@ -41,11 +41,11 @@ export const SocketProvider = ({ children }) => {
     try {
       console.log('🚀 Starting socket initialization...');
       console.log('📡 Connecting to:', "https://api.estreewalla.com");
-      
+
       // Determine user role - since it's not in userDetails, we need to infer it
       // If your API has customer endpoints, likely this is a customer
       const userRole = 'customer'; // Default to customer since you have customerId
-      
+
       const newSocket = io("https://api.estreewalla.com", {
         transports: ['websocket', 'polling'],
         timeout: 10000,
@@ -61,7 +61,7 @@ export const SocketProvider = ({ children }) => {
         console.log('✅✅✅ SOCKET CONNECTED SUCCESSFULLY!');
         console.log('🔗 Socket ID:', newSocket.id);
         setIsConnected(true);
-        
+
         const room = `customer_${userDetails.id}`;
         console.log('🚪 Joining room:', room);
         newSocket.emit('join-room', room);
@@ -70,7 +70,7 @@ export const SocketProvider = ({ children }) => {
       newSocket.on('connect_error', (error) => {
         console.log('❌❌❌ CONNECTION ERROR:', error.message);
         console.log('🔍 Error details:', error);
-        
+
         // Try alternative connection methods
         console.log('🔄 Trying alternative connection method...');
         setTimeout(() => {
@@ -107,9 +107,9 @@ export const SocketProvider = ({ children }) => {
   const initializeSocketWithAlternativeConfig = () => {
     try {
       console.log('🔄 Trying alternative socket configuration...');
-      
+
       const userRole = 'customer';
-      
+
       const newSocket = io("https://api.estreewalla.com", {
         transports: ['polling'], // Try polling only
         timeout: 5000,

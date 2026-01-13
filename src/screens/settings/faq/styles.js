@@ -1,6 +1,5 @@
-import { StyleSheet } from "react-native";
-import { fontSizes } from '../../../theme/appConstant';
-import { windowHeight } from '../../../theme/appConstant';
+import { StyleSheet } from 'react-native';
+import { fontSizes, windowHeight, windowWidth } from '../../../theme/appConstant';
 import fonts from '../../../theme/appFonts';
 import appColors from '../../../theme/appColors';
 
@@ -9,84 +8,96 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: appColors.background,
   },
+
   content: {
-    paddingHorizontal: 18,
-    paddingBottom: windowHeight(50),
-    paddingTop:3
+    paddingHorizontal: windowWidth(18),
+    paddingBottom: windowHeight(25),
+    paddingTop: windowHeight(5),
   },
+
   faqContainer: {
     marginBottom: windowHeight(10),
   },
+
   faqItem: {
-    marginBottom: 12,
-    borderRadius: 8,
+    marginBottom: windowHeight(12),
+    borderRadius: windowWidth(8),
     overflow: 'hidden',
     backgroundColor: appColors.menuCard,
     elevation: 2,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: windowHeight(1) },
     shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowRadius: windowWidth(3),
   },
+
   faqQuestion: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 14,
+    padding: windowHeight(8),
   },
+
   faqQuestionText: {
     flex: 1,
     fontSize: fontSizes.FONT17,
-    color:appColors.font,
-    fontFamily:fonts.InterMedium,
-    marginRight: 12,
-    lineHeight:windowHeight(21)
+    color: appColors.font,
+    fontFamily: fonts.InterMedium,
+    marginRight: windowWidth(12),
+    lineHeight: windowHeight(21),
   },
-  faqAnswer: {
-    padding: 13,
-    paddingTop: 7,
-  
 
-     borderTopWidth: 1,
+  faqAnswer: {
+    paddingHorizontal: windowWidth(13),
+    paddingTop: windowHeight(7),
+    paddingBottom: windowHeight(12),
+
+    borderTopWidth: 1,
     borderStyle: 'dashed',
     borderTopColor: appColors.darkBlue,
-    marginHorizontal:10
- 
+    marginHorizontal: windowWidth(10),
   },
+
   faqAnswerText: {
     fontSize: fontSizes.FONT15,
-    lineHeight: 22,
-    color:appColors.font,
-    fontFamily:fonts.InterRegular,
-    marginHorizontal:windowHeight(-10)
+    lineHeight: windowHeight(22),
+    color: appColors.font,
+    fontFamily: fonts.InterRegular,
   },
+
   helpSection: {
-    backgroundColor:appColors.menuCard,
-    borderRadius: 12,
-    padding: 24,
+    backgroundColor: appColors.menuCard,
+    borderRadius: windowWidth(12),
+    padding: windowHeight(24),
     alignItems: 'center',
+    marginTop: windowHeight(10),
   },
+
   helpTitle: {
-    fontSize: 17,
-    color:appColors.font,
-    marginBottom: 8,
-     fontFamily:fonts.InterMedium,
+    fontSize: fontSizes.FONT17,
+    color: appColors.font,
+    marginBottom: windowHeight(8),
+    fontFamily: fonts.InterMedium,
   },
+
   helpText: {
-    fontSize: 15,
-    color:appColors.font,
-    marginBottom: 16,
-    fontFamily: 'Inter-Regular',
+    fontSize: fontSizes.FONT15,
+    color: appColors.font,
+    marginBottom: windowHeight(16),
+    fontFamily: fonts.InterRegular,
     textAlign: 'center',
+    lineHeight: windowHeight(22),
   },
+
   helpButton: {
     backgroundColor: appColors.font,
-    borderRadius: 24,
-    paddingHorizontal: 32,
-    paddingVertical: 10,
+    borderRadius: windowWidth(24),
+    paddingHorizontal: windowWidth(32),
+    paddingVertical: windowHeight(10),
   },
+
   helpButtonText: {
-    fontSize: 14,
+    fontSize: fontSizes.FONT14,
     color: appColors.white,
-fontFamily:fonts.InterMedium,
+    fontFamily: fonts.InterMedium,
   },
 });

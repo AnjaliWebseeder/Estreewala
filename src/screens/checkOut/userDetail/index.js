@@ -72,7 +72,7 @@ const UserDetailsScreen = ({ navigation, route }) => {
   const webViewRef = useRef(null);
   const { saveLocation, userLocation } = useAuth();
   const [address, setAddress] = useState(userLocation?.address || '');
-   const { showToast } = useToast();
+  const { showToast } = useToast();
 
   // Check and request location permission
   const requestLocationPermission = async () => {
@@ -244,11 +244,9 @@ const UserDetailsScreen = ({ navigation, route }) => {
 
         const suggestions = [
           data.display_name,
-          `${data.address.road || ''}, ${
-            data.address.suburb || data.address.city_district || ''
+          `${data.address.road || ''}, ${data.address.suburb || data.address.city_district || ''
           }`,
-          `${data.address.neighbourhood || data.address.suburb || ''}, ${
-            data.address.city || data.address.town || ''
+          `${data.address.neighbourhood || data.address.suburb || ''}, ${data.address.city || data.address.town || ''
           }`,
         ].filter(addr => addr.trim() !== '');
 
@@ -332,135 +330,134 @@ const UserDetailsScreen = ({ navigation, route }) => {
   };
 
 
-// Add this validation before the API call
-const validateOrderItems = () => {
-  const cartItemsArray = Object.keys(cartItems).map(key => cartItems[key]);
+  // Add this validation before the API call
+  const validateOrderItems = () => {
+    const cartItemsArray = Object.keys(cartItems).map(key => cartItems[key]);
 
-  const premiumServices = ['steam ironing', 'spin washing', 'steam washing', 'stain removal'];
-  const mainServices = ['ironing', 'washing', 'dry wash', 'wash & iron', 'wash and iron'];
+    const premiumServices = ['steam ironing', 'spin washing', 'steam washing', 'stain removal'];
+    const mainServices = ['ironing', 'washing', 'dry wash', 'wash & iron', 'wash and iron'];
 
-  const hasPremiumServices = cartItemsArray.some(item => 
-    premiumServices.includes(item.service?.toLowerCase())
-  );
-
-  const hasMainServices = cartItemsArray.some(item => 
-    mainServices.includes(item.service?.toLowerCase())
-  );
-
-  if (hasPremiumServices && !hasMainServices) {
-    showToast(
-      `Please select a main service (Ironing, Washing, Dry Wash, or Wash & Iron). Premium services can only be added after choosing a main service.`,
-      "info"
+    const hasPremiumServices = cartItemsArray.some(item =>
+      premiumServices.includes(item.service?.toLowerCase())
     );
-    return false;
-  }
 
-  return true;
-};
+    const hasMainServices = cartItemsArray.some(item =>
+      mainServices.includes(item.service?.toLowerCase())
+    );
 
-
-
-
-
-const handleSave = async () => {
-  try {
-    // 🔹 Validate all fields before proceeding
-    if (!validateForm()) {
-      return;
+    if (hasPremiumServices && !hasMainServices) {
+      showToast(
+        `Please select a main service (Ironing, Washing, Dry Wash, or Wash & Iron). Premium services can only be added after choosing a main service.`,
+        "info"
+      );
+      return false;
     }
 
-    // 🔹 Ensure pickup & delivery dates are valid
-    const pickupMoment = moment(pickupDate).isValid()
-      ? moment(pickupDate)
-      : moment().add(1, 'days');
+    return true;
+  };
 
-    const deliveryMoment = moment(selectedDropDate).isValid()
-      ? moment(selectedDropDate)
-      : pickupMoment.clone().add(2, 'days');
 
-    // 🔹 Build full address dynamically
-    const fullAddress = `${flatNo ? flatNo + ', ' : ''}${address}${
-      landmark ? ', ' + landmark : ''
-    }`;
 
-    // 🔹 Extract pickup start time
-  const now = new Date();
 
-// 2. Add 2 or 3 hours delay (let's take 3 hours for example)
-const defaultPickupTimeDate = new Date(now.getTime() + 3 * 60 * 60 * 1000);
 
-// 3. Format it to "HH:mm AM/PM"
-const formatTime = (date) => {
-  let hours = date.getHours();
-  const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12 || 12; // convert 0 => 12
-  const minutesStr = minutes < 10 ? `0${minutes}` : minutes;
-  return `${hours}:${minutesStr} ${ampm}`;
-};
+  const handleSave = async () => {
+    try {
+      // 🔹 Validate all fields before proceeding
+      if (!validateForm()) {
+        return;
+      }
 
-// 4. Use pickupSlot time or default time
-const rawPickupTime = pickupSlot?.time || formatTime(defaultPickupTimeDate);
-    const pickupStartTime = rawPickupTime.split('-')[0].trim();
-    const formattedDeliveryTime = deliveryMoment.format('hh:mm A');
+      // 🔹 Ensure pickup & delivery dates are valid
+      const pickupMoment = moment(pickupDate).isValid()
+        ? moment(pickupDate)
+        : moment().add(1, 'days');
 
-    // 🔹 Construct final payload
-    const orderPayload = {
-      vendorId: vendorId || '',
-      items: Object.keys(cartItems).map(key => ({
-        item: cartItems[key].itemId,
-        category: cartItems[key].category,
-        service: cartItems[key].service || '',
-        quantity: cartItems[key].qty || 1,
-      })),
-      totalPrice: totalPrice || 0,
-      pickupDate: pickupMoment.format('YYYY-MM-DD'),
-      pickupTime: pickupStartTime,
-      deliveryDate: deliveryMoment.format('YYYY-MM-DD'),
-            deliveryTime: formattedDeliveryTime,
-      instructions: note,
-      address: fullAddress,
-      coordinates: {
-        type: 'Point',
-        coordinates: [
-          coords?.longitude || 0,
-          coords?.latitude || 0,
-        ],
-      },
-      house: flatNo || '',
-      landmark: landmark || '',
-      contactDetails: {
-        fullName: name || '',
-        mobile: mobile || '',
-        email: email || '',
-      },
-    };
+      const deliveryMoment = moment(selectedDropDate).isValid()
+        ? moment(selectedDropDate)
+        : pickupMoment.clone().add(2, 'days');
 
-    console.log(
-      '🧾 FINAL ORDER PAYLOAD ===>>>',
-      JSON.stringify(orderPayload, null, 2),
-    );
+      // 🔹 Build full address dynamically
+      const fullAddress = `${flatNo ? flatNo + ', ' : ''}${address}${landmark ? ', ' + landmark : ''
+        }`;
 
-   const result = await dispatch(placeOrder(orderPayload)).unwrap();
-    dispatch(clearCart());
-    navigation.replace('OrderConfirmation', { orderData: result });
-  } catch (error) {
-  console.error('❌ Error placing order:', error);
-  const errorMessage = error?.message || error?.toString() || '';
-  if (errorMessage.includes('Premium service') && 
-      errorMessage.includes('can only be added along with a main service')) {
-    showToast(
-      errorMessage,
-      "info"
-    );
-  } else {
-    showToast(
-      error?.message || 'Failed to place order. Please try again.',
-      "error"
-    );
-  }
-}
-};
+      // 🔹 Extract pickup start time
+      const now = new Date();
+
+      // 2. Add 2 or 3 hours delay (let's take 3 hours for example)
+      const defaultPickupTimeDate = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+
+      // 3. Format it to "HH:mm AM/PM"
+      const formatTime = (date) => {
+        let hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12; // convert 0 => 12
+        const minutesStr = minutes < 10 ? `0${minutes}` : minutes;
+        return `${hours}:${minutesStr} ${ampm}`;
+      };
+
+      // 4. Use pickupSlot time or default time
+      const rawPickupTime = pickupSlot?.time || formatTime(defaultPickupTimeDate);
+      const pickupStartTime = rawPickupTime.split('-')[0].trim();
+      const formattedDeliveryTime = deliveryMoment.format('hh:mm A');
+
+      // 🔹 Construct final payload
+      const orderPayload = {
+        vendorId: vendorId || '',
+        items: Object.keys(cartItems).map(key => ({
+          item: cartItems[key].itemId,
+          category: cartItems[key].category,
+          service: cartItems[key].service || '',
+          quantity: cartItems[key].qty || 1,
+        })),
+        totalPrice: totalPrice || 0,
+        pickupDate: pickupMoment.format('YYYY-MM-DD'),
+        pickupTime: pickupStartTime,
+        deliveryDate: deliveryMoment.format('YYYY-MM-DD'),
+        deliveryTime: formattedDeliveryTime,
+        instructions: note,
+        address: fullAddress,
+        coordinates: {
+          type: 'Point',
+          coordinates: [
+            coords?.longitude || 0,
+            coords?.latitude || 0,
+          ],
+        },
+        house: flatNo || '',
+        landmark: landmark || '',
+        contactDetails: {
+          fullName: name || '',
+          mobile: mobile || '',
+          email: email || '',
+        },
+      };
+
+      console.log(
+        '🧾 FINAL ORDER PAYLOAD ===>>>',
+        JSON.stringify(orderPayload, null, 2),
+      );
+
+      const result = await dispatch(placeOrder(orderPayload)).unwrap();
+      dispatch(clearCart());
+      navigation.replace('OrderConfirmation', { orderData: result });
+    } catch (error) {
+      console.error('❌ Error placing order:', error);
+      const errorMessage = error?.message || error?.toString() || '';
+      if (errorMessage.includes('Premium service') &&
+        errorMessage.includes('can only be added along with a main service')) {
+        showToast(
+          errorMessage,
+          "info"
+        );
+      } else {
+        showToast(
+          error?.message || 'Failed to place order. Please try again.',
+          "error"
+        );
+      }
+    }
+  };
 
   // Custom Modal Components
   const PermissionModal = () => (
@@ -534,8 +531,8 @@ const rawPickupTime = pickupSlot?.time || formatTime(defaultPickupTimeDate);
             {errorType === 'permission'
               ? 'Location Access Denied'
               : errorType === 'unavailable'
-              ? 'Location Unavailable'
-              : 'Location Error'}
+                ? 'Location Unavailable'
+                : 'Location Error'}
           </Text>
 
           <Text style={styles.modalMessage}>{errorMessage}</Text>
@@ -628,7 +625,7 @@ const rawPickupTime = pickupSlot?.time || formatTime(defaultPickupTimeDate);
 
   return (
     <SafeAreaView style={styles.container}>
-    <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />  
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={appColors.blue} />

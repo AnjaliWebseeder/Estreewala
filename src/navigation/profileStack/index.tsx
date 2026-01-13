@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Profile from '../../screens/profile';
 import ManageAddress from '../../screens/settings/manageAddress';
-import MapAddressScreen from "../../screens/settings/manageAddress/mapAddress";
+import MapAddressScreen from "../../screens/settings/manageAddress/MapAddressScreen";
 import Settings from '../../screens/settings/settings';
 
 const ProfileStackNav = createNativeStackNavigator();

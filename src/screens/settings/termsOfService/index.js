@@ -9,6 +9,8 @@ import RenderHtml from 'react-native-render-html';
 import { useWindowDimensions } from 'react-native';
 import Header from "../../../components/header";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { windowHeight, windowWidth, fontSizes } from '../../../theme/appConstant';
+import appColors from '../../../theme/appColors';
 
 const TermsOfServiceScreen = ({ navigation }) => {
   const { width } = useWindowDimensions();
@@ -130,53 +132,61 @@ const TermsOfServiceScreen = ({ navigation }) => {
 
   const tagsStyles = {
     body: {
-      fontSize: 14,
-      lineHeight: 22,
-      color: '#333',
+      fontSize: fontSizes.FONT14,
+      lineHeight: windowHeight(15),
+      color: appColors.font,
     },
+
     h1: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginTop: 0,
-      marginBottom: 16,
-      color: '#000',
-      textAlign: 'center',
+      fontSize: fontSizes.FONT20,
+      fontWeight: '700',
+      marginTop: windowHeight(20),
+      marginBottom: windowHeight(10),
+      color: appColors.black,
     },
+
     h2: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginTop: 24,
-      marginBottom: 12,
-      color: '#000',
-      borderBottomWidth: 1,
-      borderBottomColor: '#e0e0e0',
-      paddingBottom: 8,
+      fontSize: fontSizes.FONT20,
+      fontWeight: '700',
+      marginTop: windowHeight(16),
+      marginBottom: windowHeight(8),
+      color: appColors.black,
     },
+
     h3: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      marginTop: 20,
-      marginBottom: 8,
-      color: '#000',
+      fontSize: fontSizes.FONT20,
+      fontWeight: '700',
+      marginTop: windowHeight(12),
+      marginBottom: windowHeight(6),
+      color: appColors.black,
     },
+
     p: {
-      marginBottom: 12,
-      lineHeight: 22,
+      marginBottom: windowHeight(10),
+      lineHeight: windowHeight(20),
+      fontSize: fontSizes.FONT17,
+      color: appColors.font,
     },
+
     ul: {
-      marginBottom: 12,
-      paddingLeft: 20,
+      marginBottom: windowHeight(10),
+      paddingLeft: windowWidth(20),
     },
-    ol: {
-      marginBottom: 12,
-      paddingLeft: 20,
-    },
+
     li: {
-      marginBottom: 6,
-      lineHeight: 20,
+      marginBottom: windowHeight(6),
+      lineHeight: windowHeight(20),
+      fontSize: fontSizes.FONT17,
+      color: appColors.font,
     },
+
     strong: {
-      fontWeight: 'bold',
+      fontWeight: '700',
+    },
+
+    a: {
+      color: appColors.blue,
+      textDecorationLine: 'underline',
     },
   };
 
@@ -190,8 +200,8 @@ const TermsOfServiceScreen = ({ navigation }) => {
           title="Terms of Service"
           onBackPress={() => navigation.goBack()}
         />
-        
-        <ScrollView 
+
+        <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.contentContainer}
           showsVerticalScrollIndicator={false}
@@ -219,13 +229,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    padding: 20,
-    paddingBottom: 40,
-    paddingTop:5
+    paddingHorizontal: windowWidth(20),
+    paddingVertical: windowHeight(20),
+    paddingBottom: windowHeight(40),
+    paddingTop: windowHeight(5)
   },
   baseStyle: {
     fontSize: 14,
-    lineHeight: 22,
+    lineHeight: windowHeight(22),
   },
 });
 

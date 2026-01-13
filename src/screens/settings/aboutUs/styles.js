@@ -1,164 +1,176 @@
+import { StyleSheet } from 'react-native';
 import fonts from '../../../theme/appFonts';
 import appColors from '../../../theme/appColors';
-import { StyleSheet } from 'react-native';
-import { fontSizes } from '../../../theme/appConstant';
-import { windowHeight } from '../../../theme/appConstant';
+import { fontSizes, windowHeight, windowWidth } from '../../../theme/appConstant';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: appColors.background,
   },
+
   header: {
     backgroundColor: appColors.background,
     borderBottomWidth: 1,
     borderBottomColor: appColors.border,
     elevation: 0,
   },
+
   content: {
-    paddingBottom: 40,
+    paddingBottom: windowHeight(40),
   },
-  // Section Styles
+
   section: {
-    paddingHorizontal: 24,
-    marginBottom: windowHeight(3),
-  
+    paddingHorizontal: windowWidth(24),
+    marginBottom: windowHeight(10),
   },
+
   sectionTitle: {
-    fontSize: 18,
+    fontSize: fontSizes.FONT18,
     color: appColors.font,
-    marginBottom: 2,
+    marginBottom: windowHeight(4),
     fontFamily: fonts.InterMedium,
   },
+
   sectionText: {
-    fontSize: 14,
-    lineHeight: 24,
+    fontSize: fontSizes.FONT14,
+    lineHeight: windowHeight(24),
     color: appColors.subTitle,
-    marginBottom: 16,
-    fontFamily:fonts.InterRegular
+    marginBottom: windowHeight(16),
+    fontFamily: fonts.InterRegular,
   },
-  
-  // Stats Section
+
+  /* ================= STATS ================= */
+
   statsSection: {
-    backgroundColor:appColors.menuCard,
-    paddingVertical: 22,
-    paddingHorizontal: 16,
-    marginBottom: windowHeight(10),
-    paddingBottom:14,
-  
+    backgroundColor: appColors.menuCard,
+    paddingVertical: windowHeight(22),
+    paddingHorizontal: windowWidth(16),
+    marginBottom: windowHeight(16),
   },
+
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: windowHeight(16),
   },
+
   statItem: {
     width: '48%',
     backgroundColor: appColors.card,
-    borderRadius: 12,
-    padding: 10,
+    borderRadius: windowWidth(12),
+    padding: windowWidth(12),
     alignItems: 'center',
     elevation: 2,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 6,
-      borderColor:appColors.darkBlue,
-    borderWidth:1
+    shadowRadius: windowWidth(6),
+    borderColor: appColors.darkBlue,
+    borderWidth: 1,
   },
+
   statNumber: {
     fontSize: fontSizes.FONT19,
-    fontWeight: '800',
     color: appColors.blue,
-    marginBottom: 4,
-    fontFamily:fonts.InterSemiBold
+    marginBottom: windowHeight(4),
+    fontFamily: fonts.InterSemiBold,
   },
+
   statLabel: {
-    fontSize: 14,
+    fontSize: fontSizes.FONT14,
     color: appColors.font,
-    fontFamily:fonts.InterRegular,
     textAlign: 'center',
+    fontFamily: fonts.InterRegular,
   },
-  
-  // Values Section
+
+  /* ================= VALUES ================= */
+
   valuesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginTop: windowHeight(6),
+    marginTop: windowHeight(10),
   },
+
   valueCard: {
     width: '48%',
     backgroundColor: appColors.menuCard,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 8,
+    borderRadius: windowWidth(12),
+    padding: windowWidth(16),
+    marginBottom: windowHeight(15),
     elevation: 1,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
-      borderColor:appColors.darkBlue,
-    borderWidth:1,
-    marginBottom:15
+    shadowRadius: windowWidth(4),
+    borderColor: appColors.darkBlue,
+    borderWidth: 1,
   },
+
   valueIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: windowWidth(48),
+    height: windowWidth(48),
+    borderRadius: windowWidth(24),
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: windowHeight(12),
   },
+
   valueTitle: {
-    fontSize: 16,
-    fontFamily:fonts.InterMedium,
+    fontSize: fontSizes.FONT16,
     color: appColors.font,
-    marginBottom: 3,
-    fontFamily:fonts.InterMedium
+    marginBottom: windowHeight(4),
+    fontFamily: fonts.InterMedium,
   },
+
   valueText: {
-    fontSize: 12,
+    fontSize: fontSizes.FONT12,
     color: appColors.subTitle,
-    lineHeight: 20,
-    fontFamily:fonts.InterRegular
+    lineHeight: windowHeight(20),
+    fontFamily: fonts.InterRegular,
   },
-  
-  // Team Section
- 
-  // CTA Section
+
+  /* ================= CTA ================= */
+
   ctaContainer: {
     backgroundColor: appColors.blue,
-    padding: 22,
+    paddingVertical: windowHeight(22),
+    paddingHorizontal: windowWidth(20),
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: windowHeight(20),
   },
+
   ctaIcon: {
-    marginBottom: 16,
+    marginBottom: windowHeight(16),
   },
+
   ctaTitle: {
-    fontSize: 18,
+    fontSize: fontSizes.FONT18,
     color: appColors.white,
-    marginBottom: 8,
+    marginBottom: windowHeight(8),
     textAlign: 'center',
-    fontFamily:fonts.InterMedium
+    fontFamily: fonts.InterMedium,
   },
+
   ctaText: {
-    fontSize: 14,
+    fontSize: fontSizes.FONT14,
     color: appColors.white,
     opacity: 0.9,
     textAlign: 'center',
-    marginBottom: 20,
-   fontFamily:fonts.InterMedium,
-    lineHeight:windowHeight(20)
+    marginBottom: windowHeight(20),
+    lineHeight: windowHeight(20),
+    fontFamily: fonts.InterRegular,
   },
+
   ctaButton: {
     backgroundColor: appColors.font,
-    borderRadius: 24,
-    paddingVertical:  10,
-    paddingHorizontal: 32,
+    borderRadius: windowWidth(24),
+    paddingVertical: windowHeight(10),
+    paddingHorizontal: windowWidth(32),
   },
+
   ctaButtonText: {
-    fontSize: 14,
+    fontSize: fontSizes.FONT14,
     color: appColors.white,
- fontFamily:fonts.InterMedium
+    fontFamily: fonts.InterMedium,
   },
 });

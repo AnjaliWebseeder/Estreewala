@@ -1,7 +1,7 @@
 import React from "react";
 import Svg, { Path } from "react-native-svg";
 
-export function BellIcon({ color = color ? color : color ? color : "#000", size= size? size : 21}) {
+export function BellIcon({ color = color ? color : color ? color : "#000", size= size? size : 18}) {
   return (
     <Svg
       width={size}

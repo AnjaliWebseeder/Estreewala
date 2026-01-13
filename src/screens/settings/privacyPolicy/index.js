@@ -9,8 +9,10 @@ import RenderHtml from 'react-native-render-html';
 import { useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from "../../../components/header";
+import { windowHeight, windowWidth, fontSizes } from '../../../theme/appConstant';
+import appColors from '../../../theme/appColors';
 
-const PrivacyPolicyScreen = ({navigation}) => {
+const PrivacyPolicyScreen = ({ navigation }) => {
   const { width } = useWindowDimensions();
 
   // Your privacy policy content with proper HTML formatting
@@ -109,50 +111,62 @@ const PrivacyPolicyScreen = ({navigation}) => {
   // Custom HTML styles for better rendering
   const tagsStyles = {
     body: {
-      fontSize: 14,
-      lineHeight: 20,
-      color: '#333',
+      fontSize: fontSizes.FONT14,
+      lineHeight: windowHeight(15),
+      color: appColors.font,
     },
+
     h1: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginTop: 20,
-      marginBottom: 10,
-      color: '#000',
+      fontSize: fontSizes.FONT20,
+      fontWeight: '700',
+      marginTop: windowHeight(20),
+      marginBottom: windowHeight(10),
+      color: appColors.black,
     },
+
     h2: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      marginTop: 16,
-      marginBottom: 8,
-      color: '#000',
+      fontSize: fontSizes.FONT20,
+      fontWeight: '700',
+      marginTop: windowHeight(16),
+      marginBottom: windowHeight(8),
+      color: appColors.black,
     },
+
     h3: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      marginTop: 12,
-      marginBottom: 6,
-      color: '#000',
+      fontSize: fontSizes.FONT20,
+      fontWeight: '700',
+      marginTop: windowHeight(12),
+      marginBottom: windowHeight(6),
+      color: appColors.black,
     },
+
     p: {
-      marginBottom: 10,
-      lineHeight: 20,
+      marginBottom: windowHeight(10),
+      lineHeight: windowHeight(20),
+      fontSize: fontSizes.FONT17,
+      color: appColors.font,
     },
+
     ul: {
-      marginBottom: 10,
-      paddingLeft: 20,
+      marginBottom: windowHeight(10),
+      paddingLeft: windowWidth(20),
     },
+
     li: {
-      marginBottom: 5,
-      lineHeight: 20,
+      marginBottom: windowHeight(6),
+      lineHeight: windowHeight(20),
+      fontSize: fontSizes.FONT17,
+      color: appColors.font,
     },
+
     strong: {
-      fontWeight: 'bold',
+      fontWeight: '700',
     },
+
     a: {
-      color: '#007AFF',
+      color: appColors.blue,
       textDecorationLine: 'underline',
-    }
+    },
   };
 
   const systemFonts = ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'];
@@ -168,27 +182,27 @@ const PrivacyPolicyScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-        <Header
-          title="Privacy Policy"
-          onBackPress={() => navigation.goBack()}
-        />
-      <ScrollView 
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
+      <Header
+        title="Privacy Policy"
+        onBackPress={() => navigation.goBack()}
+      />
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-         <View style={styles.container}>
-          
-        <RenderHtml
-          contentWidth={width - 40}
-          source={{ html: privacyPolicyContent }}
-          tagsStyles={tagsStyles}
-          systemFonts={systemFonts}
-          renderersProps={renderersProps}
-          enableExperimentalMarginCollapsing={true}
-        />
-         </View>
+        <View style={styles.container}>
+
+          <RenderHtml
+            contentWidth={width - 40}
+            source={{ html: privacyPolicyContent }}
+            tagsStyles={tagsStyles}
+            systemFonts={systemFonts}
+            renderersProps={renderersProps}
+            enableExperimentalMarginCollapsing={true}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -205,7 +219,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: 20,
     paddingBottom: 40,
-    paddingTop:5
+    paddingTop: 5
   },
 });
 

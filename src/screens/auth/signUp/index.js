@@ -11,7 +11,11 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   registerCustomer,
+  registerSendOtp,
+  registerVerifyOtp,
+  resetOtpState,
   resetRegisterState,
+  resetSignupOtpState,
 } from '../../../redux/slices/authSlice';
 import AuthHeader from '../../../components/auth/authHeader';
 import InputField from '../../../components/auth/inputField';
@@ -19,39 +23,35 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
 import { useToast } from '../../../utils/context/toastContext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useAuth } from '../../../utils/context/authContext';
+import { getFcmToken } from '../../../utils/notification/notificationService';
+import { updateFcmToken } from '../../../redux/slices/notificationSlice';
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { registerLoading, registerError, registerSuccess } = useSelector(
-    state => state.auth,
-  );
+  const { login } = useAuth();
+  const { signupOtp, signupVerify } = useSelector(
+  state => state.auth
+);
 
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [showOtpInput, setShowOtpInput] = useState(false);
+
   const { showToast } = useToast();
 
-  // Clear errors when component unmounts
+
   React.useEffect(() => {
     return () => {
-      dispatch(resetRegisterState());
+      dispatch(resetSignupOtpState());
     };
   }, [dispatch]);
 
   const validateForm = () => {
     if (!name.trim()) {
       showToast('Please enter your full name', 'error');
-      return false;
-    }
-
-    if (!email.trim()) {
-      showToast('Please enter your email address', 'error');
-      return false;
-    }
-
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      showToast('Please enter a valid email address', 'error');
       return false;
     }
 
@@ -68,28 +68,65 @@ const SignUpScreen = () => {
     return true;
   };
 
-  const handleSignUp = async () => {
+
+  const handleSendOtp = async () => {
     if (!validateForm()) return;
 
     try {
-      await dispatch(
-        registerCustomer({
-          name: name.trim(),
-          email: email.trim(),
+      const res = await dispatch(
+        registerSendOtp({
           phone: phone.trim(),
-        }),
+          fullname: name.trim(),
+        })
       ).unwrap();
 
-      navigation.navigate('PhoneLogin');
+      showToast(res?.message || 'OTP sent successfully', 'success');
+      setShowOtpInput(true);
     } catch (error) {
-      showToast(error || 'Registration failed', 'error');
-      console.log('Registration error:', error);
+      showToast(error, 'error');
     }
   };
 
-  const isEmailValid = /^\S+@\S+\.\S+$/.test(email.trim());
+
+  const handleVerifyOtp = async () => {
+    if (!otp.trim()) {
+      showToast('Please enter OTP', 'error');
+      return;
+    }
+
+    try {
+      const res = await dispatch(
+        registerVerifyOtp({
+          phone: phone.trim(),
+          fullname: name.trim(),
+          otp: otp.trim(),
+        })
+      ).unwrap();
+
+      if (res.success && res.token && res.customer) {
+        await login(res.token, res.customer);
+
+        const fcmToken = await getFcmToken();
+        if (fcmToken) {
+          await dispatch(updateFcmToken(fcmToken));
+        }
+
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
+      } else {
+        showToast(res.message || 'Registration failed', 'error');
+      }
+    } catch (error) {
+      showToast(error || 'OTP verification failed', 'error');
+    }
+  };
+
+
+
+  // const isEmailValid = /^\S+@\S+\.\S+$/.test(email.trim());
   const isPhoneValid = /^\d{10}$/.test(phone.trim());
-  const isFormValid = name.trim() && isEmailValid && isPhoneValid;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -118,21 +155,12 @@ const SignUpScreen = () => {
           />
 
           <View style={{ marginHorizontal: 15 }}>
+
             <InputField
               icon="person-outline"
               placeholder="Full Name"
               value={name}
               onChangeText={setName}
-              autoCapitalize="words"
-            />
-
-            <InputField
-              icon="mail-outline"
-              placeholder="Email address"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
             />
 
             <InputField
@@ -144,18 +172,38 @@ const SignUpScreen = () => {
               maxLength={10}
             />
 
-            <TouchableOpacity
-              style={[
-                styles.submitButton,
-                registerLoading && styles.disabledButton,
-              ]}
-              onPress={handleSignUp}
-              disabled={registerLoading}
-            >
-              <Text style={styles.submitButtonText}>
-                {registerLoading ? 'Creating Account...' : 'Sign Up'}
-              </Text>
-            </TouchableOpacity>
+            {!showOtpInput && (
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={handleSendOtp}
+              >
+                <Text style={styles.submitButtonText}>Send OTP</Text>
+              </TouchableOpacity>
+            )}
+
+            {showOtpInput && (
+              <>
+                <InputField
+                  icon="lock-closed-outline"
+                  placeholder="Enter OTP"
+                  value={otp}
+                  onChangeText={setOtp}
+                  keyboardType="number-pad"
+                  maxLength={4}
+                />
+
+                <TouchableOpacity
+  style={styles.submitButton}
+  onPress={handleVerifyOtp}
+  // disabled={signupVerify.loading}
+>
+  <Text style={styles.submitButtonText}>
+    {signupVerify.loading ? 'Verifying...' : 'Verify OTP'}
+  </Text>
+</TouchableOpacity>
+
+              </>
+            )}
           </View>
         </ScrollView>
       </KeyboardAwareScrollView>

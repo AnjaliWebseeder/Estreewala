@@ -1,9 +1,9 @@
 // otherComponent/location/confirmLocation.js
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  TouchableOpacity,
   ActivityIndicator,
   Alert,
   Linking,
@@ -26,11 +26,11 @@ const ConfirmLocationScreen = ({ route }) => {
   const { selectedLocation } = route.params || {};
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { saveLocation, markAppAsLaunched, isFirstLaunch,userToken } = useAuth();
-  
+  const { saveLocation, markAppAsLaunched, isFirstLaunch, userToken } = useAuth();
+
   // Get address state from Redux
   const { addLoading, addSuccess, addError } = useSelector(state => state.address);
-  
+
   const [location, setLocation] = useState(null);
   const [address, setAddress] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,7 +39,7 @@ const ConfirmLocationScreen = ({ route }) => {
   const webViewRef = useRef(null);
   const insets = useSafeAreaInsets();
 
-  
+
 
   // Request location permission
   const requestLocationPermission = async () => {
@@ -55,7 +55,7 @@ const ConfirmLocationScreen = ({ route }) => {
             buttonPositive: "OK"
           }
         );
-        
+
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           setHasPermission(true);
           return true;
@@ -99,10 +99,10 @@ const ConfirmLocationScreen = ({ route }) => {
 
   const initializeLocation = async () => {
     setLoading(true);
-    
+
     // Request permission first
     const permissionGranted = await requestLocationPermission();
-    
+
     if (permissionGranted) {
       if (selectedLocation) {
         // Use selected location
@@ -161,7 +161,7 @@ const ConfirmLocationScreen = ({ route }) => {
       (error) => {
         console.error('Location error:', error);
         setLoading(false);
-        
+
         // Handle different error types
         if (error.code === error.PERMISSION_DENIED) {
           Alert.alert(
@@ -194,8 +194,8 @@ const ConfirmLocationScreen = ({ route }) => {
             "Could not get your location. Please try again.",
             [
               { text: "Retry", onPress: getCurrentLocation },
-              { 
-                text: "Use Default", 
+              {
+                text: "Use Default",
                 onPress: () => {
                   const defaultLocation = {
                     coords: {
@@ -212,11 +212,11 @@ const ConfirmLocationScreen = ({ route }) => {
           );
         }
       },
-      { 
-        enableHighAccuracy: true, 
-        timeout: 15000, 
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
         maximumAge: 10000,
-        distanceFilter: 10 
+        distanceFilter: 10
       }
     );
   };
@@ -278,7 +278,7 @@ const ConfirmLocationScreen = ({ route }) => {
   const handleMapLoad = () => {
     setMapLoading(false);
     console.log('Map loaded successfully');
-    
+
     // If we have location data, update the map
     if (location) {
       updateMap(location.coords.latitude, location.coords.longitude);
@@ -315,46 +315,46 @@ const ConfirmLocationScreen = ({ route }) => {
     }
   };
 
-const handleConfirmLocation = async () => {
-  if (location && address) {
-    try {
-      setLoading(true);
+  const handleConfirmLocation = async () => {
+    if (location && address) {
+      try {
+        setLoading(true);
 
-      // Prepare address data according to API structure
-      const addressData = {
-        type: "Home",
-        location: {
+        // Prepare address data according to API structure
+        const addressData = {
+          type: "Home",
+          location: {
+            address: address,
+            coordinates: [location.coords.longitude, location.coords.latitude]
+          },
+          isDefault: true,
+        };
+
+        console.log("📍 Saving address:", addressData);
+
+        // Save to local storage for re-use
+        await saveLocation({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
           address: address,
-          coordinates: [location.coords.longitude, location.coords.latitude]
-        },
-        isDefault: true,
-      };
+        });
 
-      console.log("📍 Saving address:", addressData);
+        // Then call your API (uncomment this when ready)
+        // await dispatch(addAddress(addressData)).unwrap();
 
-      // Save to local storage for re-use
-   await saveLocation({
-  latitude: location.coords.latitude,
-  longitude: location.coords.longitude,
-  address: address,
-});
-
-      // Then call your API (uncomment this when ready)
-      // await dispatch(addAddress(addressData)).unwrap();
-
-      setLoading(false);
-      console.log("✅ Location confirmed and saved successfully");
+        setLoading(false);
+        console.log("✅ Location confirmed and saved successfully");
         handleNavigation();
 
-    } catch (error) {
-      console.error("Error confirming location:", error);
-      setLoading(false);
-      Alert.alert("Error", "Could not save your location. Please try again.");
+      } catch (error) {
+        console.error("Error confirming location:", error);
+        setLoading(false);
+        Alert.alert("Error", "Could not save your location. Please try again.");
+      }
+    } else {
+      Alert.alert("Error", "Please wait for location to load.");
     }
-  } else {
-    Alert.alert("Error", "Please wait for location to load.");
-  }
-};
+  };
 
 
   const openInMapsApp = () => {
@@ -513,7 +513,7 @@ const handleConfirmLocation = async () => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       {/* Header */}
 
       {/* Map View with WebView */}
@@ -540,7 +540,7 @@ const handleConfirmLocation = async () => {
         />
 
         {/* Current Location Button */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.currentLocationButton}
           onPress={getCurrentLocation}
         >
@@ -548,7 +548,7 @@ const handleConfirmLocation = async () => {
         </TouchableOpacity>
 
         {/* Open in Maps App Button */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.openMapsButton}
           onPress={openInMapsApp}
         >
@@ -572,7 +572,7 @@ const handleConfirmLocation = async () => {
           </View>
         </View>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.confirmButton, (!location || loading || addLoading) && styles.disabled]}
           onPress={handleConfirmLocation}
           disabled={!location || loading || addLoading}

@@ -4,11 +4,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from "../utils/context/authContext";
 import Splash from '../screens/splash';
 import OnBoarding from '../screens/onBoarding';
-import SignIn from '../screens/auth/signIn';
-import SignUp from '../screens/auth/signUp';
-import ForgotPassword from '../screens/auth/forgotPassword';
+// import SignIn from '../screens/auth/signIn';
+// import SignUp from '../screens/auth/signUp';
+// import ForgotPassword from '../screens/auth/forgotPassword';
 import PhoneLogin from '../screens/auth/phoneLogin';
-import OtpInput from '../screens/auth/phoneLogin/otpInput';
+// import OtpInput from '../screens/auth/phoneLogin/otpInput';
 import SetLocation from '../otherComponent/location/setLocation';
 import ConfirmLocation from '../otherComponent/location/confirmLocation';
 import BottomTab from './bottomTab';
@@ -34,30 +34,32 @@ import OrderDetails from '../screens/order/orderDetail'
 import OrdersScreen from '../screens/order';
 import NotificationPermission from '../screens/settings/notificationPermission'
 import UserDetailsScreen from '../screens/checkOut/userDetail'
-import MapAddressScreen from "../screens/settings/manageAddress/mapAddress"
+import MapAddressScreen from "../screens/settings/manageAddress/MapAddressScreen"
 import TermsOfServiceScreen from "../screens/settings/termsOfService"
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigation() {
   const { isOpen, closeDrawer } = useDrawer();
-  const { 
-    userToken, 
-    userLocation, 
-    isLoading 
+  const {
+    userToken,
+    userLocation,
+    isLoading
   } = useAuth();
 
-    console.log('🔍 AppNavigation Render -', {
+  console.log('🔍 AppNavigation Render -', {
     userToken: !!userToken,
     userLocation: !!userLocation,
     isLoading
   });
+
+  console.log("userToken",userToken);
 
   // Show loading until auth state is determined
   if (isLoading) {
     return null; // or <LoadingScreen />
   }
 
-    const navigateFromDrawer = (screenName) => {
+  const navigateFromDrawer = (screenName) => {
     closeDrawer();
     navigationRef.current?.navigate(screenName);
   };
@@ -74,22 +76,26 @@ export default function AppNavigation() {
           <>
             <Stack.Screen name="Splash" component={Splash} />
             <Stack.Screen name="OnBoarding" component={OnBoarding} />
-            <Stack.Screen name="SignIn" component={SignIn} />
-            <Stack.Screen name="SignUp" component={SignUp} />
-            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+            {/* <Stack.Screen name="SignIn" component={SignIn} />
+            <Stack.Screen name="SignUp" component={SignUp} /> */}
+            {/* <Stack.Screen name="ForgotPassword" component={ForgotPassword} /> */}
             <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
-            <Stack.Screen name="OtpInput" component={OtpInput} />
+            {/* <Stack.Screen name="OtpInput" component={OtpInput} /> */}
             <Stack.Screen name="NotificationPermission" component={NotificationPermission} />
           </>
-        ) : !userLocation ? (
-          // AUTHENTICATED BUT NO LOCATION - Location setup flow
-          <>
-            <Stack.Screen name="SetLocation" component={SetLocation} />
-            <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
-            {/* Allow going back to login if needed */}
-            <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
-          </>
-        ) : (
+        ) 
+        
+        // : !userLocation ? (
+        //   // AUTHENTICATED BUT NO LOCATION - Location setup flow
+        //   <>
+        //     <Stack.Screen name="SetLocation" component={SetLocation} />
+        //     <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
+        //     {/* Allow going back to login if needed */}
+        //     <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
+        //   </>
+        // )
+        
+        : (
           // FULLY AUTHENTICATED WITH LOCATION - Main app
           <>
             <Stack.Screen name="Main" component={BottomTab} />
@@ -105,7 +111,7 @@ export default function AppNavigation() {
             <Stack.Screen name="Settings" component={Settings} />
             <Stack.Screen name="Search" component={Search} />
             <Stack.Screen name="Notification" component={Notification} />
-            <Stack.Screen name="ChangePassword" component={ChangePassword} />
+            {/* <Stack.Screen name="ChangePassword" component={ChangePassword} /> */}
             <Stack.Screen name="LoginSecurity" component={LoginSecurity} />
             <Stack.Screen name="LaundryServiceList" component={LaundryServiceList} />
             <Stack.Screen name="LaundryScreen" component={LaundryScreen} />
@@ -115,21 +121,21 @@ export default function AppNavigation() {
             <Stack.Screen name="OrderDetails" component={OrderDetails} />
             <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen} />
             <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
-            <Stack.Screen 
-  name="MapAddressScreen" 
-  component={MapAddressScreen}
-  options={{ headerShown: false }}
-/>
+            <Stack.Screen
+              name="MapAddressScreen"
+              component={MapAddressScreen}
+              options={{ headerShown: false }}
+            />
           </>
         )}
       </Stack.Navigator>
 
       <SimpleDrawer isOpen={isOpen} onClose={closeDrawer}>
-        <CustomDrawerContent 
-          navigation={{ 
+        <CustomDrawerContent
+          navigation={{
             navigate: navigateFromDrawer,
             closeDrawer: closeDrawer,
-          }} 
+          }}
         />
       </SimpleDrawer>
     </>

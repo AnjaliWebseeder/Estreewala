@@ -49,4 +49,14 @@ export const styles = StyleSheet.create({
     opacity: 0,
     fontSize: 1,
   },
+ backButton: {
+  position: 'absolute',
+  top: -420,             
+  left: 0,
+  padding: 5,
+  borderRadius: 50,
+  backgroundColor: 'rgba(0,0,0,0.50)', 
+  zIndex: 100,
+  elevation: 8,       
+},
 });

@@ -1,5 +1,6 @@
 import { StyleSheet, Dimensions } from 'react-native';
 import appColors from "../../../../theme/appColors"
+import { windowHeight } from '../../../../theme/appConstant';
 
 const { width, height } = Dimensions.get('window');
 
@@ -10,7 +11,7 @@ export const styles = StyleSheet.create({
   },
   // Increased map height to 60% of screen
   mapContainer: {
-    height: height * 0.6, // Changed from 0.4 to 0.6 (60% of screen)
+    height:windowHeight(400), // Changed from 0.4 to 0.6 (60% of screen)
     position: 'relative',
   },
   map: {
@@ -33,7 +34,7 @@ export const styles = StyleSheet.create({
   },
   currentLocationButton: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 110,
     right: 20,
     backgroundColor: appColors.white,
     width: 50,
@@ -50,7 +51,42 @@ export const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     padding: 16,
+    marginTop:-windowHeight(130),
   },
+  inputContainer: {
+  marginBottom: 14,
+},
+
+inputLabel: {
+  fontSize: 12,
+  color: "#6B7280", // muted gray
+  marginBottom: 6,
+  fontWeight: "500",
+},
+
+input: {
+  borderWidth: 1,
+  borderColor: "#E5E7EB",
+  borderRadius: 12,
+  paddingHorizontal: 14,
+  fontSize: 14,
+  color: "#111827",
+  backgroundColor: "#FFFFFF",
+  marginBottom:5
+},
+
+inputFocused: {
+  borderColor: "#2563EB", // primary blue
+  shadowColor: "#2563EB",
+  shadowOpacity: 0.12,
+  shadowRadius: 6,
+  elevation: 2,
+},
+
+multilineInput: {
+  height: 70,
+  textAlignVertical: "top",
+},
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',

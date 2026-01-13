@@ -19,14 +19,14 @@ import { getCustomerDetails, updateCustomerName, clearUpdateNameSuccess, updateC
 
 const LoginSecurityScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { 
-    customerData, 
-    loading, 
-    updatingName, 
-    updateNameError, 
-    updateNameSuccess 
+  const {
+    customerData,
+    loading,
+    updatingName,
+    updateNameError,
+    updateNameSuccess
   } = useSelector(state => state.customer);
-  
+
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
@@ -79,7 +79,7 @@ const LoginSecurityScreen = ({ navigation }) => {
     try {
       // Update locally first for immediate UI feedback
       dispatch(updateCustomerNameLocally(name.trim()));
-      
+
       // Then make API call
       await dispatch(updateCustomerName(name.trim())).unwrap();
     } catch (error) {
@@ -99,23 +99,23 @@ const LoginSecurityScreen = ({ navigation }) => {
   };
 
   const fields = [
-    { 
-      label: "Name", 
-      key: "name", 
+    {
+      label: "Name",
+      key: "name",
       value: name,
-      editable: true 
+      editable: true
     },
-    { 
-      label: "Email", 
-      key: "email", 
-      value: customerData?.email || "N/A", 
-      editable: false 
-    },
-    { 
-      label: "Contact", 
-      key: "contactNo", 
-      value: customerData?.phone || "N/A", 
-      editable: false 
+    // { 
+    //   label: "Email", 
+    //   key: "email", 
+    //   value: customerData?.email || "N/A", 
+    //   editable: false 
+    // },
+    {
+      label: "Contact",
+      key: "contactNo",
+      value: customerData?.phone || "N/A",
+      editable: false
     },
   ];
 
@@ -132,7 +132,7 @@ const LoginSecurityScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={[styles.container, { paddingHorizontal: 0 }]}>
-    <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />  
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <View style={styles.container}>
         <Header title={"Personal Information"} onBackPress={() => navigation.goBack()} />
         <ScrollView contentContainerStyle={styles.content}>
@@ -155,7 +155,7 @@ const LoginSecurityScreen = ({ navigation }) => {
                       <>
                         <TextInput
                           style={[
-                            styles.input, 
+                            styles.input,
                             focusedField && styles.inputFocused,
                             nameError && styles.inputError
                           ]}
@@ -202,8 +202,8 @@ const LoginSecurityScreen = ({ navigation }) => {
 
               {editMode && (
                 <View style={styles.saveButtonContainer}>
-                  <TouchableOpacity 
-                    style={[styles.saveButton, updatingName && styles.saveButtonDisabled]} 
+                  <TouchableOpacity
+                    style={[styles.saveButton, updatingName && styles.saveButtonDisabled]}
                     onPress={handleNameUpdate}
                     disabled={updatingName}
                   >
@@ -213,8 +213,8 @@ const LoginSecurityScreen = ({ navigation }) => {
                       <Text style={styles.saveButtonText}>Save Changes</Text>
                     )}
                   </TouchableOpacity>
-                  
-                          </View>
+
+                </View>
               )}
             </View>
           </View>

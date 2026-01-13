@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -6,49 +6,54 @@ import {
   TextInput,
   Animated,
   KeyboardAvoidingView,
-  Platform,
   StatusBar,
   ScrollView,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+
 import { useDispatch, useSelector } from 'react-redux';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Geolocation from 'react-native-geolocation-service';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import {
   sendOtp,
   verifyOtp,
   resetOtpState,
   resetVerifyState,
 } from '../../../redux/slices/authSlice';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { addAddress, setDefaultAddress } from '../../../redux/slices/addressSlice';
+import messaging from '@react-native-firebase/messaging';
+import { updateFcmToken } from '../../../redux/slices/notificationSlice';
+
 import AuthHeader from '../../../components/auth/authHeader';
-import OtpInput from './otpInput/index';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import OtpInput from './otpInput';
 import { styles } from './styles';
 import { countries } from '../../../utils/data';
 import appColors from '../../../theme/appColors';
-import AuthFooter from '../../../components/auth/authFooter';
 import { useToast } from '../../../utils/context/toastContext';
 import { useAuth } from '../../../utils/context/authContext';
-import { getFcmToken } from '../../../utils/notification/notificationService';
-import { updateFcmToken } from '../../../redux/slices/notificationSlice';
 
 const PhoneLoginScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { otpLoading, otpSent, verifyLoading } = useSelector(
-    state => state.auth,
-  );
-
+  const { otpLoading, otpSent, verifyLoading } = useSelector(state => state.auth);
+  const { login, saveLocation } = useAuth();
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [focusedField, setFocusedField] = useState(null);
   const [resendTimer, setResendTimer] = useState(30);
-  const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const [isChecked, setIsChecked] = useState(false);
   const [isOtpSent, setIsOtpSent] = useState(false);
+  const [selectedCountry] = useState(countries[0]);
+
   const phoneInputRef = useRef();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
   const { showToast } = useToast();
-  const { login, userToken } = useAuth();
-  // Clear states when component unmounts
+
+  /* ================= CLEANUP ================= */
   useEffect(() => {
     return () => {
       dispatch(resetOtpState());
@@ -56,99 +61,198 @@ const PhoneLoginScreen = ({ navigation }) => {
     };
   }, [dispatch]);
 
-  // Handle OTP sent state
+  /* ================= OTP SENT ================= */
   useEffect(() => {
-    if (otpSent) {
-      setIsOtpSent(true);
-      setResendTimer(30);
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [otpSent, fadeAnim]);
+    if (!otpSent) return;
 
-  // Countdown timer for resend OTP
+    setIsOtpSent(true);
+    setResendTimer(30);
+
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [otpSent]);
+
+  /* ================= RESEND TIMER ================= */
   useEffect(() => {
-    let timer;
-    if (otpSent && resendTimer > 0) {
-      timer = setInterval(() => {
-        setResendTimer(prev => prev - 1);
-      }, 1000);
+    if (!isOtpSent || resendTimer === 0) return;
+
+    const timer = setTimeout(() => {
+      setResendTimer(prev => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [resendTimer, isOtpSent]);
+
+  /* ================= HELPERS ================= */
+
+  const requestLocationPermission = async () => {
+    if (Platform.OS !== 'android') return true;
+
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+    );
+
+    return granted === PermissionsAndroid.RESULTS.GRANTED;
+  };
+
+  const reverseGeocode = async (lat, lng) => {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
+      {
+        headers: {
+          'User-Agent': 'LaundryApp/1.0',
+          Accept: 'application/json',
+        },
+      }
+    );
+    return res.json();
+  };
+
+  const parseAddress = data => {
+    const addr = data?.address || {};
+
+    // AddressLine1: sab info, jo bhi mile
+    const addressLine1 = [
+      addr.house_number,
+      addr.building,
+      addr.road,
+      addr.county,
+      addr.suburb,
+      addr.neighbourhood,
+      addr.locality
+    ].filter(Boolean).join(', ');
+
+    return {
+      addressLine1: addressLine1,  // optional, extra info
+      addressLine2: '',            // always empty
+      city: addr.city || addr.town || addr.village || '',
+      state: addr.state || '',
+      pincode: addr.postcode || '',
+    };
+  };
+
+  const handleAutoAddress = async () => {
+    try {
+      const hasPermission = await requestLocationPermission();
+      if (!hasPermission) return;
+
+      return new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+          async ({ coords }) => {
+            const geoData = await reverseGeocode(coords.latitude, coords.longitude);
+            const parsed = parseAddress(geoData);
+
+            if (!parsed.city || !parsed.state || !parsed.pincode) {
+              console.log('❌ Incomplete mandatory fields');
+              return resolve(null);
+            }
+
+            const addressData = {
+              type: 'Home',
+              addressLine1: parsed.addressLine1,
+              addressLine2: parsed.addressLine2,
+              city: parsed.city,
+              state: parsed.state,
+              pincode: parsed.pincode,
+              coordinates: [coords.longitude, coords.latitude],
+              isDefault: true,
+            };
+
+            const added = await dispatch(addAddress(addressData)).unwrap();
+            if (added?._id) {
+              await dispatch(setDefaultAddress(added._id)).unwrap();
+            }
+
+            resolve(addressData); // return addressData so caller can saveLocation
+          },
+          error => {
+            console.log('📍 Location error:', error);
+            resolve(null);
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      });
+    } catch (e) {
+      console.log('❌ Auto address failed:', e);
+      return null;
     }
-    return () => clearInterval(timer);
-  }, [otpSent, resendTimer]);
+  };
+
+
+
+  /* ================= OTP HANDLERS ================= */
 
   const handleSendOtp = async () => {
+    if (phone.length !== 10) {
+      showToast('Enter valid phone number', 'error');
+      return;
+    }
+
     try {
-      await dispatch(sendOtp({ phone: phone })).unwrap();
-    } catch (error) {
-      showToast(error || 'Failed to send OTP', 'error');
+      await dispatch(sendOtp({ phone })).unwrap();
+    } catch (err) {
+      showToast(err || 'Failed to send OTP', 'error');
     }
   };
 
   const handleResendOtp = () => {
-    if (resendTimer === 0) {
-      handleSendOtp();
-    }
+    if (resendTimer !== 0 || otpLoading) return;
+    dispatch(sendOtp({ phone }));
+    setResendTimer(30);
   };
 
-  const saveFcmTokenAfterLogin = () => async dispatch => {
-    try {
-      const token = await getFcmToken();
-      if (!token) return;
-
-      await dispatch(updateFcmToken(token));
-    } catch (error) {
-      console.log('❌ Error saving FCM Token:', error);
-    }
-  };
 
   const handleVerifyOtp = async () => {
     try {
       const result = await dispatch(verifyOtp({ phone, otp })).unwrap();
 
-      if (result.token && result.customer) {
-        console.log('TOKEN IS', result.token, result.customer);
+      if (result?.message) showToast(result.message, 'success');
 
-        // Login user
+      if (result?.token && result?.customer) {
         await login(result.token, result.customer);
+        try {
+          const fcmToken = await messaging().getToken();
+          console.log('📲 FCM Token:', fcmToken);
 
-        // Save FCM Token
-        await dispatch(saveFcmTokenAfterLogin());
-
-        // Navigate to home
+          if (fcmToken) {
+            dispatch(updateFcmToken(fcmToken));
+          }
+        } catch (err) {
+          console.log('❌ FCM token error:', err);
+        }
+        const addedAddress = await handleAutoAddress();
+        if (addedAddress) {
+          await saveLocation({
+            coordinates: addedAddress.coordinates,
+            city: addedAddress.city,
+            state: addedAddress.state,
+            pincode: addedAddress.pincode,
+          });
+        }
         navigation.reset({
           index: 0,
           routes: [{ name: 'Main' }],
         });
-      } else {
-        console.warn('⚠️ Missing token or customer info');
-        showToast('Login failed. Please try again.', 'error');
       }
     } catch (err) {
-      console.error('Error verifying OTP:', err);
-      showToast(err || 'Wrong OTP, please try again!', 'error');
+      showToast(err, 'error');
     }
   };
 
+
+  /* ================= UI ================= */
+
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar
-        barStyle="dark-content"
-        translucent
-        backgroundColor="transparent"
-      />
+      <StatusBar translucent barStyle="dark-content" backgroundColor="transparent" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           <View style={styles.centerView}>
             <AuthHeader
               title="Sign in with Phone"
@@ -176,7 +280,7 @@ const PhoneLoginScreen = ({ navigation }) => {
                       <Text style={styles.countryCodeText}>
                         {selectedCountry.dialCode}
                       </Text>
-                      <Ionicons name="chevron-down" size={16} color="#666" />
+                      {/* <Ionicons name="chevron-down" size={16} color="#666" /> */}
                     </TouchableOpacity>
 
                     <TextInput
@@ -243,12 +347,6 @@ const PhoneLoginScreen = ({ navigation }) => {
                       </Text>
                     </View>
                   </TouchableOpacity>
-
-                  <AuthFooter
-                    text="Don't have an account?"
-                    buttonText="Sign Up"
-                    onPress={() => navigation.navigate('SignUp')}
-                  />
                 </>
               ) : (
                 <Animated.View style={{ opacity: fadeAnim }}>
@@ -277,15 +375,28 @@ const PhoneLoginScreen = ({ navigation }) => {
                     onPress={handleResendOtp}
                     disabled={resendTimer > 0 || otpLoading}
                   >
-                    <Text style={styles.resendOtpText}>
+                    <Text
+                      style={[
+                        styles.resendOtpText,
+                        {
+                          color:
+                            resendTimer > 0 || otpLoading
+                              ? '#9E9E9E'        // gray
+                              : appColors.primary, // blue
+                        },
+                      ]}
+                    >
                       {resendTimer > 0
                         ? `Resend OTP in ${resendTimer}s`
                         : 'Resend OTP'}
                     </Text>
+
                   </TouchableOpacity>
+
                 </Animated.View>
               )}
             </View>
+
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

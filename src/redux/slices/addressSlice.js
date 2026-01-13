@@ -1,348 +1,251 @@
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "../../services/axiosConfig"
-import { GET_ADDRESSES, ADD_ADDRESS, UPDATE_ADDRESS, DELETE_ADDRESS } from "../../services/api"
+import axiosInstance from "../../services/axiosConfig";
+import {
+  GET_ADDRESSES,
+  ADD_ADDRESS,
+  UPDATE_ADDRESS,
+  DELETE_ADDRESS,
+  SET_DEFAULT_ADDRESS,
+} from "../../services/api";
 
-// Get Addresses - NO TOKEN PARAMS NEEDED!
+/* ===================== GET ===================== */
 export const getAddresses = createAsyncThunk(
   "address/getAddresses",
   async (_, { rejectWithValue }) => {
     try {
-      console.log("🏠 Fetching addresses...");
-      
       const response = await axiosInstance.get(GET_ADDRESSES, {
         timeout: 10000,
       });
 
-      console.log("✅ Get Addresses Response:", response.data);
-      
-      // Handle different response structures
-      if (response.data.addresses) {
-        return response.data.addresses; // Return addresses array directly
-      } else if (Array.isArray(response.data)) {
-        return response.data; // If response is already an array
-      } else {
-        return []; // Fallback to empty array
-      }
-      
+      return {
+        addresses: response.data?.addresses || response.data || [],
+        message: response.data?.message || null,
+      };
     } catch (error) {
-      console.log("❌ Get Addresses Error:", error);
-      
-      let errorMessage = "Failed to fetch addresses";
-      
-      if (error.response) {
-        errorMessage = error.response.data?.message || error.response.data?.error || errorMessage;
-      } else if (error.request) {
-        errorMessage = "No response from server. Please check your connection.";
-      } else {
-        errorMessage = error.message || errorMessage;
-      }
-      
-      return rejectWithValue(errorMessage);
+      return rejectWithValue(
+        error.response?.data || { message: "Failed to fetch addresses" }
+      );
     }
   }
 );
 
-// Add Address - NO TOKEN PARAMS NEEDED!
+/* ===================== ADD ===================== */
 export const addAddress = createAsyncThunk(
   "address/addAddress",
-  async (addressData, { rejectWithValue }) => {
+  async (addressData, { rejectWithValue, dispatch }) => {
     try {
-      console.log("➕ Adding address:", addressData);
-      
       const response = await axiosInstance.post(ADD_ADDRESS, addressData, {
         timeout: 10000,
       });
 
-      console.log("✅ Add Address Response:", response.data);
-      
-      // Handle different response structures
-      if (response.data.address) {
-        return response.data.address; // If response has address object
-      } else if (response.data.addresses && Array.isArray(response.data.addresses)) {
-        // If response returns all addresses, return the last one (newly added)
-        return response.data.addresses[response.data.addresses.length - 1];
-      } else {
-        // Create a mock address with ID if API doesn't return the created address
-        return {
-          _id: Date.now().toString(), // Temporary ID
-          ...addressData,
-          createdAt: new Date().toISOString()
-        };
-      }
-      
+      // always refresh list
+      await dispatch(getAddresses());
+
+      return response.data;
     } catch (error) {
-      console.log("❌ Add Address Error:", error);
-      
-      let errorMessage = "Failed to add address";
-      
-      if (error.response) {
-        errorMessage = error.response.data?.message || error.response.data?.error || errorMessage;
-      } else if (error.request) {
-        errorMessage = "No response from server. Please check your connection.";
-      } else {
-        errorMessage = error.message || errorMessage;
-      }
-      
-      return rejectWithValue(errorMessage);
+      return rejectWithValue(
+        error.response?.data || { message: "Failed to add address" }
+      );
     }
   }
 );
 
-// Update Address - NO TOKEN PARAMS NEEDED!
+/* ===================== UPDATE ===================== */
 export const updateAddress = createAsyncThunk(
   "address/updateAddress",
   async ({ id, addressData }, { rejectWithValue, dispatch }) => {
     try {
-      console.log("✏️ Updating address:", id, addressData);
-      
-      const response = await axiosInstance.put(UPDATE_ADDRESS(id), addressData, {
-        timeout: 10000,
-      });
+      const response = await axiosInstance.put(
+        UPDATE_ADDRESS(id),
+        addressData,
+        { timeout: 10000 }
+      );
 
-      console.log("✅ Update Address Response:", response.data);
-      
-      // Optionally refresh addresses after update
       await dispatch(getAddresses());
-      
-      // Return the updated address data for immediate UI update
-      return {
-        _id: id,
-        ...addressData
-      };
-      
+
+      return response.data;
     } catch (error) {
-      console.log("❌ Update Address Error:", error);
-      
-      let errorMessage = "Failed to update address";
-      
-      if (error.response) {
-        errorMessage = error.response.data?.message || error.response.data?.error || errorMessage;
-      } else if (error.request) {
-        errorMessage = "No response from server. Please check your connection.";
-      } else {
-        errorMessage = error.message || errorMessage;
-      }
-      
-      return rejectWithValue(errorMessage);
+      return rejectWithValue(
+        error.response?.data || { message: "Failed to update address" }
+      );
     }
   }
 );
 
-// Delete Address - NO TOKEN PARAMS NEEDED!
+/* ===================== DELETE ===================== */
 export const deleteAddress = createAsyncThunk(
   "address/deleteAddress",
   async (id, { rejectWithValue }) => {
     try {
-      console.log("🗑️ Deleting address:", id);
-      
-      await axiosInstance.delete(DELETE_ADDRESS(id), {
+      const response = await axiosInstance.delete(DELETE_ADDRESS(id), {
         timeout: 10000,
       });
 
-      console.log("✅ Delete Address Success");
-      return id; // Return the deleted address ID
-      
+      return {
+        id,
+        message: response.data?.message,
+      };
     } catch (error) {
-      console.log("❌ Delete Address Error:", error);
-      
-      let errorMessage = "Failed to delete address";
-      
-      if (error.response) {
-        errorMessage = error.response.data?.message || error.response.data?.error || errorMessage;
-      } else if (error.request) {
-        errorMessage = "No response from server. Please check your connection.";
-      } else {
-        errorMessage = error.message || errorMessage;
-      }
-      
-      return rejectWithValue(errorMessage);
+      return rejectWithValue(
+        error.response?.data || { message: "Failed to delete address" }
+      );
     }
   }
 );
 
+/* ===================== SET DEFAULT ===================== */
+export const setDefaultAddress = createAsyncThunk(
+  "address/setDefault",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.patch(
+        SET_DEFAULT_ADDRESS(id),
+        {},
+        { timeout: 10000 }
+      );
+
+      return {
+        id,
+        message: response.data?.message,
+        addresses: response.data?.addresses,
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || { message: "Failed to set default address" }
+      );
+    }
+  }
+);
+
+/* ===================== SLICE ===================== */
 const addressSlice = createSlice({
   name: "address",
   initialState: {
-    // Address List
     addresses: [],
+    selectedAddress: null, // ✅ ALWAYS OBJECT
     addressesLoading: false,
-    addressesError: null,
-    
-    // Add Address
     addLoading: false,
-    addSuccess: false,
-    addError: null,
-    
-    // Update Address
     updateLoading: false,
-    updateSuccess: false,
-    updateError: null,
-    
-    // Delete Address
     deleteLoading: false,
-    deleteSuccess: false,
+    setDefaultLoading: false,
+
+    addressesError: null,
+    addError: null,
+    updateError: null,
     deleteError: null,
-    
-    // Selected Address
-    selectedAddress: null,
+    setDefaultError: null,
+
+    apiMessage: null,
   },
+
   reducers: {
     resetAddressState: (state) => {
-      state.addressesLoading = false;
-      state.addressesError = null;
-      state.addLoading = false;
-      state.addSuccess = false;
-      state.addError = null;
-      state.updateLoading = false;
-      state.updateSuccess = false;
-      state.updateError = null;
-      state.deleteLoading = false;
-      state.deleteSuccess = false;
-      state.deleteError = null;
-    },
-    resetAddAddressState: (state) => {
-      state.addLoading = false;
-      state.addSuccess = false;
-      state.addError = null;
-    },
-    resetUpdateAddressState: (state) => {
-      state.updateLoading = false;
-      state.updateSuccess = false;
-      state.updateError = null;
-    },
-    resetDeleteAddressState: (state) => {
-      state.deleteLoading = false;
-      state.deleteSuccess = false;
-      state.deleteError = null;
-    },
-    clearAddressErrors: (state) => {
       state.addressesError = null;
       state.addError = null;
       state.updateError = null;
       state.deleteError = null;
+      state.setDefaultError = null;
+      state.apiMessage = null;
     },
+
     setSelectedAddress: (state, action) => {
-      state.selectedAddress = action.payload;
+      state.selectedAddress = action.payload; // ✅ FULL OBJECT
     },
   },
+
   extraReducers: (builder) => {
     builder
-      // Get Addresses
+      /* ---------- GET ---------- */
       .addCase(getAddresses.pending, (state) => {
         state.addressesLoading = true;
-        state.addressesError = null;
       })
       .addCase(getAddresses.fulfilled, (state, action) => {
         state.addressesLoading = false;
-        state.addresses = action.payload || [];
-        console.log("ADDRESSES FETCHED SUCCESSFULLY => ", action.payload);
+        state.addresses = action.payload.addresses;
+        state.apiMessage = action.payload.message;
+
+        const defaultAddress = state.addresses.find((a) => a.isDefault);
+        state.selectedAddress =
+          defaultAddress || state.addresses[0] || null;
       })
       .addCase(getAddresses.rejected, (state, action) => {
         state.addressesLoading = false;
-        state.addressesError = action.payload;
-        console.log("ADDRESSES FETCH FAILED => ", action.payload);
+        state.addressesError = action.payload?.message;
       })
-      // Add Address
+
+      /* ---------- ADD ---------- */
       .addCase(addAddress.pending, (state) => {
         state.addLoading = true;
-        state.addError = null;
-        state.addSuccess = false;
       })
       .addCase(addAddress.fulfilled, (state, action) => {
         state.addLoading = false;
-        state.addSuccess = true;
-        state.addError = null;
-        
-        // Safely add the address to the array
-        if (action.payload && state.addresses) {
-          // Check if address already exists to avoid duplicates
-          const existingIndex = state.addresses.findIndex(
-            addr => addr._id === action.payload._id
-          );
-          
-          if (existingIndex === -1) {
-            state.addresses.push(action.payload);
-          } else {
-            // Update existing address
-            state.addresses[existingIndex] = action.payload;
-          }
-        }
-        
-        console.log("ADDRESS ADDED SUCCESSFULLY => ", action.payload);
+        state.apiMessage = action.payload?.message;
       })
       .addCase(addAddress.rejected, (state, action) => {
         state.addLoading = false;
-        state.addSuccess = false;
-        state.addError = action.payload;
-        console.log("ADDRESS ADD FAILED => ", action.payload);
+        state.addError = action.payload?.message;
       })
-      // Update Address
+
+      /* ---------- UPDATE ---------- */
       .addCase(updateAddress.pending, (state) => {
         state.updateLoading = true;
-        state.updateError = null;
-        state.updateSuccess = false;
       })
       .addCase(updateAddress.fulfilled, (state, action) => {
         state.updateLoading = false;
-        state.updateSuccess = true;
-        state.updateError = null;
-        
-        // Update the address in the local state immediately
-        if (action.payload && state.addresses) {
-          const index = state.addresses.findIndex(addr => addr._id === action.payload._id);
-          if (index !== -1) {
-            state.addresses[index] = { 
-              ...state.addresses[index], 
-              ...action.payload 
-            };
-          }
-        }
-        
-        console.log("ADDRESS UPDATED SUCCESSFULLY => ", action.payload);
+        state.apiMessage = action.payload?.message;
       })
       .addCase(updateAddress.rejected, (state, action) => {
         state.updateLoading = false;
-        state.updateSuccess = false;
-        state.updateError = action.payload;
-        console.log("ADDRESS UPDATE FAILED => ", action.payload);
+        state.updateError = action.payload?.message;
       })
-      // Delete Address
+
+      /* ---------- DELETE ---------- */
       .addCase(deleteAddress.pending, (state) => {
         state.deleteLoading = true;
-        state.deleteError = null;
-        state.deleteSuccess = false;
       })
       .addCase(deleteAddress.fulfilled, (state, action) => {
         state.deleteLoading = false;
-        state.deleteSuccess = true;
-        state.deleteError = null;
-        
-        if (state.addresses) {
-          state.addresses = state.addresses.filter(addr => addr._id !== action.payload);
-          if (state.selectedAddress === action.payload) {
-            state.selectedAddress = null;
-          }
+        state.addresses = state.addresses.filter(
+          (a) => a._id !== action.payload.id
+        );
+
+        if (state.selectedAddress?._id === action.payload.id) {
+          state.selectedAddress = null;
         }
-        
-        console.log("ADDRESS DELETED SUCCESSFULLY => ", action.payload);
+
+        state.apiMessage = action.payload.message;
       })
       .addCase(deleteAddress.rejected, (state, action) => {
         state.deleteLoading = false;
-        state.deleteSuccess = false;
-        state.deleteError = action.payload;
-        console.log("ADDRESS DELETE FAILED => ", action.payload);
+        state.deleteError = action.payload?.message;
+      })
+
+      /* ---------- SET DEFAULT ---------- */
+      .addCase(setDefaultAddress.pending, (state) => {
+        state.setDefaultLoading = true;
+      })
+      .addCase(setDefaultAddress.fulfilled, (state, action) => {
+        state.setDefaultLoading = false;
+
+        if (Array.isArray(action.payload.addresses)) {
+          state.addresses = action.payload.addresses;
+        }
+
+        const selected = state.addresses.find(
+          (a) => a._id === action.payload.id
+        );
+
+        state.selectedAddress = selected || null;
+        state.apiMessage = action.payload.message;
+      })
+      .addCase(setDefaultAddress.rejected, (state, action) => {
+        state.setDefaultLoading = false;
+        state.setDefaultError = action.payload?.message;
       });
   },
 });
 
-export const { 
-  resetAddressState,
-  resetAddAddressState,
-  resetUpdateAddressState,
-  resetDeleteAddressState,
-  clearAddressErrors,
-  setSelectedAddress,
-} = addressSlice.actions;
+export const { resetAddressState, setSelectedAddress } =
+  addressSlice.actions;
 
 export default addressSlice.reducer;

@@ -4,16 +4,16 @@ import fonts from "../../theme/appFonts";
 import appColors from "../../theme/appColors";
 import { windowHeight } from "../../theme/appConstant";
 
-const Header = ({ title, onBackPress, onRightPress, showNotificationIcon,containerStyle,titleStyle,iconColor}) => {
+const Header = ({ title, onBackPress, onRightPress, showNotificationIcon, containerStyle, titleStyle, iconColor }) => {
   return (
-    <View style={[styles.header,{...containerStyle}]}>
+    <View style={[styles.header, { ...containerStyle }]}>
       {/* Back button */}
-    <TouchableOpacity style={styles.arrowView} onPress={onBackPress}>
+      <TouchableOpacity style={styles.arrowView} onPress={onBackPress}>
         <Icon name="chevron-back" size={16} color={iconColor ? iconColor : appColors.black} />
       </TouchableOpacity>
 
       {/* Centered title */}
-      <Text style={[styles.headerTitle,{...titleStyle}]}>{title}</Text>
+      <Text style={[styles.headerTitle, { ...titleStyle }]}>{title}</Text>
 
       {/* Right icon or empty space */}
       {showNotificationIcon ? (
@@ -47,14 +47,16 @@ const styles = StyleSheet.create({
     width: 35,
   },
   headerTitle: {
-    // position: "absolute",
+    position: "absolute",
     left: 0,
     right: 0,
+    textAlign: "center",
     fontSize: 18,
     fontFamily: fonts.InterMedium,
     color: appColors.font,
-    lineHeight:23
+    lineHeight: 23,
   },
+
   rightIcon: {
     width: 35, // same width as back button for symmetry
     height: 35,

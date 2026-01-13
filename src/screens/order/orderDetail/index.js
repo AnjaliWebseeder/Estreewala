@@ -46,6 +46,7 @@ const OrderDetails = ({ navigation, route }) => {
   // Update currentOrder when route params change
 
   useEffect(() => {
+    console.log("order",order);
     if (order) {
       setCurrentOrder(order);
     }

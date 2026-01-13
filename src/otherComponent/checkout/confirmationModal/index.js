@@ -10,7 +10,7 @@ const ConfirmationModal = ({ visible, onClose, onConfirm, title, message }) => {
       animationType={"fade"}
       onRequestClose={onClose}
     >
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.modalOverlay}
         activeOpacity={1}
         onPress={onClose}
@@ -21,22 +21,22 @@ const ConfirmationModal = ({ visible, onClose, onConfirm, title, message }) => {
               <Icon name="warning" size={24} color="#e53935" />
               <Text style={styles.modalTitle}>{title}</Text>
             </View>
-            
+
             <Text style={styles.modalMessage}>{message}</Text>
-            
+
             <View style={styles.modalButtons}>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.cancelButton]} 
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
                 onPress={onClose}
               >
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.confirmButton]} 
+
+              <TouchableOpacity
+                style={[styles.modalButton, styles.confirmButton]}
                 onPress={onConfirm}
               >
-                <Text style={styles.confirmButtonText}>Delete All</Text>
+                <Text style={styles.confirmButtonText}>Confirm</Text>
               </TouchableOpacity>
             </View>
           </View>

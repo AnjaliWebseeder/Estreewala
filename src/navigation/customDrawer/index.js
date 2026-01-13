@@ -8,24 +8,36 @@ import { BellIcon } from '../../assets/Icons/svg/bell'
 import HelpSupportIcon from '../../assets/Icons/svg/helpSupport'
 import { useAuth } from "../../utils/context/authContext"
 import { useSelector } from "react-redux";
+import { useToast } from "../../utils/context/toastContext";
 
 const CustomDrawerContent = (props) => {
-  const { user, logout, userToken ,token} = useAuth(); // Using Redux hook
-  const { customerData} = useSelector(state => state.customer); 
+  const { user, logout, userToken, token } = useAuth();
+  const { customerData } = useSelector(state => state.customer);
   const navigation = useNavigation();
+  const { showToast } = useToast();
+  const unreadCount = useSelector(
+    state => state.notification?.unreadCount ?? 0
+  );
+
   const handleRateApp = () => {
     Linking.openURL('market://details?id=your.package.name');
   };
 
   const handleLogout = async () => {
     try {
-     props.navigation.closeDrawer();
-     await logout(); // Using Redux logout action
-     console.log("HANDLE LOGOUT CALL")         
+      props.navigation.closeDrawer();
+
+      await logout();
+
+      showToast('Logged out successfully', 'success');
+
+      console.log("HANDLE LOGOUT CALL");
     } catch (error) {
       console.log("Logout error:", error);
+      showToast('Logout failed. Please try again.', 'error');
     }
   };
+
 
   // Handle navigation with drawer close
   const handleNavigation = (screenName, params = {}) => {
@@ -35,9 +47,9 @@ const CustomDrawerContent = (props) => {
 
   return (
     <View style={[styles.container, { elevation: 5 }]}>
-      <ScrollView 
-        showsVerticalScrollIndicator={false} 
-        contentContainerStyle={styles.contentContainerStyle} 
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.contentContainerStyle}
         style={[styles.container]}
       >
         {/* User Info Section */}
@@ -63,7 +75,7 @@ const CustomDrawerContent = (props) => {
         <View style={styles.main}>
           {/* Main Navigation */}
           <View style={styles.menuSection}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.menuItem}
               onPress={() => handleNavigation("Main")}
             >
@@ -71,7 +83,7 @@ const CustomDrawerContent = (props) => {
               <Text style={styles.menuText}>Home</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.menuItem}
               onPress={() => handleNavigation("Main", { screen: "Orders" })}
             >
@@ -79,7 +91,7 @@ const CustomDrawerContent = (props) => {
               <Text style={styles.menuText}>My Orders</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.menuItem}
               onPress={() => handleNavigation("ManageAddress")}
             >
@@ -87,19 +99,26 @@ const CustomDrawerContent = (props) => {
               <Text style={styles.menuText}>Manage Address</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.menuItem} 
+            <TouchableOpacity
+              style={styles.menuItem}
               onPress={() => handleNavigation("Notification")}
             >
-              <BellIcon color={appColors.font}/>
+              <BellIcon color={appColors.font} />
               <Text style={styles.menuText}>Notification</Text>
+
+              {/* {unreadCount > 0 && (
+    <View style={styles.notificationBadge}>
+      <Text style={styles.badgeText}>{unreadCount}</Text>
+    </View>
+  )} */}
               <View style={styles.notificationBadge}>
-                <Text style={styles.badgeText}>3</Text>
+                <Text style={styles.badgeText}>{unreadCount}</Text>
               </View>
             </TouchableOpacity>
 
+
             {/* Profile Menu Item */}
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.menuItem}
               onPress={() => handleNavigation("LoginSecurity")}
             >
@@ -110,48 +129,48 @@ const CustomDrawerContent = (props) => {
 
           {/* Support & Information */}
           <View style={styles.supportSection}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.menuItem}
               onPress={() => handleNavigation("ContactSupport")}
             >
-              <HelpSupportIcon color={appColors.font}/>
+              <HelpSupportIcon color={appColors.font} />
               <Text style={styles.menuText}>Contact Support</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.menuItem}
               onPress={() => handleNavigation("PrivacyPolicy")}
             >
-              <Icon name="shield-checkmark-outline" size={20} color={appColors.font}/>
+              <Icon name="shield-checkmark-outline" size={20} color={appColors.font} />
               <Text style={styles.menuText}>Privacy Policy</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.menuItem}
               onPress={() => handleNavigation("AboutUs")}
             >
-              <Icon name="information-circle-outline" size={20} color={appColors.font}/>
+              <Icon name="information-circle-outline" size={20} color={appColors.font} />
               <Text style={styles.menuText}>About Us</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.menuItem}
               onPress={() => handleNavigation("Faqs")}
             >
-              <Icon name="help-circle-outline" size={20} color={appColors.font}/>
+              <Icon name="help-circle-outline" size={20} color={appColors.font} />
               <Text style={styles.menuText}>FAQ</Text>
             </TouchableOpacity>
 
-             <TouchableOpacity 
+            <TouchableOpacity
               style={styles.menuItem}
               onPress={() => handleNavigation("TermsOfServiceScreen")}
             >
-            <Icon name="document-text-outline" size={20} color={appColors.font} />
+              <Icon name="document-text-outline" size={20} color={appColors.font} />
               <Text style={styles.menuText}>Terms Of Service</Text>
             </TouchableOpacity>
 
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.menuItem}
               onPress={handleRateApp}
             >
@@ -161,15 +180,15 @@ const CustomDrawerContent = (props) => {
           </View>
 
           {/* Logout Button - Only show if authenticated */}
-       
-            <TouchableOpacity onPress={handleLogout} style={styles.signOut}>
-              <Icon name="log-out-outline" size={20} color="#E74C3C" />
-              <Text style={styles.signOutText}>Sign Out</Text>
-            </TouchableOpacity>
-        
+
+          <TouchableOpacity onPress={handleLogout} style={styles.signOut}>
+            <Icon name="log-out-outline" size={20} color="#E74C3C" />
+            <Text style={styles.signOutText}>Sign Out</Text>
+          </TouchableOpacity>
+
         </View>
       </ScrollView>
-      
+
       {/* Service Status */}
       <View style={{ paddingHorizontal: 10 }}>
         <View style={styles.serviceStatus}>
@@ -178,8 +197,8 @@ const CustomDrawerContent = (props) => {
             <Text style={styles.statusText}>Service Available</Text>
           </View>
           <Text style={styles.statusSubText}>Open 24/7 for pickups</Text>
-        </View> 
-      </View> 
+        </View>
+      </View>
     </View>
   );
 };

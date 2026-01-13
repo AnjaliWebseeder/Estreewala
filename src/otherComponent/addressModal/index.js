@@ -111,6 +111,7 @@ const AddressModal = ({ visible, onClose, onSave, editingAddress }) => {
                   ]}>
                     {type.label}
                   </Text>
+                  
                 </View>
               </TouchableOpacity>
             ))}
@@ -131,6 +132,8 @@ const AddressModal = ({ visible, onClose, onSave, editingAddress }) => {
             numberOfLines={4}
             textAlignVertical="top"
           />
+          
+          
           {errors.details && (
             <Text style={styles.errorText}>{errors.details}</Text>
           )}

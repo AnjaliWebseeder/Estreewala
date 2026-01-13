@@ -1,11 +1,11 @@
 import React from "react";
 import Svg, { Path, G } from "react-native-svg";
 
-export function MenuIcon({ color = "#fff"}) {
+export function MenuIcon({ color = "#000"}) {
   return (
     <Svg
-      width={22}
-      height={22}
+      width={18}
+      height={18}
       viewBox="0 0 32 32"
       fill="none"
     >
