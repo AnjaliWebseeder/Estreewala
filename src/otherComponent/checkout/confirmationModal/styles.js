@@ -62,7 +62,7 @@ export const styles = StyleSheet.create({
     backgroundColor: appColors.lightBorder,
   },
   confirmButton: {
-    backgroundColor: appColors.error,
+    backgroundColor: appColors.darkBlue,
   },
   cancelButtonText: {
     color: appColors.font,

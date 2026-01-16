@@ -9,12 +9,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { getAddresses } from "../../../redux/slices/addressSlice";
 import { fetchNotifications } from "../../../redux/slices/notificationSlice";
-import LocationRequiredModal from '../../../otherComponent/LocationRequiredModal/LocationRequiredModal';
+import { useAuth } from "../../../utils/context/authContext";
 
 const Header = ({ navigation }) => {
     const dispatch = useDispatch();
+    const { userLocation } = useAuth();
     const { openDrawer } = useDrawer();
-    const [showLocationModal, setShowLocationModal] = useState(false);
 
     const unreadCount = useSelector(
         state => state.notification?.unreadCount ?? 0
@@ -24,25 +24,21 @@ const Header = ({ navigation }) => {
         state => state.address
     );
 
-    // ✅ EFFECTIVE ADDRESS (declare first)
     const effectiveAddress =
         selectedAddress ||
-        addresses.find(a => a.isDefault) ||
-        addresses[0];
+        addresses?.find(a => a.isDefault) ||
+        addresses?.[0] ||
+        (userLocation
+            ? {
+                type: "Current Location",
+                addressLine1: `${userLocation.city}, ${userLocation.state}`,
+            }
+            : null);
 
     useEffect(() => {
         dispatch(getAddresses());
         dispatch(fetchNotifications());
     }, [dispatch]);
-
-    // ✅ SHOW MODAL IF NO ADDRESS
-    useEffect(() => {
-        if (!effectiveAddress || addresses.length === 0) {
-            setShowLocationModal(true);
-        } else {
-            setShowLocationModal(false);
-        }
-    }, [effectiveAddress, addresses]);
 
     const handleMenuPress = () => {
         openDrawer();
@@ -67,12 +63,12 @@ const Header = ({ navigation }) => {
 
                     <View style={{ marginLeft: 6 }}>
                         <Text style={styles.addressTitle}>
-                            {effectiveAddress?.type || "Add Address"}
+                            {effectiveAddress ? effectiveAddress.type : "Add Location"}
                         </Text>
 
                         {effectiveAddress && (
                             <Text style={styles.addressSub} numberOfLines={1}>
-                                {effectiveAddress.addressLine1}
+                                {effectiveAddress.addressLine1 || "Using your current location"}
                             </Text>
                         )}
                     </View>
@@ -85,11 +81,9 @@ const Header = ({ navigation }) => {
                     >
                         <BellIcon color={appColors.primary} />
 
-                        {unreadCount > 0 && (
-                            <View style={styles.badge}>
-                                <Text style={styles.badgeText}>{unreadCount}</Text>
-                            </View>
-                        )}
+                        <View style={styles.badge}>
+                            <Text style={styles.badgeText}>{unreadCount}</Text>
+                        </View>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -97,15 +91,6 @@ const Header = ({ navigation }) => {
             <Text style={styles.title}>
                 Which laundry service do you need today?
             </Text>
-
-            {/* ✅ FORCE LOCATION MODAL */}
-            <LocationRequiredModal
-                visible={showLocationModal}
-                onManageAddress={() => {
-                    setShowLocationModal(false);
-                    navigation.navigate('ManageAddress');
-                }}
-            />
         </>
     );
 };

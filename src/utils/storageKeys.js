@@ -1,0 +1,1 @@
+export const ASYNC_FCM_TOKEN = 'FCM_TOKEN';

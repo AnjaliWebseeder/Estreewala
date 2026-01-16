@@ -24,12 +24,16 @@ export const GET_CUSTOMER_NOTIFICATIONS =
 export const MARK_NOTIFICATION_READ = (id) =>
   `${BASE_URL}/customers/notifications/${id}/read`;
 
+export const MARK_ALL_NOTIFICATION_READ = `${BASE_URL}/customers/notifications/mark-all-read`;
+
+export const ORDER_DETAILS=(id)=>`${BASE_URL}/customers/orders/${id}/summary`;
+
 export const GET_NEARBY_VENDORS = `${BASE_URL}/customers/nearby-vendors`;
-export const GET_NEARBY_VENDORS_FILTER_API = `${BASE_URL}/customers/nearby-vendors/filtered`;
+export const GET_NEARBY_VENDORS_FILTER_API = `${BASE_URL}/customers/filter-by-latlng`;
 export const GET_CUSTOMERDETAILS = `${BASE_URL}/customers/details`
 
-export const SEARCH_VENDORS_API = `${BASE_URL}/customers/search-vendors`
-
+export const SEARCH_VENDORS_API =
+  `${BASE_URL}/customers/search-by-latlng`;
 
 export const UPDATE_FCM_API = `${BASE_URL}/customers/update-fcm-token`
 

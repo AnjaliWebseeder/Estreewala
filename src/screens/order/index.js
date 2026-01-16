@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator,StatusBar } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StatusBar } from "react-native";
 import { styles } from "./styles";
 import FastImage from "react-native-fast-image";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -19,7 +19,8 @@ import { showOrderNotification } from "../../utils/notification/notificationServ
 const defaultServiceImages = [service1, service2, service3, service4];
 
 const OrdersScreen = ({ navigation, route }) => {
-  const [activeTab, setActiveTab] = useState("active");
+  const defaultTabFromRoute = route?.params?.defaultTab;
+  const [activeTab, setActiveTab] = useState(defaultTabFromRoute || "active");
   const [hasLoadedTabs, setHasLoadedTabs] = useState({
     scheduled: false,
     active: false,
@@ -28,7 +29,7 @@ const OrdersScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const { socket, isConnected } = useSocket();
   const { showToast } = useToast();
-  
+
   // Get orders from Redux store
   const {
     pendingOrders,
@@ -46,6 +47,17 @@ const OrdersScreen = ({ navigation, route }) => {
     { id: "completed", label: "Past Orders" },
   ];
 
+  useEffect(() => {
+    if (defaultTabFromRoute === 'scheduled') {
+      setActiveTab('scheduled');
+      setHasLoadedTabs(prev => ({
+        ...prev,
+        scheduled: true,
+      }));
+      dispatch(getOrdersByStatus('pending'));
+    }
+  }, [defaultTabFromRoute, dispatch]);
+
   // Track initial load
   const initialLoadRef = useRef(true);
 
@@ -61,7 +73,7 @@ const OrdersScreen = ({ navigation, route }) => {
     // Listen for order status updates from backend
     const handleOrderUpdate = (data) => {
       console.log('📦 Real-time order update received:', data);
-      
+
       // Update order in Redux store
       dispatch(updateOrderStatus({
         orderId: data.orderId,
@@ -70,8 +82,8 @@ const OrdersScreen = ({ navigation, route }) => {
         updatedAt: data.updatedAt
       }));
 
-      
-    
+
+
     };
 
     socket.on('order-update', handleOrderUpdate);
@@ -93,10 +105,10 @@ const OrdersScreen = ({ navigation, route }) => {
       const newOrder = route.params.newOrder;
       console.log('🎉 New order received in OrdersScreen:', newOrder);
       dispatch(addNewOrder(newOrder));
-      
+
       // Clear the route params to avoid adding duplicate
       navigation.setParams({ newOrder: null });
-      
+
       // Switch to the appropriate tab based on order status
       if (newOrder.status === 'pending') {
         setActiveTab('scheduled');
@@ -117,13 +129,11 @@ const OrdersScreen = ({ navigation, route }) => {
     }
   }, []);
 
-  // Fetch data for all tabs initially
   const fetchAllTabsData = () => {
     dispatch(getOrdersByStatus('pending'));
     dispatch(getOrdersByStatus('accepted'));
-    dispatch(getOrdersByStatus('completed'));
-    
-    // Mark all tabs as loaded
+    dispatch(getOrdersByStatus('completed,rejected,cancelled'));
+
     setHasLoadedTabs({
       scheduled: true,
       active: true,
@@ -131,12 +141,9 @@ const OrdersScreen = ({ navigation, route }) => {
     });
   };
 
-  // Smart tab switching - only fetch if not already loaded
   const handleTabPress = (tabId) => {
     console.log(`🔄 Switching to tab: ${tabId}`);
     setActiveTab(tabId);
-    
-    // Only fetch if this tab hasn't been loaded yet
     if (!hasLoadedTabs[tabId]) {
       console.log(`📥 First time loading tab: ${tabId}`);
       fetchOrdersForTab(tabId);
@@ -146,101 +153,65 @@ const OrdersScreen = ({ navigation, route }) => {
     }
   };
 
-  // Fetch orders for specific tab
   const fetchOrdersForTab = (tabId) => {
-    console.log(`📡 Fetching orders for tab: ${tabId}`);
     switch (tabId) {
       case "scheduled":
         dispatch(getOrdersByStatus('pending'));
         break;
+
       case "active":
         dispatch(getOrdersByStatus('accepted'));
         break;
+
       case "completed":
-        dispatch(getOrdersByStatus('completed'));
+        dispatch(getOrdersByStatus('completed,rejected,cancelled'));
         break;
     }
   };
 
-  // Fetch orders for current tab (with optional force refresh)
-  const fetchOrdersForCurrentTab = (forceRefresh = false) => {
-    if (forceRefresh) {
-      console.log(`🔄 Force refreshing tab: ${activeTab}`);
-      fetchOrdersForTab(activeTab);
-    } else if (!hasLoadedTabs[activeTab]) {
-      console.log(`📥 Loading tab for first time: ${activeTab}`);
-      fetchOrdersForTab(activeTab);
-      setHasLoadedTabs(prev => ({ ...prev, [activeTab]: true }));
-    }
-  };
-
-  // Enhanced refresh function
   const handleRefresh = () => {
     console.log('🔄 Manual refresh triggered for tab:', activeTab);
-    fetchOrdersForTab(activeTab); // Always fetch fresh data on manual refresh
+    fetchOrdersForTab(activeTab);
   };
 
-  // Transform API data to match existing UI structure
   const transformOrderData = (order) => {
-    const randomImage = defaultServiceImages[Math.floor(Math.random() * defaultServiceImages.length)];
-    const totalItems = order.items?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
+    const randomImage =
+      defaultServiceImages[Math.floor(Math.random() * defaultServiceImages.length)];
 
-    // ✅ Determine status display
+    const totalItems =
+      order.items?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
+
     let statusDisplay, statusColor, textColor, progress;
 
     switch (order.status) {
       case "pending":
-        statusDisplay = "SCHEDULED";
+        statusDisplay = "PENDING";
         statusColor = "#e3f2fd";
         textColor = "#1976d2";
         break;
+
       case "accepted":
         statusDisplay = "ACCEPTED";
         statusColor = "#e8f5e8";
         textColor = "#2e7d32";
         progress = "Vendor preparing your order";
         break;
-      case "preparing":
-        statusDisplay = "PREPARING";
-        statusColor = "#fff3e0";
-        textColor = "#f57c00";
-        progress = "Vendor is preparing your order";
-        break;
-      case "ready":
-        statusDisplay = "READY";
-        statusColor = "#e8f5e8";
-        textColor = "#2e7d32";
-        progress = "Ready for pickup";
-        break;
-      case "picked_up":
-        statusDisplay = "PICKED UP";
-        statusColor = "#e3f2fd";
-        textColor = "#1976d2";
-        progress = "Driver picked up your order";
-        break;
-      case "on_the_way":
-        statusDisplay = "ON THE WAY";
-        statusColor = "#fff3e0";
-        textColor = "#f57c00";
-        progress = "Order is on the way";
-        break;
-      case "delivered":
-        statusDisplay = "DELIVERED";
+
+      case "completed":
+        statusDisplay = "COMPLETED";
         statusColor = appColors.lightCream;
         textColor = "#a0a1a5";
         break;
+
       case "rejected":
-        statusDisplay = "REJECTED";
-        statusColor = "#ffebee";
-        textColor = "#c62828";
-        break;
       case "cancelled":
-        statusDisplay = "CANCELLED";
+        statusDisplay = order.status.toUpperCase();
         statusColor = "#ffebee";
         textColor = "#c62828";
         break;
+
       default:
-        statusDisplay = order.status?.toUpperCase() || "PENDING";
+        statusDisplay = "PENDING";
         statusColor = "#e3f2fd";
         textColor = "#1976d2";
     }
@@ -248,9 +219,9 @@ const OrdersScreen = ({ navigation, route }) => {
     return {
       id: order.id || order._id,
       title: order.vendor?.businessName || "Unknown Vendor",
-      orderId: 'ORD-' + (order.id || order._id || '').slice(-5).toUpperCase(),
+      orderId: order.orderId || 'N/A',
       items: `${totalItems} item${totalItems > 1 ? "s" : ""}`,
-      price: (order.totalAmount / 100).toFixed(2),
+      price: order.totalAmount,
       status: statusDisplay,
       statusColor,
       textColor,
@@ -259,6 +230,7 @@ const OrdersScreen = ({ navigation, route }) => {
       originalData: order,
     };
   };
+
 
   const getOrdersForTab = () => {
     let orders = [];
@@ -275,11 +247,11 @@ const OrdersScreen = ({ navigation, route }) => {
       default:
         orders = [];
     }
-        // Sort orders by creation date (newest first)
-    const sortedOrders = [...orders].sort((a, b) => 
+    // Sort orders by creation date (newest first)
+    const sortedOrders = [...orders].sort((a, b) =>
       new Date(b.createdAt) - new Date(a.createdAt)
     );
-    
+
     return sortedOrders.map(transformOrderData);
   };
 
@@ -304,12 +276,13 @@ const OrdersScreen = ({ navigation, route }) => {
   };
 
   const renderItem = ({ item }) => {
+    console.log("item.orderId", item.orderId);
     const formattedPickupDate = moment(item.originalData.pickupDate).format("DD MMM YYYY");
     const formattedDeliveryDate = moment(item?.originalData?.deliveryDate).format("DD MMM YYYY");
-    
+
     return (
-      <TouchableOpacity 
-        onPress={() => navigation.navigate('OrderDetails', { order: item.originalData })} 
+      <TouchableOpacity
+        onPress={() => navigation.navigate("OrderDetails", { orderId: item.id })}
         style={styles.card}
       >
         <View style={{ flexDirection: "row", paddingHorizontal: 10 }}>
@@ -318,7 +291,7 @@ const OrdersScreen = ({ navigation, route }) => {
             <Text style={styles.title}>{item.title}</Text>
 
             <View style={styles.row}>
-              <Text style={styles.subText}>Order ID {item.orderId}</Text>
+              <Text style={styles.subText}>{item.orderId}</Text>
               <Text style={styles.date}>
                 {moment(item?.originalData?.createdAt).utcOffset("+05:30").format("DD MMM, hh:mm A")}
               </Text>
@@ -398,13 +371,13 @@ const OrdersScreen = ({ navigation, route }) => {
       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <View style={styles.container}>
         <View style={styles.main}>
-          <Header 
-            iconColor={appColors.white} 
-            titleStyle={{color:appColors.white}} 
-            title={"My Orders"} 
-            onBackPress={() => navigation.goBack()} 
+          <Header
+            iconColor={appColors.white}
+            titleStyle={{ color: appColors.white }}
+            title={"My Orders"}
+            onBackPress={() => navigation.goBack()}
           />
-        
+
           <View style={styles.tabContainer}>
             {tabs.map((tab) => (
               <TouchableOpacity

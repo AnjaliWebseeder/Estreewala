@@ -8,13 +8,13 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: appColors.background, // ultra-light bg
   },
-main:{
-  backgroundColor:appColors.darkBlue,
-  marginBottom:windowHeight(20)
-},
-profileSection:{
-  paddingTop:windowHeight(10)
-},
+  main: {
+    backgroundColor: appColors.darkBlue,
+    marginBottom: windowHeight(20)
+  },
+  profileSection: {
+    paddingTop: windowHeight(10)
+  },
   scrollContent: {
     paddingHorizontal: 16,
     paddingBottom: windowHeight(80),
@@ -26,9 +26,9 @@ profileSection:{
     borderRadius: 16,
     marginBottom: 14,
     overflow: "hidden",
-    borderColor:appColors.border,
-    borderWidth:0.2,
-    paddingVertical:5,
+    borderColor: appColors.border,
+    borderWidth: 0.2,
+    paddingVertical: 5,
     ...Platform.select({
       ios: {
         shadowColor: "#64748B",
@@ -45,7 +45,7 @@ profileSection:{
     paddingVertical: 12.3,
     paddingHorizontal: 16,
     borderBottomWidth: 0.5,
-    borderBottomColor:appColors.border,
+    borderBottomColor: appColors.border,
   },
   iconBox: {
     width: 28,
@@ -68,50 +68,68 @@ profileSection:{
     borderRightWidth: 2,
     borderColor: appColors.subTitle,
     transform: [{ rotate: "45deg" }],
-    marginRight:10
+    marginRight: 10
   },
   // ================= PHOTO STYLES =================
-profileImage: {
-  width: 100,
-  height: 100,
-  borderRadius: 50, // circular image
-  borderColor: appColors.border,
-  resizeMode: "cover",
-  alignSelf: "center",
-  marginBottom: 10,
-},
-userName: {
-  fontSize: 18,
-  fontWeight: "600",
-  color: appColors.white,
-  textAlign: "center",
-},
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50, // circular image
+    borderColor: appColors.border,
+    resizeMode: "cover",
+    alignSelf: "center",
+    marginBottom: 10,
+  },
+  userName: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: appColors.white,
+    textAlign: "center",
+  },
 
-userEmail: {
-  fontSize: 14,
-  color: "#888",
-  textAlign: "center",
-  marginBottom:windowHeight(18)
-},
- deleteButton: {
-  backgroundColor: "white", // iOS system red (Instagram/Uber style)
-  paddingVertical: 12,
-  borderRadius: 12,
-  flexDirection: "row",
-  justifyContent: "center",
-  alignItems: "center",
-  marginHorizontal: 0,
-  marginBottom: 10,
-  opacity:0.9,
-  borderColor:appColors.error,
-  borderWidth:1
-},
+  userEmail: {
+    fontSize: 14,
+    color: "#888",
+    textAlign: "center",
+    marginBottom: windowHeight(18)
+  },
+  deleteButton: {
+    backgroundColor: "white", // iOS system red (Instagram/Uber style)
+    paddingVertical: 12,
+    borderRadius: 12,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 0,
+    marginBottom: 10,
+    opacity: 0.9,
+    borderColor: appColors.error,
+    borderWidth: 1
+  },
 
-deleteText: {
-  color: "#f07777ff",
-  fontSize: 16,
-  fontWeight: "600",
-},
+  deleteText: {
+    color: "#f07777ff",
+    fontSize: 16,
+    fontFamily: "Inter-Medium",
+  },
+
+  logoutButton: {
+    backgroundColor: "#f7f7f7",
+    paddingVertical: 12,
+    borderRadius: 12,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+  },
+
+  logoutText: {
+    color: "#444",
+    fontSize: 16,
+    fontFamily: "Inter-Medium",
+  },
 
 
   // ===== SIGN OUT =====

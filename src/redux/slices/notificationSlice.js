@@ -4,6 +4,7 @@ import {
   UPDATE_FCM_API,
   GET_CUSTOMER_NOTIFICATIONS,
   MARK_NOTIFICATION_READ,
+  MARK_ALL_NOTIFICATION_READ,
 } from '../../services/api';
 
 const getAuthToken = (getState) => {
@@ -51,7 +52,7 @@ export const fetchNotifications = createAsyncThunk(
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log("notification res.data",res.data);
+      console.log("notification res.data", res.data);
 
       return res.data || [];
     } catch (error) {
@@ -89,6 +90,32 @@ export const markNotificationRead = createAsyncThunk(
     }
   }
 );
+
+export const markAllNotificationsRead = createAsyncThunk(
+  'notification/markAllRead',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const token = getAuthToken(getState);
+
+      const res = await axiosInstance.patch(
+        MARK_ALL_NOTIFICATION_READ,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log("mark all read res",res.data)
+
+      return res.data; // backend success msg
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+        'Failed to mark all notifications read'
+      );
+    }
+  }
+);
+
 
 /* --------------------------------------------------
  🧠 SLICE
@@ -153,6 +180,24 @@ const notificationSlice = createSlice({
         }
       })
 
+      .addCase(markAllNotificationsRead.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(markAllNotificationsRead.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.list = state.list.map(n => ({
+          ...n,
+          isRead: true,
+        }));
+
+        state.unreadCount = 0;
+        state.error = null;
+      })
+      .addCase(markAllNotificationsRead.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       /* ---------- FCM ---------- */
       .addCase(updateFcmToken.fulfilled, (state) => {
         state.fcmUpdated = true;

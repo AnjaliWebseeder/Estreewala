@@ -127,8 +127,8 @@ const AboutUsScreen = ({ navigation }) => {
       color: '#000',
     },
     ourvaluestitle: {
-    marginBottom: 0,  // override
-  },
+      marginBottom: 0,  // override
+    },
     h3: {
       fontSize: 18,
       fontWeight: 'bold',
@@ -153,17 +153,17 @@ const AboutUsScreen = ({ navigation }) => {
   };
 
   const classesStyles = {
-  'our-values-title': {
-    marginBottom: 0,   // remove bottom space
-    paddingBottom: 0,
-  },
-  'our-title':{
-    marginTop:0
-  },
-  'title':{
-    marginTop:10
-  }
-};
+    'our-values-title': {
+      marginBottom: 0,
+      paddingBottom: 0,
+    },
+    'our-title': {
+      marginTop: 0
+    },
+    'title': {
+      marginTop: 10
+    }
+  };
 
 
   const systemFonts = ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'];
@@ -176,8 +176,8 @@ const AboutUsScreen = ({ navigation }) => {
           title="About Us"
           onBackPress={() => navigation.goBack()}
         />
-        
-        <ScrollView 
+
+        <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.contentContainer}
           showsVerticalScrollIndicator={false}
@@ -186,7 +186,7 @@ const AboutUsScreen = ({ navigation }) => {
             contentWidth={width - 40}
             source={{ html: aboutUsContent }}
             tagsStyles={tagsStyles}
-             classesStyles={classesStyles}
+            classesStyles={classesStyles}
             systemFonts={systemFonts}
             enableExperimentalMarginCollapsing={true}
           />
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: 20,
     paddingBottom: 40,
-    paddingTop:5
+    paddingTop: 5
   },
 });
 

@@ -7,11 +7,11 @@ import fonts from "../../../theme/appFonts";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchNotifications, markNotificationRead } from '../../../redux/slices/notificationSlice';
+import { fetchNotifications, markNotificationRead, markAllNotificationsRead } from '../../../redux/slices/notificationSlice';
 
 const Notification = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { list, loading } = useSelector(state => state.notification);
+  const { list, loading, error } = useSelector(state => state.notification);
 
   useEffect(() => {
     dispatch(fetchNotifications());
@@ -20,9 +20,25 @@ const Notification = ({ navigation }) => {
 
 
   const handlePress = (item) => {
-    if (!item.read) {
-      dispatch(markNotificationRead(item.id));
+    if (!item.isRead) {
+      dispatch(markNotificationRead(item._id));
     }
+    navigation.navigate("OrderDetails", {
+      orderId: item.data.mongoId,
+    });
+  };
+
+  const handleMarkAllRead = () => {
+    if (list.length === 0) return;
+
+    dispatch(markAllNotificationsRead())
+      .unwrap()
+      .then((res) => {
+        Alert.alert('Success', res?.message || 'All notifications marked as read');
+      })
+      .catch((err) => {
+        Alert.alert('Error', err);
+      });
   };
 
   const EmptyState = () => (
@@ -45,11 +61,11 @@ const Notification = ({ navigation }) => {
       onPress={() => handlePress(item)}
       style={[
         styles.card,
-        item.read ? styles.readCard : styles.unreadCard,
+        item.isRead ? styles.readCard : styles.unreadCard,
       ]}
     >
       {/* LEFT STRIP */}
-      {!item.read && <View style={styles.unreadStrip} />}
+      {!item.isRead && <View style={styles.unreadStrip} />}
 
       {/* ICON */}
       <View
@@ -70,27 +86,41 @@ const Notification = ({ navigation }) => {
           <Text
             style={[
               styles.title,
-              !item.read && styles.unreadTitle,
+              !item.isRead && styles.unreadTitle,
             ]}
             numberOfLines={2}
           >
             {item.title || item.message}
           </Text>
 
-          {!item.read && <View style={styles.unreadDot} />}
+          {!item.isRead && <View style={styles.unreadDot} />}
         </View>
 
-        <Text style={styles.time}>
-          {item.time || new Date(item.createdAt).toLocaleString()}
-        </Text>
+        {/* ORDER ID */}
+        {item?.data?.orderId && (
+          <Text style={styles.orderIdText}>
+            Order ID: {item.data.orderId}
+          </Text>
+        )}
+        {/* 
+  <Text style={styles.time}>
+    {new Date(item.createdAt).toLocaleString()}
+  </Text> */}
       </View>
+
     </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="Notification" onBackPress={() => navigation.goBack()} />
+      <Header
+        title="Notification"
+        onBackPress={() => navigation.goBack()}
 
+      />
+      <TouchableOpacity onPress={handleMarkAllRead}>
+        <Text style={styles.markAllText}>Mark all read</Text>
+      </TouchableOpacity>
       <FlatList
         data={list}
         keyExtractor={(item) => item._id}
@@ -211,7 +241,17 @@ const styles = StyleSheet.create({
     color: "#888",
     marginTop: 4,
   },
-
+  markAllText: {
+    fontSize: 13,
+    fontFamily: fonts.InterSemiBold,
+    color: "#4F8AF2",
+    letterSpacing: 0.4,
+    textDecorationLine: "underline",
+    textDecorationStyle: "solid",
+    alignSelf: "flex-end",
+    marginHorizontal: 12,
+    marginBottom: 10,
+  },
 });
 
 export default Notification;

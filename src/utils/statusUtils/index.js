@@ -1,40 +1,101 @@
-export const statusText = {
-  NEW: "Order is accepted.",
-  WASHING: "Order is being processed.",
-  COMPLETED: "Order is completed.",
-  DELIVERY: "Order will be delivered soon.",
-  CANCELLED: "Order has been cancelled.",
+
+export const formatDateTime = (dateString, timeString) => {
+  if (!dateString) return '';
+
+  const date = new Date(dateString);
+
+  const formattedDate = date.toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+
+  return timeString
+    ? `${formattedDate} at ${timeString}`
+    : formattedDate;
 };
 
-export const getStatusSteps = (status) => {
+
+export const getStatusSteps = (order) => {
+  if (!order) return [];
+
+  const { status, timeline = {} } = order;
+
+  const {
+    createdAt,
+    acceptedAt,
+    completedAt,
+    cancelledAt,
+    rejectedAt,
+    deliveryDateTime,
+  } = timeline;
+
   const steps = [
-    { title: "Order is Placed.", date: "09 Mar 2021 at 03:00 PM", icon: 'documentIcon', bgColor: "#bfd8f6" },
-    { title: "Order is being processed.", date: "09 Mar 2021", icon: 'PickupOrderIcon', bgColor: "#fef5d8" },
-    { title: "Order is completed.", date: "11 Mar 2021", icon: 'OrderOnWayIcon', bgColor: "#e5eaff" },
-    { title: "Order will be delivered soon.", date: "11 Mar 2021 at 10:00 AM", icon: 'deliveryIcon', bgColor: "#ffecee" },
+    {
+      key: "placed",
+      title: "Order is Placed",
+      date: formatDateTime(createdAt),
+      completed: true,
+      iconColor: "#333",
+      bgColor: "#dffafaff",
+    },
+
+    {
+      key: "accepted",
+      title: acceptedAt
+        ? "Order is Being Processed"
+        : "Order is Yet to be Processed",
+      date: formatDateTime(acceptedAt),
+      completed: !!acceptedAt,
+      iconColor: "#FF9800",
+      bgColor: "#fff3e0",
+    },
+
+    {
+      key: "completed",
+      title: completedAt
+        ? "Order is Completed"
+        : deliveryDateTime
+          ? "Expected Delivery"
+          : "Pending Delivery",
+      date: formatDateTime(completedAt || deliveryDateTime),
+      completed: !!completedAt,
+      iconColor: "#4CAF50",
+      bgColor: "#e6f4ea",
+    }
   ];
 
-  // Determine which steps are completed based on status
-  const statusIndex = {
-    NEW: 0,
-    WASHING: 1,
-    COMPLETED: 2,
-    DELIVERY: 3,
-    CANCELLED: -1, // Special case for cancelled
-  };
-
-  const currentIndex = statusIndex[status] || 0;
-  
-  if (status === 'CANCELLED') {
-    return steps.map((step, index) => ({
-      ...step,
-      completed: false,
-      isCancelled: true
-    }));
+  if (status === "cancelled") {
+    return [
+      steps[0],
+      {
+        key: "cancelled",
+        title: "Order Cancelled",
+        date: formatDateTime(cancelledAt),
+        completed: true,
+        iconColor: "#FF3B30",
+        bgColor: "#f9dad9",
+      },
+    ];
   }
 
-  return steps.map((step, index) => ({
-    ...step,
-    completed: index <= currentIndex
-  }));
+  if (status === "rejected") {
+    return [
+      steps[0],
+      {
+        key: "rejected",
+        title: "Order Rejected",
+        date: formatDateTime(rejectedAt),
+        completed: true,
+        iconColor: "#FF3B30",
+        bgColor: "#f9dad9",
+      },
+    ];
+  }
+
+  return steps;
 };
+
+
+
+

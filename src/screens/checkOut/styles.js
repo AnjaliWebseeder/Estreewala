@@ -163,17 +163,17 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 15,
-    paddingVertical: 10,
+    paddingVertical: 8,
     borderWidth: 1,
     borderColor: appColors.border,
     borderRadius: 8,
-    // marginBottom: 10,
+    // marginBottom:8,
   },
   primaryOption: {
     borderColor: appColors.blue,
     backgroundColor: appColors.blue + '10',
     borderWidth: 0.6,
-    marginBottom: 12
+    marginBottom: 8
   },
   optionTextContainer: {
     flex: 1,
@@ -199,6 +199,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: appColors.border,
     borderRadius: 8,
+    marginTop: windowHeight(2)
   },
 
   addressType: {
@@ -217,19 +218,6 @@ export const styles = StyleSheet.create({
     color: appColors.blue,
     fontFamily: fonts.InterMedium,
     fontSize: 11,
-  },
-
-  addAddressBtn: {
-    padding: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: appColors.blue,
-    alignItems: 'center',
-  },
-
-  addAddressText: {
-    color: appColors.blue,
-    fontFamily: fonts.InterSemiBold,
   },
 
   contactCard: {
@@ -275,5 +263,42 @@ export const styles = StyleSheet.create({
     fontFamily: fonts.InterRegular,
   },
 
+  addAddressBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderWidth: 1,
+    borderColor: appColors.primary,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginTop: 10
+  },
+
+  addAddressText: {
+    fontSize: 13,
+    color: appColors.primary,
+    fontFamily: fonts.InterMedium,
+  },
+
+  changeBtn: {
+    backgroundColor: appColors.darkBlue,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+
+  changeBtnText: {
+    fontSize: 12,
+    fontFamily: fonts.InterMedium,
+    color: appColors.white,
+  },
+
+  addressRow: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingRight: 10,
+  },
 
 });

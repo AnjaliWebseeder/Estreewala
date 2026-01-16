@@ -35,7 +35,7 @@ export default function ManageAddress({ navigation, route }) {
   const { addresses, addressesLoading, selectedAddress } = useSelector(
     (state) => state.address
   );
-  const { userLocation } = useAuth();
+  const { userLocation, saveLocation } = useAuth();
   const { showToast } = useToast();
 
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -174,16 +174,32 @@ export default function ManageAddress({ navigation, route }) {
   };
 
 
-  const applySelectedAddress = () => {
-    const selectedObj = addresses.find(
-      (a) => a._id === localSelectedAddress
-    );
+ const applySelectedAddress = async () => {
+  const selectedObj = addresses.find(
+    a => a._id === localSelectedAddress
+  );
 
-    if (selectedObj) {
-      dispatch(setSelectedAddress(selectedObj));
-      navigation.goBack();
-    }
-  };
+  if (!selectedObj) {
+    showToast('Please select an address', 'error');
+    return;
+  }
+
+  dispatch(setSelectedAddress(selectedObj));
+
+  if (selectedObj?.location?.coordinates?.coordinates?.length === 2) {
+    const [lng, lat] = selectedObj.location.coordinates.coordinates;
+
+    await saveLocation({
+      coordinates: [lng, lat],
+      city: selectedObj.city,
+      state: selectedObj.state,
+      pincode: selectedObj.pincode,
+    });
+  }
+
+  navigation.goBack(); // ✅ Checkout par wapas
+};
+
 
 
   const openMap = (item = null) => {
@@ -261,13 +277,13 @@ export default function ManageAddress({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" />
-      <Header title="Manage Address" onBackPress={navigation.goBack} />
+      <Header title="Manage Address" onBackPress={() => navigation.goBack()} />
 
       {!hasAddresses && (
         <TouchableOpacity
           style={[styles.currentLocationBtn]}
           onPress={getCurrentLocation}
-          // disabled={isLocating || !userLocation}
+        // disabled={isLocating || !userLocation}
         >
           {isLocating ? <ActivityIndicator color={appColors.blue} /> : <Icon name="navigate" size={20} color={appColors.blue} />}
           <Text style={styles.currentLocationText}>{isLocating ? "Adding..." : "Use Current Location"}</Text>
@@ -294,11 +310,16 @@ export default function ManageAddress({ navigation, route }) {
         <Text style={styles.addNewButtonText}>Add New Address</Text>
       </TouchableOpacity>
 
-      {hasAddresses && (
-        <TouchableOpacity style={styles.applyBtn} onPress={applySelectedAddress}>
-          <Text style={styles.applyBtnText}>Apply Selected Address</Text>
-        </TouchableOpacity>
-      )}
+     <TouchableOpacity
+  style={[
+    styles.applyBtn,
+    !localSelectedAddress && { opacity: 0.5 }
+  ]}
+  disabled={!localSelectedAddress}
+  onPress={applySelectedAddress}
+>
+  <Text style={styles.applyBtnText}>Apply Selected Address</Text>
+</TouchableOpacity>
 
       <DeleteConfirmation visible={deleteModalVisible} onClose={() => setDeleteModalVisible(false)} onConfirm={handleDelete} />
       <Modal

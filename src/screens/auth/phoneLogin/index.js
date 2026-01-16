@@ -16,7 +16,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Geolocation from 'react-native-geolocation-service';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
   sendOtp,
@@ -24,7 +23,6 @@ import {
   resetOtpState,
   resetVerifyState,
 } from '../../../redux/slices/authSlice';
-import { addAddress, setDefaultAddress } from '../../../redux/slices/addressSlice';
 import messaging from '@react-native-firebase/messaging';
 import { updateFcmToken } from '../../../redux/slices/notificationSlice';
 
@@ -98,6 +96,7 @@ const PhoneLoginScreen = ({ navigation }) => {
     return granted === PermissionsAndroid.RESULTS.GRANTED;
   };
 
+
   const reverseGeocode = async (lat, lng) => {
     const res = await fetch(
       `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
@@ -114,20 +113,7 @@ const PhoneLoginScreen = ({ navigation }) => {
   const parseAddress = data => {
     const addr = data?.address || {};
 
-    // AddressLine1: sab info, jo bhi mile
-    const addressLine1 = [
-      addr.house_number,
-      addr.building,
-      addr.road,
-      addr.county,
-      addr.suburb,
-      addr.neighbourhood,
-      addr.locality
-    ].filter(Boolean).join(', ');
-
     return {
-      addressLine1: addressLine1,  // optional, extra info
-      addressLine2: '',            // always empty
       city: addr.city || addr.town || addr.village || '',
       state: addr.state || '',
       pincode: addr.postcode || '',
@@ -137,36 +123,29 @@ const PhoneLoginScreen = ({ navigation }) => {
   const handleAutoAddress = async () => {
     try {
       const hasPermission = await requestLocationPermission();
-      if (!hasPermission) return;
+      if (!hasPermission) return null;
 
-      return new Promise((resolve, reject) => {
+      return new Promise(resolve => {
         Geolocation.getCurrentPosition(
           async ({ coords }) => {
-            const geoData = await reverseGeocode(coords.latitude, coords.longitude);
+            const geoData = await reverseGeocode(
+              coords.latitude,
+              coords.longitude
+            );
+
             const parsed = parseAddress(geoData);
 
             if (!parsed.city || !parsed.state || !parsed.pincode) {
-              console.log('❌ Incomplete mandatory fields');
+              console.log('❌ Incomplete address');
               return resolve(null);
             }
 
-            const addressData = {
-              type: 'Home',
-              addressLine1: parsed.addressLine1,
-              addressLine2: parsed.addressLine2,
+            resolve({
+              coordinates: [coords.longitude, coords.latitude],
               city: parsed.city,
               state: parsed.state,
               pincode: parsed.pincode,
-              coordinates: [coords.longitude, coords.latitude],
-              isDefault: true,
-            };
-
-            const added = await dispatch(addAddress(addressData)).unwrap();
-            if (added?._id) {
-              await dispatch(setDefaultAddress(added._id)).unwrap();
-            }
-
-            resolve(addressData); // return addressData so caller can saveLocation
+            });
           },
           error => {
             console.log('📍 Location error:', error);
@@ -180,8 +159,6 @@ const PhoneLoginScreen = ({ navigation }) => {
       return null;
     }
   };
-
-
 
   /* ================= OTP HANDLERS ================= */
 
@@ -223,15 +200,12 @@ const PhoneLoginScreen = ({ navigation }) => {
         } catch (err) {
           console.log('❌ FCM token error:', err);
         }
-        const addedAddress = await handleAutoAddress();
-        if (addedAddress) {
-          await saveLocation({
-            coordinates: addedAddress.coordinates,
-            city: addedAddress.city,
-            state: addedAddress.state,
-            pincode: addedAddress.pincode,
-          });
+        const locationData = await handleAutoAddress();
+
+        if (locationData) {
+          await saveLocation(locationData);
         }
+
         navigation.reset({
           index: 0,
           routes: [{ name: 'Main' }],

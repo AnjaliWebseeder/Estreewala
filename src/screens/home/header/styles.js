@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: windowWidth(6),
-    paddingTop: 0
+    paddingTop: 15
   },
   actions: {
     flexDirection: "row",

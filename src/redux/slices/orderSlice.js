@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../../services/axiosConfig';
+import { BASE_URL } from '../../services/api';
 
 // ✅ Place Order API Thunk
 export const placeOrder = createAsyncThunk(
@@ -12,7 +13,7 @@ export const placeOrder = createAsyncThunk(
       if (!token) throw new Error('No token found. Please log in again.');
 
       const response = await axiosInstance.post(
-        'https://api.estreewalla.com/api/v1/customers/orders',
+        `${BASE_URL}/customers/orders`,
         orderData,
         {
           headers: {
@@ -57,7 +58,7 @@ export const cancelOrder = createAsyncThunk(
       if (!token) throw new Error('No token found. Please log in again.');
 
       const response = await axiosInstance.patch(
-        `https://api.estreewalla.com/api/v1/customers/orders/${orderId}/cancel`,
+        `${BASE_URL}/customers/orders/${orderId}/cancel`,
         { reason },
         {
           headers: {

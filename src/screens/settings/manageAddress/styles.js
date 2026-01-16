@@ -60,10 +60,10 @@ export const styles = StyleSheet.create({
     paddingVertical: windowHeight(5),
   },
   radioOuter: {
-    height: windowHeight(15),
-    width: windowWidth(25),
-    borderRadius: 10,
-    borderWidth: 1.2,
+    height: windowWidth(20),
+    width: windowWidth(20),
+    borderRadius: windowWidth(10),
+    borderWidth: 1.5,
     borderColor: appColors.border,
     alignItems: 'center',
     justifyContent: 'center',
@@ -72,12 +72,11 @@ export const styles = StyleSheet.create({
     borderColor: appColors.font,
   },
   radioInner: {
-    height: windowHeight(9),
-    width: windowWidth(15),
-    borderRadius: 5,
+    height: windowWidth(10),
+    width: windowWidth(10),
+    borderRadius: windowWidth(5),
     backgroundColor: appColors.font,
   },
-
   // Default Badge
   defaultBadge: {
     backgroundColor: "#c5f0d0",
@@ -91,37 +90,37 @@ export const styles = StyleSheet.create({
     fontFamily: fonts.InterSemiBold,
   },
 
- // Set Default Button (Stylish)
-setDefaultBtn: {
-  marginTop: windowHeight(6),
-  flexDirection: "row",
-  alignItems: "center",
+  // Set Default Button (Stylish)
+  setDefaultBtn: {
+    marginTop: windowHeight(6),
+    flexDirection: "row",
+    alignItems: "center",
 
-  paddingVertical: windowHeight(1),
-  paddingHorizontal: windowWidth(10),
+    paddingVertical: windowHeight(1),
+    paddingHorizontal: windowWidth(10),
 
-  backgroundColor: "#e7f3f6", 
-  borderRadius: 20,
+    backgroundColor: "#e7f3f6",
+    borderRadius: 20,
 
-  alignSelf: "flex-end",
+    alignSelf: "flex-end",
 
-  borderWidth: 1,
-  borderColor: "#0a8ba5",
+    borderWidth: 1,
+    borderColor: "#0a8ba5",
 
-  // subtle elevation
-  shadowColor: "#0a8ba5",
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.18,
-  shadowRadius: 4,
-  elevation: 2,
-},
+    // subtle elevation
+    shadowColor: "#0a8ba5",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 4,
+    elevation: 2,
+  },
 
-setDefaultText: {
-  color: "#0a8ba5",
-  fontSize: fontSizes.FONT12,
-  fontFamily: fonts.InterSemiBold,
-  letterSpacing: 0.4,
-},
+  setDefaultText: {
+    color: "#0a8ba5",
+    fontSize: fontSizes.FONT12,
+    fontFamily: fonts.InterSemiBold,
+    letterSpacing: 0.4,
+  },
 
 
   addBtn: {
@@ -238,42 +237,42 @@ setDefaultText: {
     alignItems: 'center',
   },
   modalOverlay: {
-  flex: 1,
-  backgroundColor: "rgba(0,0,0,0.4)",
-  justifyContent: "flex-end",
-},
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "flex-end",
+  },
 
-modalContainer: {
-  backgroundColor: "#fff",
-  padding: 20,
-  borderTopLeftRadius: 20,
-  borderTopRightRadius: 20,
-},
+  modalContainer: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
 
-modalTitle: {
-  fontSize: 16,
-  fontWeight: "600",
-  marginBottom: 12,
-  color: "#111827",
-},
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 12,
+    color: "#111827",
+  },
 
-modalAddress: {
-  fontSize: 14,
-  color: "#374151",
-  lineHeight: 20,
-},
+  modalAddress: {
+    fontSize: 14,
+    color: "#374151",
+    lineHeight: 20,
+  },
 
-modalCloseBtn: {
-  marginTop: 20,
-  paddingVertical: 12,
-  borderRadius: 10,
-  backgroundColor: "#2563EB",
-  alignItems: "center",
-},
+  modalCloseBtn: {
+    marginTop: 20,
+    paddingVertical: 12,
+    borderRadius: 10,
+    backgroundColor: appColors.darkBlue,
+    alignItems: "center",
+  },
 
-modalCloseText: {
-  color: "#fff",
-  fontWeight: "600",
-},
+  modalCloseText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
 
 });

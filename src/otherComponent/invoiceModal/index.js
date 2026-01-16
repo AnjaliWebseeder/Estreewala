@@ -48,279 +48,256 @@ const InvoiceModal = ({ visible, onClose, order, onDownload }) => {
   }
 
   // Generate HTML content for PDF with enhanced print styling
-  const generateHTML = () => {
-    return `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Invoice ${invoiceData.invoiceNumber}</title>
-        <style>
-          body { 
-            font-family: Arial, sans-serif; 
-            margin: 40px; 
-            line-height: 1.6;
-            color: #333;
-            background: white;
-          }
-          .header { 
-            display: flex; 
-            justify-content: space-between; 
-            margin-bottom: 30px; 
-            border-bottom: 2px solid #2c5aa0;
-            padding-bottom: 20px;
-          }
-          .invoice-number { 
-            font-size: 24px; 
-            font-weight: bold; 
-            color: #2c5aa0;
-          }
-          .section { 
-            margin-bottom: 20px; 
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-          }
-          .section-title { 
-            font-size: 18px; 
-            font-weight: bold; 
-            margin-bottom: 10px; 
-            border-bottom: 1px solid #ddd; 
-            padding-bottom: 5px; 
-            color: #2c5aa0;
-          }
-          .detail-row { 
-            display: flex; 
-            margin-bottom: 5px; 
-          }
-          .detail-label { 
-            width: 120px; 
-            font-weight: bold; 
-          }
-          .table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin: 15px 0; 
-          }
-          .table th, .table td { 
-            border: 1px solid #ddd; 
-            padding: 8px; 
-            text-align: left; 
-          }
-          .table th { 
-            background-color: #f2f2f2; 
-            font-weight: bold;
-          }
-          .summary-row { 
-            display: flex; 
-            justify-content: space-between; 
-            margin-bottom: 8px; 
-          }
-          .total-row { 
-            font-weight: bold; 
-            font-size: 16px; 
-            margin-top: 10px; 
-            border-top: 2px solid #ddd; 
-            padding-top: 10px; 
-          }
-          .terms-section { 
-            margin-top: 30px; 
-            font-size: 12px; 
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-          }
-          .logo { 
-            font-size: 20px; 
-            font-weight: bold; 
-            color: #2c5aa0; 
-          }
-          .print-actions {
-            text-align: center;
-            margin: 20px 0;
-            padding: 15px;
-            background: #e7f3ff;
-            border-radius: 8px;
-          }
-          .print-btn {
-            background: #2c5aa0;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 5px;
-          }
-          .download-info {
-            font-size: 14px;
-            color: #666;
-            margin-top: 10px;
-          }
-          
-          @media print {
-            body {
-              margin: 0;
-              padding: 20px;
-              background: white;
-            }
-            .print-actions {
-              display: none !important;
-            }
-            .header {
-              border-bottom-color: #000;
-            }
-            .section {
-              background: #fff;
-              border: 1px solid #ddd;
-            }
-          }
-        </style>
-        <script>
-          function printInvoice() {
-            window.print();
-          }
-          
-          function downloadAsPDF() {
-            window.print();
-          }
-          
-          // Auto-trigger print on Android for better UX
-          window.onload = function() {
-            // Auto-open print dialog on Android devices
-            if (/Android/i.test(navigator.userAgent)) {
-              setTimeout(() => {
-                window.print();
-              }, 1000);
-            }
-          };
-        </script>
-      </head>
-      <body>
-        <div class="header">
-          <div>
-            <div class="invoice-number">Invoice #${invoiceData.invoiceNumber}</div>
-            <div>Date: ${invoiceData.invoiceDate}</div>
-            <div>Due Date: ${invoiceData.dueDate}</div>
-          </div>
-          <div class="logo">${order?.vendor?.businessName || 'QuickClean'}</div>
-        </div>
+ const generateHTML = () => {
+  return `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice ${invoiceData.invoiceNumber}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #ffffff;
+        color: #333333;
+        margin: 0;
+        padding: 20px;
+        line-height: 1.5;
+      }
 
-        <div class="section">
-          <div class="section-title">Order Details</div>
-          <div class="detail-row">
-            <div class="detail-label">Status:</div>
-            <div>${order?.status || 'N/A'}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Pickup Date:</div>
-            <div>${moment(order?.pickupDate).format("DD MMM YYYY")} ${order?.pickupTime}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Delivery Date:</div>
-            <div>${moment(order?.deliveryDate).format("DD MMM YYYY")} ${order?.deliveryTime}</div>
-          </div>
-        </div>
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 3px solid #2c5aa0;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+      }
 
-        <div class="section">
-          <div class="section-title">Customer Details</div>
-          <div class="detail-row">
-            <div class="detail-label">Name:</div>
-            <div>${order?.contactDetails?.fullName || 'N/A'}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Address:</div>
-            <div>${order?.deliveryAddress?.address || 'N/A'}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Phone:</div>
-            <div>${order?.contactDetails?.mobile || 'N/A'}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Email:</div>
-            <div>${order?.contactDetails?.email || 'N/A'}</div>
-          </div>
-        </div>
+      .invoice-number {
+        font-size: 20px;
+        font-weight: bold;
+        color: #2c5aa0;
+      }
 
-        <div class="section">
-          <div class="section-title">Vendor Details</div>
-          <div class="detail-row">
-            <div class="detail-label">Business:</div>
-            <div>${order?.vendor?.businessName || 'N/A'}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Address:</div>
-            <div>${order?.vendor?.address || 'N/A'}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Phone:</div>
-            <div>${order?.vendor?.phone || 'N/A'}</div>
-          </div>
-        </div>
+      .logo {
+        font-size: 20px;
+        font-weight: bold;
+        color: #2c5aa0;
+      }
 
-        <div class="section">
-          <div class="section-title">Items</div>
-          <table class="table">
-            <thead>
+      .section {
+        margin-bottom: 25px;
+        padding: 15px;
+        background: #f9f9f9;
+        border-radius: 8px;
+      }
+
+      .section-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #2c5aa0;
+        margin-bottom: 12px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 5px;
+      }
+
+      .detail-row {
+        display: flex;
+        margin-bottom: 8px;
+      }
+
+      .detail-label {
+        width: 140px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .detail-text {
+        flex: 1;
+        color: #555;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      .table th, .table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+        font-size: 14px;
+      }
+
+      .table th {
+        background: #f2f2f2;
+        font-weight: bold;
+        color: #2c5aa0;
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 15px;
+      }
+
+      .total-row {
+        font-weight: bold;
+        font-size: 16px;
+        border-top: 2px solid #ddd;
+        padding-top: 10px;
+        margin-top: 10px;
+      }
+
+      .terms-section {
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #555;
+        line-height: 1.4;
+      }
+
+      @media print {
+        body { padding: 10px; }
+        .print-actions { display: none !important; }
+        .section { background: #fff; border: 1px solid #ddd; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div>
+        <div class="invoice-number">Invoice #${invoiceData.invoiceNumber}</div>
+        <div>Date: ${invoiceData.invoiceDate}</div>
+        <div>Due Date: ${invoiceData.dueDate}</div>
+      </div>
+      <div class="logo">${order?.vendor?.businessName || 'QuickClean'}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Order Details</div>
+      <div class="detail-row">
+        <div class="detail-label">Status:</div>
+        <div class="detail-text">${order?.status || 'N/A'}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Pickup Date:</div>
+        <div class="detail-text">${moment(order?.pickupDate).format("DD MMM YYYY")}</div>
+      </div>
+      ${!["cancelled", "rejected"].includes(order?.status)
+        ? `<div class="detail-row">
+            <div class="detail-label">${order?.status === "completed" ? "Delivered:" : "Expected Delivery:"}</div>
+            <div class="detail-text">${
+              order?.status === "completed"
+                ? moment(order?.timeline?.completedAt).format("DD MMM YYYY")
+                : moment(order?.timeline?.deliveryDateTime).format("DD MMM YYYY")
+            }</div>
+          </div>`
+        : ""}
+    </div>
+
+    <div class="section">
+      <div class="section-title">Customer Details</div>
+      <div class="detail-row">
+        <div class="detail-label">Name:</div>
+        <div class="detail-text">${order?.contactDetails?.fullName || 'N/A'}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Address:</div>
+        <div class="detail-text">${order?.deliveryAddress?.fullAddress || 'N/A'}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Phone:</div>
+        <div class="detail-text">${order?.contactDetails?.mobile || 'N/A'}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Vendor Details</div>
+      <div class="detail-row">
+        <div class="detail-label">Business:</div>
+        <div class="detail-text">${order?.vendor?.name || 'N/A'}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Address:</div>
+        <div class="detail-text">${order?.vendor?.address || 'N/A'}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Phone:</div>
+        <div class="detail-text">${order?.vendor?.phone || 'N/A'}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Items</div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Service</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${invoiceData.items.map(item => {
+            const itemTotal = item.price * item.qty;
+            return `
               <tr>
-                <th>Item</th>
-                <th>Service</th>
-                <th>Qty</th>
+                <td>${item.name}</td>
+                <td>${item.service}</td>
+                <td>${item.qty}</td>
+                <td>₹${item.price}</td>
+                <td>₹${itemTotal}</td>
               </tr>
-            </thead>
-            <tbody>
-              ${invoiceData.items.map(item => {
-                const itemTotal = item.price * item.qty;
-                return `
-                  <tr>
-                    <td>${item.name}</td>
-                    <td>${item.service}</td>
-                    <td>${item.qty}</td>
-                  </tr>
-                `;
-              }).join('')}
-            </tbody>
-          </table>
-        </div>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
 
-        <div class="section">
-          <div class="summary-row">
-            <div>Subtotal:</div>
-            <div>₹${invoiceData.subtotal}</div>
-          </div>
-          ${invoiceData.tax > 0 ? `
-          <div class="summary-row">
-            <div>Tax:</div>
-            <div>₹${invoiceData.tax}</div>
-          </div>
-          ` : ''}
-          ${invoiceData.deliveryFee > 0 ? `
-          <div class="summary-row">
-            <div>Delivery Fee:</div>
-            <div>₹${invoiceData.deliveryFee}</div>
-          </div>
-          ` : ''}
-          <div class="summary-row total-row">
-            <div>Total:</div>
-            <div>₹${invoiceData.total}</div>
-          </div>
-        </div>
+    <div class="section">
+      <div class="summary-row">
+        <div>Subtotal:</div>
+        <div>₹${invoiceData.subtotal}</div>
+      </div>
+      ${invoiceData.tax > 0 ? `
+        <div class="summary-row">
+          <div>Tax:</div>
+          <div>₹${invoiceData.tax}</div>
+        </div>` : ''}
+      ${invoiceData.deliveryFee > 0 ? `
+        <div class="summary-row">
+          <div>Delivery Fee:</div>
+          <div>₹${invoiceData.deliveryFee}</div>
+        </div>` : ''}
+      <div class="summary-row total-row">
+        <div>Total:</div>
+        <div>₹${invoiceData.total}</div>
+      </div>
+    </div>
 
-        <div class="terms-section">
-          <div class="section-title">Terms & Conditions</div>
-          <div>
-            • Payment due within 7 days of invoice date<br>
-            • Late fees may apply for overdue payments<br>
-            • All prices include applicable taxes<br>
-            • No returns or exchanges on laundry services<br>
-            • Special instructions: ${order?.instructions || 'None'}
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-  };
+    <div class="terms-section">
+      <div class="section-title">Terms & Conditions</div>
+      <div>
+        • Payment due within 7 days of invoice date<br>
+        • Late fees may apply for overdue payments<br>
+        • All prices include applicable taxes<br>
+        • No returns or exchanges on laundry services<br>
+        • Special instructions: ${order?.instructions || 'None'}
+      </div>
+    </div>
+  </body>
+  </html>
+  `;
+};
+
 
   // Handle PDF creation
   const createPDF = async () => {
@@ -331,7 +308,7 @@ const InvoiceModal = ({ visible, onClose, order, onDownload }) => {
 
     try {
       setIsGenerating(true);
-      
+
       // Use the onDownload prop if provided
       if (onDownload) {
         await onDownload();
@@ -339,7 +316,7 @@ const InvoiceModal = ({ visible, onClose, order, onDownload }) => {
 
       // Always show WebView for PDF generation
       setShowWebView(true);
-      
+
     } catch (error) {
       console.error('PDF download failed:', error);
       Alert.alert("Error", "Failed to generate PDF. Please try again.");
@@ -359,7 +336,7 @@ const InvoiceModal = ({ visible, onClose, order, onDownload }) => {
     }
   };
 
- 
+
   return (
     <>
       {/* Original Preview Modal */}
@@ -378,8 +355,8 @@ const InvoiceModal = ({ visible, onClose, order, onDownload }) => {
                 <Ionicons name="close" size={24} color={appColors.font} />
               </TouchableOpacity>
             </View>
-            
-            
+
+
             <ScrollView style={styles.modalContent}>
               {/* Your existing preview content remains the same */}
               <View style={styles.invoiceHeader}>
@@ -393,7 +370,7 @@ const InvoiceModal = ({ visible, onClose, order, onDownload }) => {
               </View>
 
               {/* Order Details */}
-              <View style={[styles.section, {marginBottom: 6}]}>
+              <View style={[styles.section, { marginBottom: 6 }]}>
                 <Text style={styles.sectionTitle}>Order Details</Text>
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Order ID:</Text>
@@ -401,10 +378,10 @@ const InvoiceModal = ({ visible, onClose, order, onDownload }) => {
                 </View>
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Status:</Text>
-                  <Text style={[styles.detailValue, { 
-                    color: order?.status === 'completed' ? '#4CAF50' : 
-                           order?.status === 'cancelled' ? '#FF3B30' : 
-                           order?.status === 'pending' ? '#FF9800' : appColors.font 
+                  <Text style={[styles.detailValue, {
+                    color: order?.status === 'completed' ? '#4CAF50' :
+                      order?.status === 'cancelled' ? '#FF3B30' :
+                        order?.status === 'pending' ? '#FF9800' : appColors.font
                   }]}>
                     {order?.status?.toUpperCase()}
                   </Text>
@@ -413,21 +390,27 @@ const InvoiceModal = ({ visible, onClose, order, onDownload }) => {
                   <Text style={styles.detailLabel}>Pickup Date:</Text>
                   <Text style={styles.detailValue}>
                     {moment(order?.pickupDate).format("DD MMM YYYY")} {order?.pickupTime}
-                    </Text>
-                </View>
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Delivery Date:</Text>
-                  <Text style={styles.detailValue}>
-                      {moment(order?.deliveryDate).format("DD MMM YYYY")} {order?.deliveryTime}
                   </Text>
                 </View>
+                {!["cancelled", "rejected"].includes(order?.status) && (
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailLabel}>
+                      {order?.status === "completed" ? "Delivered:" : "Expected Delivery:"}
+                    </Text>
+                    <Text style={styles.detailValue}>
+                      {order?.status === "completed"
+                        ? moment(order?.timeline?.completedAt).format("DD MMM YYYY")
+                        : moment(order?.timeline?.deliveryDateTime).format("DD MMM YYYY")}
+                    </Text>
+                  </View>
+                )}
               </View>
             </ScrollView>
 
             {/* Footer Buttons */}
-      <View style={styles.modalFooter}>
-              <TouchableOpacity 
-                style={[styles.footerButton, styles.downloadButton, isGenerating && styles.disabledButton]} 
+            <View style={styles.modalFooter}>
+              <TouchableOpacity
+                style={[styles.footerButton, styles.downloadButton, isGenerating && styles.disabledButton]}
                 onPress={createPDF}
                 disabled={isGenerating}
               >
@@ -449,17 +432,17 @@ const InvoiceModal = ({ visible, onClose, order, onDownload }) => {
       >
         <View style={{ flex: 1 }}>
           <View style={styles.webViewHeader}>
-            <TouchableOpacity 
-              onPress={() => setShowWebView(false)} 
+            <TouchableOpacity
+              onPress={() => setShowWebView(false)}
               style={styles.webViewBackButton}
             >
               <Ionicons name="arrow-back" size={24} color={appColors.white} />
               <Text style={styles.webViewBackText}>Back to Preview</Text>
             </TouchableOpacity>
-            
-          
+
+
           </View>
-          
+
           <WebView
             ref={webViewRef}
             source={{ html: generateHTML() }}

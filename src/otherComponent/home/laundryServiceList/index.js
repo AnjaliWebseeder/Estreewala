@@ -7,6 +7,9 @@ import {
   ActivityIndicator,
   StatusBar,
   RefreshControl,
+  PermissionsAndroid, Platform, Alert,
+  Linking,
+  AppState
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
@@ -23,10 +26,10 @@ import { getNearbyVendors, updateNearbyVendors } from '../../../redux/slices/nea
 import { searchVendors, clearSearchResults } from '../../../redux/slices/searchSlice';
 import { useSocket } from '../../../utils/context/socketContext';
 import { useToast } from '../../../utils/context/toastContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axiosInstance from '../../../services/axiosConfig';
 import { GET_NEARBY_VENDORS_FILTER_API } from '../../../services/api';
-
+import { useAuth } from '../../../utils/context/authContext';
+import Geolocation from 'react-native-geolocation-service';
 
 const randomImages = [service, service1, service2, service3, service4];
 
@@ -93,6 +96,8 @@ const LaundryCard = ({ vendor, navigation, index }) => {
 const LaundryServiceList = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const { socket, isConnected } = useSocket();
+  const { userLocation, saveLocation } = useAuth();
+  console.log("userLocation", userLocation);
   const { showToast } = useToast();
   const [filteredVendors, setFilteredVendors] = useState([]);
   const [useFilteredList, setUseFilteredList] = useState(false);
@@ -111,8 +116,182 @@ const LaundryServiceList = ({ navigation, route }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [localSearchResults, setLocalSearchResults] = useState([]);
   const [showSearchLoader, setShowSearchLoader] = useState(false);
+  const [locationPermissionDenied, setLocationPermissionDenied] = useState(false);
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const { serviceName } = route.params || {};
+  const [selectedServices, setSelectedServices] = useState([]);
+
+  console.log("serviceName", serviceName);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", async state => {
+      if (state === "active") {
+        const granted = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+        );
+
+        if (granted) {
+          setLocationPermissionDenied(false);
+          handleAutoLocation();
+        }
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
+
+
+  useEffect(() => {
+    if (!serviceName) return;
+
+    const SERVICE_MAP = {
+      'Dry Wash': 'Dry Wash',
+      'Wash': 'Washing',
+      'Ironing': 'Ironing',
+      'Steam Ironing': 'Steam Ironing',
+    };
+
+    const matchedService = SERVICE_MAP[serviceName];
+    if (!matchedService) return;
+
+    setSelectedServices([matchedService]); // ✅ STORE FOR MODAL
+
+    applyFilters({
+      rating: 0,
+      distance: 0,
+      services: [matchedService],
+      reset: false,
+    });
+
+  }, [serviceName, userLocation?.coordinates]);
+
+  useEffect(() => {
+    if (!userLocation?.coordinates?.length) return;
+    if (locationPermissionDenied) return;
+    if (userLocation.coordinates.length === 2) {
+      dispatch(getNearbyVendors({
+        lat: userLocation.coordinates[1],
+        lng: userLocation.coordinates[0],
+      }));
+    }
+  }, [userLocation, locationPermissionDenied, dispatch]);
+
+  // Reverse geocode
+  const requestLocationPermission = async () => {
+    if (Platform.OS !== 'android') return true;
+
+    const result = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+    );
+
+    switch (result) {
+      case PermissionsAndroid.RESULTS.GRANTED:
+        setLocationPermissionDenied(false);
+        return true;
+
+      case PermissionsAndroid.RESULTS.DENIED:
+        // ❌ User said "Don't allow" (can ask again)
+        setLocationPermissionDenied(true);
+        return false;
+
+      case PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN:
+        // 🚨 User ticked "Don't ask again"
+        setLocationPermissionDenied(true);
+        Alert.alert(
+          "Location Required",
+          "Please enable location from settings to see nearby laundries",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Open Settings", onPress: () => Linking.openSettings() }
+          ]
+        );
+        return false;
+
+      default:
+        setLocationPermissionDenied(true);
+        return false;
+    }
+  };
+
+
+
+  const reverseGeocode = async (lat, lng) => {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
+      {
+        headers: {
+          'User-Agent': 'LaundryApp/1.0',
+          Accept: 'application/json',
+        },
+      }
+    );
+    return res.json();
+  };
+
+  const parseAddress = data => {
+    const addr = data?.address || {};
+
+    return {
+      city: addr.city || addr.town || addr.village || '',
+      state: addr.state || '',
+      pincode: addr.postcode || '',
+    };
+  };
+
+  const handleAutoLocation = async () => {
+    try {
+      const hasPermission = await requestLocationPermission();
+      if (!hasPermission) {
+        await saveLocation(null);
+        return;
+      }
+      return new Promise(resolve => {
+        Geolocation.getCurrentPosition(
+          async ({ coords }) => {
+            const geoData = await reverseGeocode(
+              coords.latitude,
+              coords.longitude
+            );
+
+            const parsed = parseAddress(geoData);
+
+            if (!parsed.city || !parsed.state || !parsed.pincode) {
+              console.log('❌ Incomplete address');
+              return resolve(null);
+            }
+
+            const locationData = {
+              coordinates: [coords.longitude, coords.latitude],
+              city: parsed.city,
+              state: parsed.state,
+              pincode: parsed.pincode,
+            };
+
+            // ✅ ONLY THIS IS NEEDED
+            await saveLocation(locationData);
+
+            resolve(locationData);
+          },
+          error => {
+            console.log('📍 Location error:', error);
+            resolve(null);
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      });
+    } catch (e) {
+      console.log('❌ Auto address failed:', e);
+      return null;
+    }
+  };
+
+
+
+  // User click kare enable location
+  const handleEnableLocation = async () => {
+    await handleAutoLocation();
+  };
+
 
   useEffect(() => {
     if (!socket) {
@@ -155,6 +334,11 @@ const LaundryServiceList = ({ navigation, route }) => {
   const performSearch = useCallback((query) => {
     const trimmedQuery = query.trim();
 
+    if (!userLocation?.coordinates || userLocation.coordinates.length !== 2) {
+      showToast('Please enable location to search', 'info');
+      return;
+    }
+
     if (trimmedQuery === '') {
       dispatch(clearSearchResults());
       setLocalSearchResults([]);
@@ -173,8 +357,16 @@ const LaundryServiceList = ({ navigation, route }) => {
     }
 
     setShowSearchLoader(true);
-    dispatch(searchVendors(trimmedQuery));
-  }, [dispatch, vendors]);
+
+    // ✅ Convert array to { lat, lng }
+    const coords = {
+      lat: userLocation.coordinates[1], // latitude
+      lng: userLocation.coordinates[0], // longitude
+    };
+
+    dispatch(searchVendors({ searchQuery: trimmedQuery, coordinates: coords }));
+  }, [dispatch, vendors, userLocation]);
+
 
   // Debounced search with smart timing
   useEffect(() => {
@@ -192,10 +384,6 @@ const LaundryServiceList = ({ navigation, route }) => {
       console.log("🔄 Search completed, loader hidden");
     }
   }, [searchLoading, searchQuery]);
-
-  useEffect(() => {
-    dispatch(getNearbyVendors());
-  }, [dispatch]);
 
   const getDisplayVendors = () => {
     if (useFilteredList) return filteredVendors;
@@ -216,7 +404,14 @@ const LaundryServiceList = ({ navigation, route }) => {
   // Manual refresh function
   const handleManualRefresh = () => {
     console.log('🔄 Manual refresh triggered');
-    dispatch(getNearbyVendors());
+    if (userLocation?.coordinates?.length === 2) {
+      dispatch(getNearbyVendors({
+        lat: userLocation.coordinates[1],
+        lng: userLocation.coordinates[0],
+      }));
+    } else {
+      showToast('Location permission required to fetch nearby vendors', 'info');
+    }
 
     // Request real-time update from backend via socket
     if (socket && isConnected) {
@@ -227,7 +422,18 @@ const LaundryServiceList = ({ navigation, route }) => {
     }
   };
 
+  const handleResetFilters = () => {
+    setSelectedServices([]);      // 🔥 IMPORTANT
+    setUseFilteredList(false);
+    setFilteredVendors([]);
+    setEmptyMessage('');
+  };
+
   const applyFilters = async ({ rating, distance, services, reset }) => {
+    if (!userLocation?.coordinates || userLocation.coordinates.length !== 2) {
+      showToast('Please enable location to apply filters', 'info');
+      return;
+    }
 
     if (reset) {
       setUseFilteredList(false);
@@ -238,45 +444,33 @@ const LaundryServiceList = ({ navigation, route }) => {
     }
 
     try {
-      console.log('🌐 BACKEND FILTER MODE (AXIOS)');
+      console.log('🌐 FILTER API MODE (AXIOS)');
 
-      const params = {};
+      const { coordinates } = userLocation;
 
-      if (services?.length > 0) {
-        params.services = services.join(',');
-      }
+      const params = {
+        lat: coordinates[1],
+        lng: coordinates[0],
+      };
 
-      if (distance > 0) {
-        params.maxDistance = distance;
-      }
+      if (services?.length > 0) params.services = services.join(',');
+      if (distance > 0) params.maxDistance = distance;
 
-      console.log('➡️ FILTER PARAMS:', params);
-
-      const response = await axiosInstance.get(
-        GET_NEARBY_VENDORS_FILTER_API,
-        {
-          params,
-          timeout: 10000,
-        }
-      );
-
-      console.log('⬅️ API RESPONSE:', response.data);
+      const response = await axiosInstance.get(GET_NEARBY_VENDORS_FILTER_API, {
+        params,
+        timeout: 10000,
+      });
 
       const apiVendors = response?.data?.vendors || [];
 
       if (apiVendors.length === 0) {
-        setEmptyMessage(
-          response?.data?.message ||
-          'No vendors found for selected filters'
-        );
+        setEmptyMessage(response?.data?.message || 'No vendors found for selected filters');
       } else {
         setEmptyMessage('');
       }
 
       setFilteredVendors(
-        rating > 0
-          ? apiVendors.filter(v => v.rating >= rating)
-          : apiVendors
+        rating > 0 ? apiVendors.filter(v => v.rating >= rating) : apiVendors
       );
 
       setUseFilteredList(true);
@@ -284,15 +478,11 @@ const LaundryServiceList = ({ navigation, route }) => {
 
     } catch (error) {
       console.error(' FILTER API ERROR:', error);
-
       setEmptyMessage('Failed to apply filters');
-
-      showToast?.({
-        type: 'error',
-        message: 'Failed to apply filters',
-      });
+      showToast?.({ type: 'error', message: 'Failed to apply filters' });
     }
   };
+
 
 
   const handleSearchChange = (text) => {
@@ -325,7 +515,7 @@ const LaundryServiceList = ({ navigation, route }) => {
           <View style={{ backgroundColor: '#07172cff', paddingBottom: 20 }}>
             <Header
               containerStyle={{ marginBottom: 5 }}
-              iconColor={appColors.white}
+              iconColor={"#07172cff"}
               title={serviceName ? serviceName : 'Nearby Laundry'}
               onBackPress={() => navigation.goBack()}
               titleStyle={{ marginHorizontal: 20, color: appColors.white }}
@@ -346,178 +536,126 @@ const LaundryServiceList = ({ navigation, route }) => {
       </SafeAreaView>
     );
   }
-
-  if (hasVendorsError && displayVendors.length === 0) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-        <ScrollView>
-          <View style={styles.container}>
-            <View style={{ backgroundColor: '#07172cff', paddingBottom: 20 }}>
-              <Header
-                containerStyle={{ marginBottom: 5 }}
-                iconColor={appColors.white}
-                title={serviceName ? serviceName : 'Nearby Laundry'}
-                onBackPress={() => navigation.goBack()}
-                titleStyle={{ marginHorizontal: 20, color: appColors.white }}
-              />
-            </View>
-
-            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
-              <View style={styles.errorIconContainer}>
-                <Icon name="error-outline" size={60} color={appColors.orange} />
-              </View>
-
-              <Text style={styles.errorTitle}>
-                {vendorsError?.includes('location') || vendorsError?.includes('address')
-                  ? 'Location Required'
-                  : 'Connection Error'}
-              </Text>
-
-              <Text style={styles.errorMessage}>
-                {vendorsError?.includes('location') || vendorsError?.includes('address')
-                  ? "We need your location to find nearby laundry services. Please add your delivery address to continue."
-                  : "Unable to load nearby vendors. Please check your connection and try again."}
-              </Text>
-
-              <View style={styles.errorActions}>
-                {(vendorsError?.includes('location') || vendorsError?.includes('address')) ? (
-                  <>
-                    <TouchableOpacity
-                      style={styles.primaryButton}
-                      onPress={() => navigation.navigate('ManageAddress', {
-                        redirectToLaundry: true
-                      })}
-                    >
-                      <Icon name="add-location" size={20} color={appColors.white} />
-                      <Text style={styles.primaryButtonText}>Add Delivery Address</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={styles.secondaryButton}
-                      onPress={handleManualRefresh}
-                    >
-                      <Text style={styles.secondaryButtonText}>Try Again</Text>
-                    </TouchableOpacity>
-                  </>
-                ) : (
-                  <>
-                    <TouchableOpacity
-                      style={styles.primaryButton}
-                      onPress={handleManualRefresh}
-                    >
-                      <Icon name="refresh" size={20} color={appColors.white} />
-                      <Text style={styles.primaryButtonText}>Retry</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={styles.secondaryButton}
-                      onPress={() => navigation.goBack()}
-                    >
-                      <Text style={styles.secondaryButtonText}>Go Back</Text>
-                    </TouchableOpacity>
-                  </>
-                )}
-              </View>
-            </View>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
-        <View style={{ backgroundColor: '#07172cff', paddingBottom: 20 }}>
+      {!userLocation || locationPermissionDenied ? (
+        <>
           <Header
             containerStyle={{ marginBottom: 5 }}
-            iconColor={appColors.white}
-            title={serviceName ? serviceName : 'Nearby Laundry'}
+            iconColor={appColors.darkBlue}
+            title={'Nearby Laundry'}
             onBackPress={() => navigation.goBack()}
-            titleStyle={{ marginHorizontal: 20, color: appColors.white }}
+            titleStyle={{ marginHorizontal: 20, color: appColors.darkBlue }}
           />
 
-          <SearchBar
-            value={searchQuery}
-            onChangeText={handleSearchChange}
-            placeholder="Search for services or vendors..."
-            onFilterPress={() => setShowFilters(true)}
-            showFilter={true}
-            searchInputContainerStyle={{
-              backgroundColor: appColors.white,
-              borderWidth: 0,
-            }}
-            inputStyle={{ color: appColors.black, fontSize: 12, }}
-            placeholderTextColor={appColors.black}
-            onClear={handleClearSearch}
-          />
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+            <Ionicons name="location-outline" size={50} color="#07172cff" />
+            <Text style={styles.emptyStateTitle}>
+              Enable location to see nearby vendors
+            </Text>
 
-
-        </View>
-
-        <View style={styles.main} />
-
-        <ScrollView
-          contentContainerStyle={styles.contentContainerStyle}
-          style={styles.listContainer}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={vendorsLoading}
-              onRefresh={handleManualRefresh}
-              colors={[appColors.blue]}
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={handleEnableLocation}
+            >
+              <Text style={styles.primaryButtonText}>Enable Location</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : (
+        <View style={styles.container}>
+          <View style={{ backgroundColor: '#07172cff', paddingBottom: 20 }}>
+            <Header
+              containerStyle={{ marginBottom: 5 }}
+              iconColor={appColors.white}
+              title={serviceName ? serviceName : 'Nearby Laundry'}
+              onBackPress={() => navigation.goBack()}
+              titleStyle={{ marginHorizontal: 20, color: appColors.white }}
             />
-          }
-        >
-          {displayVendors.length > 0 ? (
-            // Show actual results
-            displayVendors.map((vendor, index) => (
-              <LaundryCard
-                key={vendor.id || `${vendor.businessName}-${index}`}
-                vendor={vendor}
-                navigation={navigation}
-                index={index}
+
+            <SearchBar
+              value={searchQuery}
+              onChangeText={handleSearchChange}
+              placeholder="Search for services or vendors..."
+              onFilterPress={() => setShowFilters(true)}
+              showFilter={true}
+              searchInputContainerStyle={{
+                backgroundColor: appColors.white,
+                borderWidth: 0,
+              }}
+              inputStyle={{ color: appColors.black, fontSize: 12, }}
+              placeholderTextColor={appColors.black}
+              onClear={handleClearSearch}
+            />
+
+
+          </View>
+
+          <View style={styles.main} />
+
+          <ScrollView
+            contentContainerStyle={styles.contentContainerStyle}
+            style={styles.listContainer}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={vendorsLoading}
+                onRefresh={handleManualRefresh}
+                colors={[appColors.blue]}
               />
-            ))
-          ) : (
-            // Show empty state
-            <View style={styles.emptyState}>
-              <Icon name="search-off" size={60} color={appColors.lightGray} />
-              <Text style={styles.emptyStateTitle}>
-                {emptyMessage
-                  ? emptyMessage
-                  : searchQuery.trim() !== ''
-                    ? searchQuery.length <= 2
-                      ? 'Type more to search...'
-                      : `No results for "${searchQuery}"`
-                    : 'No vendors available in your area'}
-              </Text>
-              <Text style={styles.emptyStateSubtitle}>
-                {searchQuery.trim() !== '' && searchQuery.length > 2
-                  ? 'Try searching for: dry wash, laundry, ironing, etc.'
-                  : 'Check back later or try a different location'
-                }
-              </Text>
+            }
+          >
+            {displayVendors.length > 0 ? (
+              // Show actual results
+              displayVendors.map((vendor, index) => (
+                <LaundryCard
+                  key={vendor.id || `${vendor.businessName}-${index}`}
+                  vendor={vendor}
+                  navigation={navigation}
+                  index={index}
+                />
+              ))
+            ) : (
+              // Show empty state
+              <View style={styles.emptyState}>
+                <Icon name="search-off" size={60} color={appColors.lightGray} />
+                <Text style={styles.emptyStateTitle}>
+                  {emptyMessage
+                    ? emptyMessage
+                    : searchQuery.trim() !== ''
+                      ? searchQuery.length <= 2
+                        ? 'Type more to search...'
+                        : `No results for "${searchQuery}"`
+                      : 'No vendors available in your area'}
+                </Text>
+                <Text style={styles.emptyStateSubtitle}>
+                  {searchQuery.trim() !== '' && searchQuery.length > 2
+                    ? 'Try searching for: dry wash, laundry, ironing, etc.'
+                    : 'Check back later or try a different location'
+                  }
+                </Text>
 
-              {searchQuery.trim() !== '' && searchQuery.length > 2 && (
-                <TouchableOpacity
-                  style={styles.suggestSearchButton}
-                  onPress={() => setSearchQuery('dry wash')}
-                >
-                  <Text style={[styles.suggestSearchText, { color: "white" }]}>Try "dry wash"</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-        </ScrollView>
+                {searchQuery.trim() !== '' && searchQuery.length > 2 && (
+                  <TouchableOpacity
+                    style={styles.suggestSearchButton}
+                    onPress={() => setSearchQuery('dry wash')}
+                  >
+                    <Text style={[styles.suggestSearchText, { color: "white" }]}>Try "dry wash"</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+          </ScrollView>
 
-        <FilterModal
-          visible={showFilters}
-          onClose={() => setShowFilters(false)}
-          onApplyFilters={applyFilters}
-        />
-      </View>
+          <FilterModal
+            visible={showFilters}
+            onClose={() => setShowFilters(false)}
+            onApplyFilters={applyFilters}
+            initialSelectedServices={selectedServices}
+            onResetFilters={handleResetFilters}   // 👈 NEW
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 };

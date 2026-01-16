@@ -1,18 +1,31 @@
+import { useEffect, useState } from 'react';
 import { View, Text, Modal, TouchableOpacity } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { styles } from './styles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useState } from 'react';
 import appColors from '../../../theme/appColors';
 
-export default function FilterModal({ visible, onClose, onApplyFilters }) {
-  const allServices = ['Ironing','Washing','Dry Wash','Wash & Iron','Steam Ironing','Spin Washing','Steam Washing','Stain Removal'];
+export default function FilterModal({
+  visible,
+  onClose,
+  onApplyFilters,
+  initialSelectedServices = [],
+  onResetFilters,          // 👈 NEW
+}) {
+  const allServices = ['Ironing', 'Washing', 'Dry Wash', 'Wash & Iron', 'Steam Ironing', 'Spin Washing', 'Steam Washing', 'Stain Removal'];
 
   const [rating, setRating] = useState(0);
   const [distance, setDistance] = useState(0); // 0 = any distance
   const [tempDistance, setTempDistance] = useState(0); // slider temp
   const [selectedServices, setSelectedServices] = useState([]); // default none selected
+
+  useEffect(() => {
+    console.log("initialSelectedServices", initialSelectedServices);
+
+    if (visible) {
+      setSelectedServices(initialSelectedServices);
+    }
+  }, [visible, initialSelectedServices]);
 
   const applyFilters = () => {
     onApplyFilters({
@@ -23,23 +36,22 @@ export default function FilterModal({ visible, onClose, onApplyFilters }) {
   };
 
   const resetFilters = () => {
-  // Reset modal state
-  setRating(0);
-  setDistance(0);
-  setTempDistance(0);
-  setSelectedServices([]);
+    setRating(0);
+    setDistance(0);
+    setTempDistance(0);
+    setSelectedServices([]);
+    onResetFilters?.();
 
-  // Inform parent to reset filters
-  onApplyFilters({
-    rating: 0,
-    distance: 0,
-    services: [],
-    reset: true // <-- optional flag to indicate reset
-  });
+    onApplyFilters({
+      rating: 0,
+      distance: 0,
+      services: [],
+      reset: true,
+    });
 
-  // Close modal
-  onClose();
-};
+    onClose();
+  };
+
 
 
   const formatDistance = (value) => {
@@ -77,14 +89,14 @@ export default function FilterModal({ visible, onClose, onApplyFilters }) {
                     setSelectedServices([...selectedServices, service]);
                   }
                 }}
-                style={{ flexDirection:'row', alignItems:'center', marginVertical:2 }}
+                style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 2 }}
               >
                 <Icon
                   name={selectedServices.includes(service) ? "check-box" : "check-box-outline-blank"}
                   size={20}
                   color={appColors.font}
                 />
-                <Text style={{ marginLeft:6 }}>{service}</Text>
+                <Text style={{ marginLeft: 6 }}>{service}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -107,8 +119,8 @@ export default function FilterModal({ visible, onClose, onApplyFilters }) {
           </View> */}
 
           {/* Distance */}
-          <View style={styles.filterSection}>
-            <Text style={[styles.filterLabel,{marginBottom:6}]}>
+          {/* <View style={styles.filterSection}>
+            <Text style={[styles.filterLabel, { marginBottom: 6 }]}>
               Maximum Distance: {formatDistance(tempDistance)}
             </Text>
             <View style={styles.sliderContainer}>
@@ -129,7 +141,7 @@ export default function FilterModal({ visible, onClose, onApplyFilters }) {
                 <Text style={styles.sliderLabel}>10+ km</Text>
               </View>
             </View>
-          </View>
+          </View> */}
 
           {/* Buttons */}
           <View style={styles.modalButtons}>

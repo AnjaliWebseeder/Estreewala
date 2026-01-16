@@ -18,7 +18,7 @@ const ConfirmationModal = ({ visible, onClose, onConfirm, title, message }) => {
         <View style={styles.modalContent}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
-              <Icon name="warning" size={24} color="#e53935" />
+              {/* <Icon name="warning" size={24} color="#e53935" /> */}
               <Text style={styles.modalTitle}>{title}</Text>
             </View>
 

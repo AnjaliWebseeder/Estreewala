@@ -169,6 +169,7 @@ const LoginSecurityScreen = ({ navigation }) => {
                           autoCapitalize="words"
                           underlineColorAndroid="transparent"
                           placeholder="Enter your name"
+                          placeholderTextColor={"gray"}
                         />
                         {nameError && (
                           <Text style={styles.errorText}>{nameError}</Text>

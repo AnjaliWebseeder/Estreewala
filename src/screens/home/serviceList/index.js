@@ -12,7 +12,7 @@ const services = [
   { id: 1, name: "Dry Wash", icon: dryWash },
   { id: 2, name: "Wash", icon: wash },
   { id: 3, name: "Ironing", icon:ironing },
-{ id: 4, name: "Wash Iron", icon: tShirtWashIron },
+{ id: 4, name: "Steam Ironing", icon: tShirtWashIron },
 // { id: 5, name: "SocksClean", icon: socksClean },
 ];
 

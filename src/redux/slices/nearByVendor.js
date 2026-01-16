@@ -5,24 +5,33 @@ import { GET_NEARBY_VENDORS } from '../../services/api';
 // Get Nearby Vendors - NO TOKEN PARAMS NEEDED!
 export const getNearbyVendors = createAsyncThunk(
   'vendor/getNearbyVendors',
-  async (_, { rejectWithValue }) => {
+  async ({ lat, lng }, { rejectWithValue }) => {
     try {
-      console.log('📍 Fetching nearby vendors...');
+      if (!lat || !lng) {
+        throw new Error('Latitude and Longitude are required');
+      }
 
-      const response = await axiosInstance.get(GET_NEARBY_VENDORS, {
-        timeout: 10000,
-      });
+      console.log('📍 Fetching nearby vendors with lat/lng:', lat, lng);
+
+      const response = await axiosInstance.get(
+        `${GET_NEARBY_VENDORS}/latlng`,
+        {
+          params: { lat, lng },
+          timeout: 10000,
+        }
+      );
 
       console.log('✅ Get Nearby Vendors Response:', response.data);
 
-      // Handle different response structures
-      if (response.data.vendors) {
-        return response.data.vendors; // Return vendors array directly
-      } else if (Array.isArray(response.data)) {
-        return response.data; // If response is already an array
-      } else {
-        return []; // Fallback to empty array
+      if (response.data?.vendors) {
+        return response.data.vendors;
       }
+
+      if (Array.isArray(response.data)) {
+        return response.data;
+      }
+
+      return [];
     } catch (error) {
       console.log('❌ Get Nearby Vendors Error:', error);
 
@@ -41,8 +50,9 @@ export const getNearbyVendors = createAsyncThunk(
 
       return rejectWithValue(errorMessage);
     }
-  },
+  }
 );
+
 
 export const getVendorCatalog = createAsyncThunk(
   'vendor/getVendorCatalog',

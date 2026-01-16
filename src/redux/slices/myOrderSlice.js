@@ -1,6 +1,7 @@
 // myorderSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../services/axiosConfig';
+import { BASE_URL } from '../../services/api';
 
 // Async thunks for different order statuses
 export const getOrdersByStatus = createAsyncThunk(
@@ -10,7 +11,7 @@ export const getOrdersByStatus = createAsyncThunk(
       console.log(`📦 Fetching ${status} orders...`);
 
       const response = await axiosInstance.get(
-        `https://api.estreewalla.com/api/v1/customers/orders-status?status=${status}`,
+        `${BASE_URL}/customers/orders-status?status=${status}`,
         {
           timeout: 10000,
         }
@@ -156,24 +157,49 @@ const myorderSlice = createSlice({
 },
   },
   extraReducers: builder => {
-    builder
-      // Get Orders by Status - Pending
-      .addCase(getOrdersByStatus.pending, (state, action) => {
-        const status = action.meta.arg;
+  builder
+    // 🔄 Pending
+    .addCase(getOrdersByStatus.pending, (state, action) => {
+      const status = action.meta.arg;
+
+      if (status.includes(',')) {
+        // Past Orders loading
+        state.completedLoading = true;
+        state.completedError = null;
+      } else {
         state[`${status}Loading`] = true;
         state[`${status}Error`] = null;
-      })
-      .addCase(getOrdersByStatus.fulfilled, (state, action) => {
-        const { status, data } = action.payload;
+      }
+    })
+
+    // ✅ Fulfilled
+    .addCase(getOrdersByStatus.fulfilled, (state, action) => {
+      const { status, data } = action.payload;
+
+      if (status.includes(',')) {
+        // 🔥 completed + rejected + cancelled → Past Orders
+        state.completedLoading = false;
+        state.completedOrders = data;
+      } else {
         state[`${status}Loading`] = false;
         state[`${status}Orders`] = data;
-      })
-      .addCase(getOrdersByStatus.rejected, (state, action) => {
-        const status = action.meta.arg;
+      }
+    })
+
+    // ❌ Rejected
+    .addCase(getOrdersByStatus.rejected, (state, action) => {
+      const status = action.meta.arg;
+
+      if (status.includes(',')) {
+        state.completedLoading = false;
+        state.completedError = action.payload;
+      } else {
         state[`${status}Loading`] = false;
         state[`${status}Error`] = action.payload;
-      });
-  },
+      }
+    });
+}
+
 });
 
 export const { 

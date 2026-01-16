@@ -41,14 +41,18 @@ const OrderConfirmation = ({ navigation, route }) => {
     };
   }, [orderData]);
 
-  useEffect(() => {
-    // Auto navigate to Main screen after 3 seconds
-    const timer = setTimeout(() => {
-       navigation.replace('Main', { screen: 'Orders' }); // or navigation.navigate('Main')
-    }, 3500);
+ useEffect(() => {
+  const timer = setTimeout(() => {
+    navigation.replace('Main', {
+      screen: 'Orders',
+      params: {
+        defaultTab: 'scheduled', // 👈 IMPORTANT
+      },
+    });
+  }, 5500); // ✅ 5.5 seconds
 
-    return () => clearTimeout(timer); // cleanup
-  }, [navigation]);
+  return () => clearTimeout(timer);
+}, [navigation]);
 
   return (
     <SafeAreaView style={styles.container}>
