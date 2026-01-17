@@ -228,24 +228,34 @@ const LaundryServiceList = ({ navigation, route }) => {
     return res.json();
   };
 
-  const parseAddress = data => {
+  const parseAddress = (data) => {
     const addr = data?.address || {};
 
     return {
-      city: addr.city || addr.town || addr.village || '',
-      state: addr.state || '',
-      pincode: addr.postcode || '',
+      city:
+        addr.city ||
+        addr.town ||
+        addr.village ||
+        addr.county ||
+        addr.state_district ||
+        "",
+
+      state: addr.state || addr.region || "",
+
+      pincode: addr.postcode || "",
     };
   };
+
 
   const handleAutoLocation = async () => {
     try {
       const hasPermission = await requestLocationPermission();
       if (!hasPermission) {
         await saveLocation(null);
-        return;
+        return null;
       }
-      return new Promise(resolve => {
+
+      return new Promise((resolve) => {
         Geolocation.getCurrentPosition(
           async ({ coords }) => {
             const geoData = await reverseGeocode(
@@ -255,35 +265,29 @@ const LaundryServiceList = ({ navigation, route }) => {
 
             const parsed = parseAddress(geoData);
 
-            if (!parsed.city || !parsed.state || !parsed.pincode) {
-              console.log('❌ Incomplete address');
-              return resolve(null);
-            }
-
             const locationData = {
               coordinates: [coords.longitude, coords.latitude],
-              city: parsed.city,
-              state: parsed.state,
-              pincode: parsed.pincode,
+              city: parsed.city || "Current Location",
+              state: parsed.state || "",
+              pincode: parsed.pincode || "",
             };
 
-            // ✅ ONLY THIS IS NEEDED
             await saveLocation(locationData);
-
             resolve(locationData);
           },
-          error => {
-            console.log('📍 Location error:', error);
+          (error) => {
+            console.log("📍 Location error:", error);
             resolve(null);
           },
           { enableHighAccuracy: true, timeout: 10000 }
         );
       });
     } catch (e) {
-      console.log('❌ Auto address failed:', e);
+      console.log("❌ Auto address failed:", e);
       return null;
     }
   };
+
 
 
 

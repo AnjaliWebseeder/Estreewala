@@ -29,6 +29,7 @@ import appColors from "../../../theme/appColors";
 import { LocationIcon } from "../../../assets/Icons/svg/locationIcon";
 import { useAuth } from "../../../utils/context/authContext";
 import { useToast } from "../../../utils/context/toastContext";
+import { clearVendors } from "../../../redux/slices/nearByVendor";
 
 export default function ManageAddress({ navigation, route }) {
   const dispatch = useDispatch();
@@ -175,14 +176,8 @@ export default function ManageAddress({ navigation, route }) {
 
 
  const applySelectedAddress = async () => {
-  const selectedObj = addresses.find(
-    a => a._id === localSelectedAddress
-  );
-
-  if (!selectedObj) {
-    showToast('Please select an address', 'error');
-    return;
-  }
+  const selectedObj = addresses.find(a => a._id === localSelectedAddress);
+  if (!selectedObj) return;
 
   dispatch(setSelectedAddress(selectedObj));
 
@@ -195,9 +190,13 @@ export default function ManageAddress({ navigation, route }) {
       state: selectedObj.state,
       pincode: selectedObj.pincode,
     });
+
+    // 🔥 IMPORTANT
+    dispatch(clearVendors());
+    dispatch(getNearbyVendors({ lat, lng }));
   }
 
-  navigation.goBack(); // ✅ Checkout par wapas
+  navigation.goBack();
 };
 
 

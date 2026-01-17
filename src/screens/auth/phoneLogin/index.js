@@ -114,8 +114,16 @@ const PhoneLoginScreen = ({ navigation }) => {
     const addr = data?.address || {};
 
     return {
-      city: addr.city || addr.town || addr.village || '',
-      state: addr.state || '',
+      city:
+        addr.city ||
+        addr.town ||
+        addr.village ||
+        addr.county ||
+        addr.state_district ||
+        '',
+
+      state: addr.state || addr.region || '',
+
       pincode: addr.postcode || '',
     };
   };
@@ -135,16 +143,11 @@ const PhoneLoginScreen = ({ navigation }) => {
 
             const parsed = parseAddress(geoData);
 
-            if (!parsed.city || !parsed.state || !parsed.pincode) {
-              console.log('❌ Incomplete address');
-              return resolve(null);
-            }
-
             resolve({
               coordinates: [coords.longitude, coords.latitude],
-              city: parsed.city,
-              state: parsed.state,
-              pincode: parsed.pincode,
+              city: parsed.city || 'Unknown City',
+              state: parsed.state || 'Unknown State',
+              pincode: parsed.pincode || '',
             });
           },
           error => {
@@ -159,6 +162,7 @@ const PhoneLoginScreen = ({ navigation }) => {
       return null;
     }
   };
+
 
   /* ================= OTP HANDLERS ================= */
 
