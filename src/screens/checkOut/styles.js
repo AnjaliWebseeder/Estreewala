@@ -82,7 +82,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 6,
     marginVertical: windowHeight(0),
-    paddingTop: windowHeight(20)
+    // paddingTop: windowHeight(20)
 
   },
 
@@ -189,6 +189,10 @@ export const styles = StyleSheet.create({
     fontFamily: fonts.InterRegular,
     color: appColors.subTitle,
     marginTop: 2,
+  },
+  optionSubtitleActive: {
+    color: appColors.darkBlue,
+    fontFamily: fonts.InterSemiBold,
   },
   addressCard: {
     flexDirection: 'row',

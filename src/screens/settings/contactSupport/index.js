@@ -42,13 +42,7 @@ export default function ContactSupport({ navigation }) {
       <View style={styles.container}>
         <Header
           title="Contact Support"
-         onBackPress={() => {
-  if (navigation.canGoBack()) {
-    navigation.goBack();
-  } else {
-    navigation.navigate('ProfileHome');
-  }
-}}
+          onBackPress={() => navigation.goBack()}
           onRightPress={() => console.log("Settings pressed")}
         />
         <ScrollView contentContainerStyle={styles.content}>

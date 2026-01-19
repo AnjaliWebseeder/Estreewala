@@ -609,7 +609,7 @@ const MapAddressScreen = ({ navigation, route }) => {
 
         case 'ERROR':
           console.error('❌ Map error:', data.error);
-          showToast("Map Error", "Failed to load map. Please try again.", "error");
+          showToast("Failed to load map. Please try again.", "error");
           break;
       }
     } catch (error) {
@@ -692,7 +692,7 @@ const MapAddressScreen = ({ navigation, route }) => {
 
     } catch (error) {
       console.error("❌ Error saving address:", error);
-      showToast("Error", error?.message || "Failed to save address", "error");
+      showToast(error?.message || "Failed to save address", "error");
     } finally {
       setIsSaving(false);
     }
@@ -746,11 +746,20 @@ const MapAddressScreen = ({ navigation, route }) => {
           />
 
           <TouchableOpacity
-            style={styles.currentLocationButton}
+            style={[
+              styles.currentLocationButton,
+              isFetchingLocation && { opacity: 0.6 }
+            ]}
             onPress={useCurrentLocation}
+            disabled={isFetchingLocation}
           >
-            <Icon name="my-location" size={20} color={appColors.blue} />
+            {isFetchingLocation ? (
+              <ActivityIndicator size="small" color={appColors.blue} />
+            ) : (
+              <Icon name="my-location" size={20} color={appColors.blue} />
+            )}
           </TouchableOpacity>
+
 
           {isMapLoading && (
             <View style={styles.mapLoadingOverlay}>

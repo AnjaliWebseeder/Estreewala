@@ -275,6 +275,15 @@ const OrdersScreen = ({ navigation, route }) => {
     }
   };
 
+  const handleBackPress = () => {
+  if (activeTab !== 'active') {
+    setActiveTab('active');
+    return;
+  }
+
+  navigation.goBack();
+};
+
   const renderItem = ({ item }) => {
     console.log("item.orderId", item.orderId);
     const formattedPickupDate = moment(item.originalData.pickupDate).format("DD MMM YYYY");
@@ -371,12 +380,12 @@ const OrdersScreen = ({ navigation, route }) => {
       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <View style={styles.container}>
         <View style={styles.main}>
-          <Header
-            iconColor={appColors.white}
-            titleStyle={{ color: appColors.white }}
-            title={"My Orders"}
-            onBackPress={() => navigation.goBack()}
-          />
+        <Header
+  iconColor={appColors.white}
+  titleStyle={{ color: appColors.white }}
+  title={"My Orders"}
+  onBackPress={handleBackPress}
+/>
 
           <View style={styles.tabContainer}>
             {tabs.map((tab) => (

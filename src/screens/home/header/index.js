@@ -24,6 +24,8 @@ const Header = ({ navigation }) => {
         state => state.address
     );
 
+    console.log("userLocation in home page ", userLocation);
+
     const effectiveAddress =
         selectedAddress ||
         addresses?.find(a => a.isDefault) ||
@@ -31,9 +33,15 @@ const Header = ({ navigation }) => {
         (userLocation
             ? {
                 type: "Current Location",
-                addressLine1: `${userLocation.city}, ${userLocation.state}`,
+                addressLine1: "",
+                city: userLocation.city,
+                state: userLocation.state,
+                pincode: userLocation.pincode || "",
             }
             : null);
+
+
+    console.log("effectiveAddress", effectiveAddress);
 
     useEffect(() => {
         dispatch(getAddresses());
@@ -67,11 +75,32 @@ const Header = ({ navigation }) => {
                         </Text>
 
                         {effectiveAddress && (
-                            <Text style={styles.addressSub} numberOfLines={1}>
-                                {effectiveAddress.addressLine1 || "Using your current location"}
+                            <Text style={styles.addressSub} numberOfLines={1} ellipsizeMode="tail">
+                                {(() => {
+                                    const parts = [];
+
+                                    if (effectiveAddress.addressLine1 && effectiveAddress.addressLine1 !== effectiveAddress.city) {
+                                        parts.push(effectiveAddress.addressLine1);
+                                    }
+                                    if (effectiveAddress.city) {
+                                        parts.push(effectiveAddress.city);
+                                    }
+                                    if (effectiveAddress.state) {
+                                        parts.push(effectiveAddress.state);
+                                    }
+
+                                    if (effectiveAddress.pincode) {
+                                        parts.push(effectiveAddress.pincode);
+                                    }
+
+                                    const fullAddress = parts.join(", ");
+                                    return fullAddress.length > 35 ? fullAddress.slice(0, 35) + "..." : fullAddress;
+                                })()}
                             </Text>
                         )}
+
                     </View>
+
                 </TouchableOpacity>
 
                 <View style={styles.actions}>

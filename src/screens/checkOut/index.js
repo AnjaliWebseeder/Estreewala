@@ -63,14 +63,21 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
   console.log("customerData in checkout screen", customerData);
 
   const effectiveAddress = useMemo(() => {
-    if (!selectedAddress) return null;
-
-    if (typeof selectedAddress === 'object') {
+    if (selectedAddress && typeof selectedAddress === 'object') {
       return selectedAddress;
     }
 
-    return addresses.find(a => a._id === selectedAddress) || null;
+    // 2️⃣ Agar selectedAddress null hai → default address dikhao
+    const defaultAddr = addresses?.find(a => a.isDefault);
+
+    if (defaultAddr) {
+      return defaultAddr;
+    }
+
+    // 3️⃣ Kuch bhi nahi mila
+    return null;
   }, [addresses, selectedAddress]);
+
 
   console.log("effectiveAddress", effectiveAddress);
 
@@ -429,7 +436,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         <View style={styles.container}>
           {/* Header */}
@@ -474,7 +481,12 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
 
                       <View style={styles.optionTextContainer}>
                         <Text style={styles.optionTitle}>Schedule Pickup</Text>
-                        <Text style={styles.optionSubtitle}>
+                        <Text
+                          style={[
+                            styles.optionSubtitle,
+                            selectedPickupSlot && styles.optionSubtitleActive,
+                          ]}
+                        >
                           {selectedPickupSlot
                             ? `${selectedPickupDate.toLocaleDateString('en-US', {
                               month: 'short',
@@ -482,6 +494,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                             })}, ${selectedPickupSlot.time}`
                             : 'Choose date and time for pickup'}
                         </Text>
+
                       </View>
 
                       <Icon name="chevron-right" size={20} color={appColors.blue} />
@@ -694,7 +707,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
               </ScrollView>
               <View>
                 <View
-                  style={[styles.section, { marginHorizontal: 10, marginTop: 10 }]}
+                  style={[styles.section, { marginHorizontal: 10 }]}
                 >
                   <View style={[styles.priceRow]}>
                     <Text style={styles.totalLabel}>Total</Text>

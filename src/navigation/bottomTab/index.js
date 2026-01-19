@@ -14,7 +14,6 @@ import appColors from '../../theme/appColors';
 import fonts from '../../theme/appFonts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LaundryServiceList from '../../otherComponent/home/laundryServiceList';
-import { ProfileStack } from '../profileStack';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 
@@ -121,44 +120,11 @@ export default function BottomTab() {
 
         <Tab.Screen
           name="Profile"
-          component={ProfileStack}
-          listeners={({ navigation, route }) => ({
-            tabPress: (e) => {
-              // Ensure we always navigate to ProfileHome inside ProfileStack
-              // This will bring Profile tab forward and set its nested state to show ProfileHome
-              navigation.navigate('Profile', { screen: 'ProfileHome' });
-
-              // Optionally reset the nested state completely:
-              // navigation.dispatch(
-              //   CommonActions.reset({
-              //     index: 0,
-              //     routes: [
-              //       {
-              //         name: 'Profile',
-              //         state: { routes: [{ name: 'ProfileHome' }] },
-              //       },
-              //     ],
-              //   })
-              // );
-            },
-          })}
-          options={({ route }) => {
-            const routeName = getFocusedRouteNameFromRoute(route) ?? "ProfileHome";
-            const hideOnScreens = ["ManageAddress", "MapAddressScreen"];
-
-            return {
-              tabBarStyle: hideOnScreens.includes(routeName)
-                ? { display: "none" }
-                : [
-                  styles.minimalTabBar,
-                  {
-                    height: 65 + insets.bottom,
-                  },
-                ],
-              tabBarIcon: ({ focused }) => (
-                <MinimalTabButton focused={focused} icon={ProfileIcon} label="Profile" />
-              ),
-            };
+          component={Profile}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <MinimalTabButton focused={focused} icon={ProfileIcon} label="Profile" />
+            ),
           }}
         />
 

@@ -33,7 +33,7 @@ import { clearVendors } from "../../../redux/slices/nearByVendor";
 
 export default function ManageAddress({ navigation, route }) {
   const dispatch = useDispatch();
-  const { addresses, addressesLoading, selectedAddress } = useSelector(
+  const { addresses, selectedAddress } = useSelector(
     (state) => state.address
   );
   const { userLocation, saveLocation } = useAuth();
@@ -44,7 +44,13 @@ export default function ManageAddress({ navigation, route }) {
   const [addressModalVisible, setAddressModalVisible] = useState(false);
   const [selectedAddressData, setSelectedAddressData] = useState(null);
 
-  const [isLocating, setIsLocating] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await dispatch(getAddresses());
+    setRefreshing(false);
+  };
 
   const {
     apiMessage,
@@ -97,12 +103,24 @@ export default function ManageAddress({ navigation, route }) {
 
   useEffect(() => {
     const error =
-      addressesError || addError || updateError || deleteError || setDefaultError;
-    if (error) {
+      addressesError ||
+      addError ||
+      updateError ||
+      deleteError ||
+      setDefaultError;
+
+    if (typeof error === 'string' && error.trim()) {
       showToast(error, "error");
       dispatch(resetAddressState());
     }
-  }, [addressesError, addError, updateError, deleteError, setDefaultError]);
+  }, [
+    addressesError,
+    addError,
+    updateError,
+    deleteError,
+    setDefaultError,
+  ]);
+
 
   const getCurrentLocation = async () => {
     const granted = await PermissionsAndroid.request(
@@ -121,8 +139,6 @@ export default function ManageAddress({ navigation, route }) {
     }
     navigation.navigate("MapAddressScreen", { editingAddress: null });
   };
-
-
 
 
   const setAsDefault = async (id) => {
@@ -175,30 +191,13 @@ export default function ManageAddress({ navigation, route }) {
   };
 
 
- const applySelectedAddress = async () => {
-  const selectedObj = addresses.find(a => a._id === localSelectedAddress);
-  if (!selectedObj) return;
+  const applySelectedAddress = async () => {
+    const selectedObj = addresses.find(a => a._id === localSelectedAddress);
+    if (!selectedObj) return;
 
-  dispatch(setSelectedAddress(selectedObj));
-
-  if (selectedObj?.location?.coordinates?.coordinates?.length === 2) {
-    const [lng, lat] = selectedObj.location.coordinates.coordinates;
-
-    await saveLocation({
-      coordinates: [lng, lat],
-      city: selectedObj.city,
-      state: selectedObj.state,
-      pincode: selectedObj.pincode,
-    });
-
-    // 🔥 IMPORTANT
-    dispatch(clearVendors());
-    dispatch(getNearbyVendors({ lat, lng }));
-  }
-
-  navigation.goBack();
-};
-
+    dispatch(setSelectedAddress(selectedObj));
+    navigation.goBack();
+  };
 
 
   const openMap = (item = null) => {
@@ -284,8 +283,8 @@ export default function ManageAddress({ navigation, route }) {
           onPress={getCurrentLocation}
         // disabled={isLocating || !userLocation}
         >
-          {isLocating ? <ActivityIndicator color={appColors.blue} /> : <Icon name="navigate" size={20} color={appColors.blue} />}
-          <Text style={styles.currentLocationText}>{isLocating ? "Adding..." : "Use Current Location"}</Text>
+          <Icon name="navigate" size={20} color={appColors.blue} />
+          <Text style={styles.currentLocationText}>Use Current Location</Text>
         </TouchableOpacity>
       )}
 
@@ -293,8 +292,8 @@ export default function ManageAddress({ navigation, route }) {
         data={addresses}
         keyExtractor={(item, index) => item._id || index.toString()}
         renderItem={renderItem}
-        refreshing={addressesLoading}
-        onRefresh={() => dispatch(getAddresses())}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
         contentContainerStyle={{ padding: 16 }}
         ListEmptyComponent={
           <View style={styles.emptyState}>
@@ -309,16 +308,16 @@ export default function ManageAddress({ navigation, route }) {
         <Text style={styles.addNewButtonText}>Add New Address</Text>
       </TouchableOpacity>
 
-     <TouchableOpacity
-  style={[
-    styles.applyBtn,
-    !localSelectedAddress && { opacity: 0.5 }
-  ]}
-  disabled={!localSelectedAddress}
-  onPress={applySelectedAddress}
->
-  <Text style={styles.applyBtnText}>Apply Selected Address</Text>
-</TouchableOpacity>
+      <TouchableOpacity
+        style={[
+          styles.applyBtn,
+          !localSelectedAddress && { opacity: 0.5 }
+        ]}
+        disabled={!localSelectedAddress}
+        onPress={applySelectedAddress}
+      >
+        <Text style={styles.applyBtnText}>Apply Selected Address</Text>
+      </TouchableOpacity>
 
       <DeleteConfirmation visible={deleteModalVisible} onClose={() => setDeleteModalVisible(false)} onConfirm={handleDelete} />
       <Modal

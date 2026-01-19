@@ -31,17 +31,33 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: appColors.darkBlue,
   },
-  modalTitle: {
-    fontSize: fontSizes.FONT18,
-    fontWeight: 'bold',
-    color: appColors.font,
-    fontFamily: fonts.InterSemiBold,
+
+  leftHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
+  },
+
+  titleContainer: {
     marginLeft: 10,
   },
+
+  modalTitle: {
+    fontSize: fontSizes.FONT18,
+    fontFamily: fonts.InterSemiBold,
+    color: appColors.font,
+  },
+
+  orderId: {
+    fontSize: fontSizes.FONT14,
+    color: appColors.subTitle,
+    marginTop: 2,
+  },
+
   closeButton: {
     padding: 5,
   },
+
   reasonsContainer: {
     maxHeight: height * 0.5,
     marginBottom: 20,
@@ -140,7 +156,7 @@ export const styles = StyleSheet.create({
     fontSize: fontSizes.FONT16,
   },
   confirmButtonText: {
-    color:appColors.white,
+    color: appColors.white,
     fontFamily: fonts.InterMedium,
     fontSize: fontSizes.FONT16,
   },

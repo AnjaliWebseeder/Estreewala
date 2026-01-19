@@ -40,10 +40,13 @@ const CustomDrawerContent = (props) => {
 
 
   // Handle navigation with drawer close
-  const handleNavigation = (screenName, params = {}) => {
-    props.navigation.closeDrawer();
+ const handleNavigation = (screenName, params = {}) => {
+  props.navigation.closeDrawer();
+
+  setTimeout(() => {
     navigation.navigate(screenName, params);
-  };
+  }, 300); // drawer animation duration
+};
 
   return (
     <View style={[styles.container, { elevation: 5 }]}>

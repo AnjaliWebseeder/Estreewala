@@ -235,14 +235,15 @@ const PhoneLoginScreen = ({ navigation }) => {
             <AuthHeader
               title="Sign in with Phone"
               subtitle={
-                isOtpSent
+                isOtpSent && phone.length === 10
                   ? `Enter the OTP sent to ${selectedCountry.dialCode}${phone}`
                   : 'Enter your phone number to continue'
               }
+
             />
             <View style={styles.mainView}>
               <View style={styles.mainContainer} />
-              {!isOtpSent ? (
+              {!isOtpSent || phone.length !== 10 ? (
                 <>
                   <View style={styles.phoneInputContainer}>
                     <TouchableOpacity

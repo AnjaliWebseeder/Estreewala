@@ -160,9 +160,12 @@ const addressSlice = createSlice({
         state.addressesLoading = true;
       })
       .addCase(getAddresses.fulfilled, (state, action) => {
-        state.addressesLoading = false;
         state.addresses = action.payload.addresses;
-        state.apiMessage = action.payload.message;
+
+        if (!state.selectedAddress) {
+          const def = state.addresses.find(a => a.isDefault);
+          if (def) state.selectedAddress = def;
+        }
       })
       .addCase(getAddresses.rejected, (state, action) => {
         state.addressesLoading = false;

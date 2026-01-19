@@ -36,10 +36,13 @@ import NotificationPermission from '../screens/settings/notificationPermission'
 import UserDetailsScreen from '../screens/checkOut/userDetail'
 import MapAddressScreen from "../screens/settings/manageAddress/MapAddressScreen"
 import TermsOfServiceScreen from "../screens/settings/termsOfService"
+import { useFocusEffect } from '@react-navigation/native';
+
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigation() {
   const { isOpen, closeDrawer } = useDrawer();
+
   const {
     userToken,
     userLocation,
@@ -52,7 +55,7 @@ export default function AppNavigation() {
     isLoading
   });
 
-  console.log("userToken",userToken);
+  console.log("userToken", userToken);
 
   // Show loading until auth state is determined
   if (isLoading) {
@@ -83,51 +86,51 @@ export default function AppNavigation() {
             {/* <Stack.Screen name="OtpInput" component={OtpInput} /> */}
             <Stack.Screen name="NotificationPermission" component={NotificationPermission} />
           </>
-        ) 
-        
-        // : !userLocation ? (
-        //   // AUTHENTICATED BUT NO LOCATION - Location setup flow
-        //   <>
-        //     <Stack.Screen name="SetLocation" component={SetLocation} />
-        //     <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
-        //     {/* Allow going back to login if needed */}
-        //     <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
-        //   </>
-        // )
-        
-        : (
-          // FULLY AUTHENTICATED WITH LOCATION - Main app
-          <>
-            <Stack.Screen name="Main" component={BottomTab} />
-            {/* Include all other screens that authenticated users can access */}
-            <Stack.Screen name="SetLocation" component={SetLocation} />
-            <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
-            <Stack.Screen name="AboutUs" component={AboutUs} />
-            <Stack.Screen name="ContactSupport" component={ContactSupport} />
-            <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
-            <Stack.Screen name="Faqs" component={Faqs} />
-            <Stack.Screen name="TermsOfServiceScreen" component={TermsOfServiceScreen} />
-            <Stack.Screen name="ManageAddress" component={ManageAddress} />
-            <Stack.Screen name="Settings" component={Settings} />
-            <Stack.Screen name="Search" component={Search} />
-            <Stack.Screen name="Notification" component={Notification} />
-            {/* <Stack.Screen name="ChangePassword" component={ChangePassword} /> */}
-            <Stack.Screen name="LoginSecurity" component={LoginSecurity} />
-            <Stack.Screen name="LaundryServiceList" component={LaundryServiceList} />
-            <Stack.Screen name="LaundryScreen" component={LaundryScreen} />
-            <Stack.Screen name="LaundryService" component={LaundryService} />
-            <Stack.Screen name="LaundryCheckoutScreen" component={LaundryCheckoutScreen} />
-            <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} />
-            <Stack.Screen name="OrderDetails" component={OrderDetails} />
-            <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen} />
-            <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
-            <Stack.Screen
-              name="MapAddressScreen"
-              component={MapAddressScreen}
-              options={{ headerShown: false }}
-            />
-          </>
-        )}
+        )
+
+          // : !userLocation ? (
+          //   // AUTHENTICATED BUT NO LOCATION - Location setup flow
+          //   <>
+          //     <Stack.Screen name="SetLocation" component={SetLocation} />
+          //     <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
+          //     {/* Allow going back to login if needed */}
+          //     <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
+          //   </>
+          // )
+
+          : (
+            // FULLY AUTHENTICATED WITH LOCATION - Main app
+            <>
+              <Stack.Screen name="Main" component={BottomTab} />
+              {/* Include all other screens that authenticated users can access */}
+              <Stack.Screen name="SetLocation" component={SetLocation} />
+              <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
+              <Stack.Screen name="AboutUs" component={AboutUs} />
+              <Stack.Screen name="ContactSupport" component={ContactSupport} />
+              <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+              <Stack.Screen name="Faqs" component={Faqs} />
+              <Stack.Screen name="TermsOfServiceScreen" component={TermsOfServiceScreen} />
+              <Stack.Screen name="ManageAddress" component={ManageAddress} />
+              <Stack.Screen name="Settings" component={Settings} />
+              <Stack.Screen name="Search" component={Search} />
+              <Stack.Screen name="Notification" component={Notification} />
+              {/* <Stack.Screen name="ChangePassword" component={ChangePassword} /> */}
+              <Stack.Screen name="LoginSecurity" component={LoginSecurity} />
+              <Stack.Screen name="LaundryServiceList" component={LaundryServiceList} />
+              <Stack.Screen name="LaundryScreen" component={LaundryScreen} />
+              <Stack.Screen name="LaundryService" component={LaundryService} />
+              <Stack.Screen name="LaundryCheckoutScreen" component={LaundryCheckoutScreen} />
+              <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} />
+              <Stack.Screen name="OrderDetails" component={OrderDetails} />
+              <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen} />
+              <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
+              <Stack.Screen
+                name="MapAddressScreen"
+                component={MapAddressScreen}
+                options={{ headerShown: false }}
+              />
+            </>
+          )}
       </Stack.Navigator>
 
       <SimpleDrawer isOpen={isOpen} onClose={closeDrawer}>

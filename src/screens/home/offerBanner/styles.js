@@ -1,83 +1,94 @@
 import fonts from '../../../theme/appFonts';
 import appColors from '../../../theme/appColors';
-import { Dimensions, StyleSheet } from 'react-native';
-import { fontSizes } from '../../../theme/appConstant';
-const { width } = Dimensions.get('window');
+import { StyleSheet } from 'react-native';
+import { fontSizes, windowWidth, windowHeight } from '../../../theme/appConstant';
+
 export const styles = StyleSheet.create({
   wrapper: {
-    marginBottom: 18,
-   
+    marginBottom: windowHeight(18),
   },
-  contentContainerStyle:{
-    paddingBottom:1,
-      paddingLeft: 16,
+
+  contentContainerStyle: {
+    paddingBottom: windowHeight(1),
+    paddingLeft: windowWidth(16),
   },
+
   title: {
     fontSize: fontSizes.FONT22,
-    fontFamily:fonts.InterSemiBold,
-    marginBottom: 8,
-   color:appColors.font,
-    paddingHorizontal: 16,
+    fontFamily: fonts.InterSemiBold,
+    marginBottom: windowHeight(8),
+    color: appColors.font,
+    paddingHorizontal: windowWidth(16),
   },
- card: {
-  width: width * 0.75,
-  padding: 16,
-  marginRight: 14,
-  borderRadius: 16,
-  shadowColor: "#000",
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.1,
-  shadowRadius: 3.84,
-  // elevation: 2,
-},
+
+  card: {
+    width: windowWidth(330),
+    padding: windowWidth(16),
+    marginRight: windowWidth(14),
+    borderRadius: windowWidth(16),
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    // elevation: 2,
+  },
+
   activeCard: {
     borderColor: '#10a1efff',
     shadowColor: '#dbb4f5ff',
     shadowOpacity: 0.2,
   },
+
   contentContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
+
   offerImage: {
-    width: 60,
-    height: 60,
+    width: windowWidth(60),
+    height: windowWidth(60),
     resizeMode: "contain",
-    marginRight: 12,
+    marginRight: windowWidth(12),
   },
+
   textContainer: {
     flex: 1,
   },
+
   offerTitle: {
-    fontSize: 16,
-    fontFamily:fonts.InterMedium,
+    fontSize: windowWidth(16),
+    fontFamily: fonts.InterMedium,
     color: appColors.title,
-    marginBottom: 2,
+    marginBottom: windowHeight(2),
   },
+
   offerSub: {
     fontSize: fontSizes.FONT16,
-    color:appColors.subTitle, 
-    lineHeight: 18,
-    fontFamily:fonts.InterRegular,
-    lineHeight:20
+    color: appColors.subTitle,
+    fontFamily: fonts.InterRegular,
+    lineHeight: windowHeight(20),
   },
+
   dotsContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 8,
+    marginTop: windowHeight(8),
   },
+
   dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginHorizontal: 4,
+    width: windowWidth(8),
+    height: windowWidth(8),
+    borderRadius: windowWidth(4),
+    marginHorizontal: windowWidth(4),
   },
+
   activeDot: {
     backgroundColor: "#07172cff",
-    width: 12,
+    width: windowWidth(12),
   },
+
   inactiveDot: {
-    backgroundColor:appColors.border,
+    backgroundColor: appColors.border,
   },
 });

@@ -1,51 +1,65 @@
 import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import { offer, offer1,offer2 ,deliveryman,delivery} from "../../../utils/images/images";
-import {styles} from './styles'
+import { offer, offer1, offer2, deliveryman, delivery } from "../../../utils/images/images";
+import { styles } from './styles'
 import LinearGradient from 'react-native-linear-gradient';
 
 const laundryOffers = [
   {
     id: "1",
-    title: "50% OFF",
-    subText: "On Your First Laundry Order",
-    image: deliveryman // laundry basket
+    title: "Easy Order Placement",
+    subText: "Place your laundry order in just a few steps",
+    image: deliveryman
   },
   {
     id: "2",
-    title: "Free Pickup & Delivery",
-    subText: "On Orders Above ₹499",
+    title: "All Laundry Services",
+    subText: "Dry Wash, Washing, Iron & Steam Iron",
     image: delivery
   },
   {
     id: "3",
-    title: "Free Pickup & Delivery",
-    subText: "On Orders Above ₹499",
+    title: "Doorstep Pickup & Delivery",
+    subText: "Laundry picked up and delivered at your home",
     image: offer2
   },
-
 ];
+
 
 const BannerOffer = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
-const renderItem = ({ item, index }) => (
- <LinearGradient
-  colors={['rgba(9, 191, 230, 0.2)', '#FFF9CC']} 
-  start={{ x: 0, y: 0 }}
-  end={{ x: 1, y: 1 }}
-  style={[styles.card, index === activeIndex && styles.activeCard]}
->
-    <View style={styles.contentContainer}>
-      <Image source={item.image} style={styles.offerImage} />
-      <View style={styles.textContainer}>
-        <Text style={styles.offerTitle}>{item.title}</Text>
-        <Text style={styles.offerSub}>{item.subText}</Text>
+  const renderItem = ({ item, index }) => (
+    <LinearGradient
+      colors={['rgba(9, 191, 230, 0.2)', '#FFF9CC']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={[styles.card, index === activeIndex && styles.activeCard]}
+    >
+      <View style={styles.contentContainer}>
+        <Image source={item.image} style={styles.offerImage} />
+        <View style={styles.textContainer}>
+          <Text
+            style={styles.offerTitle}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {item.title}
+          </Text>
+
+          <Text
+            style={styles.offerSub}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {item.subText}
+          </Text>
+
+        </View>
       </View>
-    </View>
-</LinearGradient>
-);
+    </LinearGradient>
+  );
 
   return (
     <View style={styles.wrapper}>
@@ -67,21 +81,21 @@ const renderItem = ({ item, index }) => (
           itemVisiblePercentThreshold: 50
         }}
       />
-      
+
       {/* Active dots indicator */}
       <View style={styles.dotsContainer}>
         {laundryOffers.map((_, index) => (
-          <TouchableOpacity 
-            key={index} 
+          <TouchableOpacity
+            key={index}
             onPress={() => {
               // Scroll to the specific index
             }}
           >
-            <View 
+            <View
               style={[
-                styles.dot, 
+                styles.dot,
                 index === activeIndex ? styles.activeDot : styles.inactiveDot
-              ]} 
+              ]}
             />
           </TouchableOpacity>
         ))}

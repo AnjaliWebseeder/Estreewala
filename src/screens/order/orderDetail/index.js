@@ -240,7 +240,13 @@ const OrderDetails = ({ navigation, route }) => {
                 {currentOrder?.contactDetails?.fullName || "Unknown"}
               </Text>
               <Text style={styles.driverCar}>
-                {currentOrder?.deliveryAddress?.fullAddress || "No address available"}
+                {currentOrder?.deliveryAddress
+                  ? (currentOrder.deliveryAddress.fullAddress &&
+                    currentOrder.deliveryAddress.fullAddress !== "N/A"
+                    ? currentOrder.deliveryAddress.fullAddress
+                    : currentOrder.deliveryAddress.addressLine1 ||
+                    "No address available")
+                  : "No address available"}
               </Text>
               <Text style={styles.driverPhone}>{customerPhone}</Text>
             </View>
@@ -435,7 +441,7 @@ const OrderDetails = ({ navigation, route }) => {
             setOtherReason('');
           }}
           onConfirm={confirmCancel}
-          orderId={currentOrder?.id}
+          orderId={currentOrder?.orderId}
           selectedReason={selectedReason}
           setSelectedReason={setSelectedReason}
           otherReason={otherReason}

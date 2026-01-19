@@ -12,7 +12,6 @@ const CustomToast = ({
   const slideAnim = useRef(new Animated.Value(100)).current;
 
   useEffect(() => {
-    // Slide up and fade in
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -26,7 +25,6 @@ const CustomToast = ({
       }),
     ]).start();
 
-    // Auto hide after duration
     const timer = setTimeout(() => {
       Animated.parallel([
         Animated.timing(fadeAnim, {
@@ -39,16 +37,19 @@ const CustomToast = ({
           duration: 300,
           useNativeDriver: true,
         }),
-      ]).start(() => {
-        onHide();
-      });
+      ]).start(onHide);
     }, duration);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [message, type]);
+
+
+  const safeType = ['success', 'error', 'warning', 'info'].includes(type)
+    ? type
+    : 'error';
 
   const getBackgroundColor = () => {
-    switch (type) {
+    switch (safeType) {
       case 'success':
         return '#2ECC71';
       case 'error':
@@ -58,12 +59,13 @@ const CustomToast = ({
       case 'info':
         return '#232425ff';
       default:
-        return '#4CAF50';
+        return '#F44336';
     }
   };
 
+
   const getIcon = () => {
-    switch (type) {
+    switch (safeType) {
       case 'success':
         return 'check-circle';
       case 'error':
@@ -73,7 +75,7 @@ const CustomToast = ({
       case 'info':
         return 'information';
       default:
-        return 'check-circle';
+        return 'close-circle';
     }
   };
 
@@ -81,7 +83,7 @@ const CustomToast = ({
     <Animated.View
       style={[
         styles.toast,
-        type === 'info' && { paddingVertical: 10 },
+        safeType === 'info' && { paddingVertical: 10 },
         {
           backgroundColor: getBackgroundColor(),
           opacity: fadeAnim,
