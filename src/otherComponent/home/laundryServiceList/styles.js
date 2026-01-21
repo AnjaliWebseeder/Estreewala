@@ -239,14 +239,14 @@ emptyState: {
 emptyStateTitle: {
   fontSize: 18,
   fontWeight: '600',
-  color: appColors.darkGray,
+  color: appColors.black,
   textAlign: 'center',
   marginTop: 16,
   marginBottom: 8,
 },
 emptyStateSubtitle: {
   fontSize: 14,
-  color: appColors.gray,
+  color: appColors.subTitle,
   textAlign: 'center',
   lineHeight: 20,
 },

@@ -1,146 +1,188 @@
-// AppNavigation.js
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useAuth } from "../utils/context/authContext";
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useAuth } from '../utils/context/authContext';
+import { View, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import appColors from '../theme/appColors';
+import fonts from '../theme/appFonts';
+import { styles } from './styles';
+import { windowWidth } from '../theme/appConstant';
+
+/* ---------------- AUTH ---------------- */
 import Splash from '../screens/splash';
 import OnBoarding from '../screens/onBoarding';
-// import SignIn from '../screens/auth/signIn';
-// import SignUp from '../screens/auth/signUp';
-// import ForgotPassword from '../screens/auth/forgotPassword';
 import PhoneLogin from '../screens/auth/phoneLogin';
-// import OtpInput from '../screens/auth/phoneLogin/otpInput';
+import OtpInput from '../screens/auth/phoneLogin/otpInput';
+import SignIn from '../screens/auth/signIn';
+import SignUp from '../screens/auth/signUp';
+import ForgotPassword from '../screens/auth/forgotPassword';
+
+/* ---------------- TABS ---------------- */
+import { Home } from '../screens/home';
+import LaundryServiceList from '../otherComponent/home/laundryServiceList';
+import LaundryService from '../otherComponent/home/laundryService';
+import Order from '../screens/order';
+import Profile from '../screens/profile';
+
+/* ---------------- CHECKOUT / ORDER ---------------- */
+import LaundryCheckoutScreen from '../screens/checkOut';
+import OrderConfirmation from '../screens/order/orderConfirm';
+import OrderDetails from '../screens/order/orderDetail';
+import UserDetailsScreen from '../screens/checkOut/userDetail';
+
+/* ---------------- LOCATION ---------------- */
 import SetLocation from '../otherComponent/location/setLocation';
 import ConfirmLocation from '../otherComponent/location/confirmLocation';
-import BottomTab from './bottomTab';
-import Notification from '../screens/settings/notification';
+import Search from '../otherComponent/search';
+import MapAddressScreen from "../screens/settings/manageAddress/MapAddressScreen";
+
+/* ---------------- SETTINGS / PROFILE ---------------- */
 import CustomDrawerContent from './customDrawer';
-import SimpleDrawer from './customDrawer/simpleDrawer';
 import AboutUs from '../screens/settings/aboutUs';
 import ContactSupport from '../screens/settings/contactSupport';
 import PrivacyPolicy from '../screens/settings/privacyPolicy';
 import Faqs from '../screens/settings/faq';
+import TermsOfServiceScreen from '../screens/settings/termsOfService';
 import ManageAddress from '../screens/settings/manageAddress';
-import Settings from '../screens/settings/settings';
-import { useDrawer } from './customDrawer/drawerContext';
-import Search from '../otherComponent/search';
+import Notification from '../screens/settings/notification';
 import ChangePassword from '../screens/settings/changePassword';
 import LoginSecurity from '../screens/settings/userProfile';
-import LaundryServiceList from '../otherComponent/home/laundryServiceList';
-import LaundryService from '../otherComponent/home/laundryService';
-import LaundryCheckoutScreen from '../screens/checkOut'
-import OrderConfirmation from '../screens/order/orderConfirm';
-import LaundryScreen from '../otherComponent/home/laundryService';
-import OrderDetails from '../screens/order/orderDetail'
-import OrdersScreen from '../screens/order';
-import NotificationPermission from '../screens/settings/notificationPermission'
-import UserDetailsScreen from '../screens/checkOut/userDetail'
-import MapAddressScreen from "../screens/settings/manageAddress/MapAddressScreen"
-import TermsOfServiceScreen from "../screens/settings/termsOfService"
-import { useFocusEffect } from '@react-navigation/native';
 
+/* ---------------- ICONS ---------------- */
+import { HomeIcon } from '../assets/Icons/svg/home';
+import { LaundryIcon } from '../assets/Icons/svg/laundriesIcon';
+import OrderIcon from '../assets/Icons/svg/order';
+import { ProfileIcon } from '../assets/Icons/svg/profile';
+
+/* ---------------- NAVIGATORS ---------------- */
 const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
+const Tab = createBottomTabNavigator();
 
-export default function AppNavigation() {
-  const { isOpen, closeDrawer } = useDrawer();
+/* ---------------- MINIMAL TAB BUTTON ---------------- */
+const MinimalTabButton = ({ focused, icon: IconComponent, label, labelWidth, iconStyle }) => (
+  <View style={styles.minimalTabButton}>
+    <View
+      style={[
+        styles.minimalIconContainer,
+        focused && styles.minimalIconContainerActive,
+        iconStyle,
+      ]}
+    >
+      <IconComponent size={18} color={focused ? appColors.white : appColors.darkBlue} />
+    </View>
+    <Text
+      pointerEvents="none"
+      style={[
+        styles.minimalTabLabel,
+        {
+          color: focused ? appColors.blue : appColors.subTitle,
+          fontFamily: focused ? fonts.PoppinsMedium : fonts.PoppinsRegular,
+          width: labelWidth,
+        },
+      ]}
+    >
+      {label}
+    </Text>
+  </View>
+);
 
-  const {
-    userToken,
-    userLocation,
-    isLoading
-  } = useAuth();
-
-  console.log('🔍 AppNavigation Render -', {
-    userToken: !!userToken,
-    userLocation: !!userLocation,
-    isLoading
-  });
-
-  console.log("userToken", userToken);
-
-  // Show loading until auth state is determined
-  if (isLoading) {
-    return null; // or <LoadingScreen />
-  }
-
-  const navigateFromDrawer = (screenName) => {
-    closeDrawer();
-    navigationRef.current?.navigate(screenName);
-  };
+/* ---------------- BOTTOM TABS ---------------- */
+function BottomTabs() {
+  const insets = useSafeAreaInsets();
 
   return (
-    <>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
+    <Tab.Navigator
+      screenOptions={{
+        tabBarShowLabel: false,
+        headerShown: false,
+        tabBarStyle: [styles.minimalTabBar, { height: 65 + insets.bottom }],
+      }}
+    >
+      <Tab.Screen
+        name="Home"
+        component={Home}
+        options={{ tabBarIcon: ({ focused }) => <MinimalTabButton focused={focused} icon={HomeIcon} label="Home" /> }}
+      />
+      <Tab.Screen
+        name="Laundry"
+        component={LaundryServiceList}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <MinimalTabButton focused={focused} icon={LaundryIcon} label="Laundry" labelWidth={53} iconStyle={{ marginLeft: 5 }} />
+          ),
         }}
-      >
-        {!userToken ? (
-          // UNAUTHENTICATED FLOW - User needs to login
-          <>
-            <Stack.Screen name="Splash" component={Splash} />
-            <Stack.Screen name="OnBoarding" component={OnBoarding} />
-            {/* <Stack.Screen name="SignIn" component={SignIn} />
-            <Stack.Screen name="SignUp" component={SignUp} /> */}
-            {/* <Stack.Screen name="ForgotPassword" component={ForgotPassword} /> */}
-            <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
-            {/* <Stack.Screen name="OtpInput" component={OtpInput} /> */}
-            <Stack.Screen name="NotificationPermission" component={NotificationPermission} />
-          </>
-        )
+      />
+      <Tab.Screen
+        name="Orders"
+        component={Order}
+        options={{ tabBarIcon: ({ focused }) => <MinimalTabButton focused={focused} icon={OrderIcon} label="Orders" /> }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={Profile}
+        options={{ tabBarIcon: ({ focused }) => <MinimalTabButton focused={focused} icon={ProfileIcon} label="Profile" /> }}
+      />
+    </Tab.Navigator>
+  );
+}
 
-          // : !userLocation ? (
-          //   // AUTHENTICATED BUT NO LOCATION - Location setup flow
-          //   <>
-          //     <Stack.Screen name="SetLocation" component={SetLocation} />
-          //     <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
-          //     {/* Allow going back to login if needed */}
-          //     <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
-          //   </>
-          // )
+/* ---------------- DRAWER ---------------- */
+function MainDrawer() {
+  return (
+    <Drawer.Navigator
+      screenOptions={{ headerShown: false, drawerStyle: { width: windowWidth(350) } }}
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+    >
+      <Drawer.Screen name="Tabs" component={BottomTabs} />
+      <Drawer.Screen name="ManageAddress" component={ManageAddress} />
+      <Drawer.Screen name="Notification" component={Notification} />
+      <Drawer.Screen name="LoginSecurity" component={LoginSecurity} />
+      <Drawer.Screen name="AboutUs" component={AboutUs} />
+      <Drawer.Screen name="ContactSupport" component={ContactSupport} />
+      <Drawer.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+      <Drawer.Screen name="Faqs" component={Faqs} />
+      <Drawer.Screen name="TermsOfServiceScreen" component={TermsOfServiceScreen} />
+      {/* <Drawer.Screen name="MapAddressScreen" component={MapAddressScreen} />
+      <Drawer.Screen name="ChangePassword" component={ChangePassword} /> */}
+    </Drawer.Navigator>
+  );
+}
 
-          : (
-            // FULLY AUTHENTICATED WITH LOCATION - Main app
-            <>
-              <Stack.Screen name="Main" component={BottomTab} />
-              {/* Include all other screens that authenticated users can access */}
-              <Stack.Screen name="SetLocation" component={SetLocation} />
-              <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
-              <Stack.Screen name="AboutUs" component={AboutUs} />
-              <Stack.Screen name="ContactSupport" component={ContactSupport} />
-              <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
-              <Stack.Screen name="Faqs" component={Faqs} />
-              <Stack.Screen name="TermsOfServiceScreen" component={TermsOfServiceScreen} />
-              <Stack.Screen name="ManageAddress" component={ManageAddress} />
-              <Stack.Screen name="Settings" component={Settings} />
-              <Stack.Screen name="Search" component={Search} />
-              <Stack.Screen name="Notification" component={Notification} />
-              {/* <Stack.Screen name="ChangePassword" component={ChangePassword} /> */}
-              <Stack.Screen name="LoginSecurity" component={LoginSecurity} />
-              <Stack.Screen name="LaundryServiceList" component={LaundryServiceList} />
-              <Stack.Screen name="LaundryScreen" component={LaundryScreen} />
-              <Stack.Screen name="LaundryService" component={LaundryService} />
-              <Stack.Screen name="LaundryCheckoutScreen" component={LaundryCheckoutScreen} />
-              <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} />
-              <Stack.Screen name="OrderDetails" component={OrderDetails} />
-              <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen} />
-              <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
-              <Stack.Screen
-                name="MapAddressScreen"
-                component={MapAddressScreen}
-                options={{ headerShown: false }}
-              />
-            </>
-          )}
-      </Stack.Navigator>
+/* ---------------- APP NAVIGATION ---------------- */
+export default function AppNavigation() {
+  const { userToken, isLoading } = useAuth();
+  if (isLoading) return null; 
 
-      <SimpleDrawer isOpen={isOpen} onClose={closeDrawer}>
-        <CustomDrawerContent
-          navigation={{
-            navigate: navigateFromDrawer,
-            closeDrawer: closeDrawer,
-          }}
-        />
-      </SimpleDrawer>
-    </>
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {!userToken ? (
+        <>
+          <Stack.Screen name="Splash" component={Splash} />
+          <Stack.Screen name="OnBoarding" component={OnBoarding} />
+          <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
+          <Stack.Screen name="OtpInput" component={OtpInput} />
+          <Stack.Screen name="SignIn" component={SignIn} />
+          <Stack.Screen name="SignUp" component={SignUp} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        </>
+      ) : (
+        <>
+          <Stack.Screen name="Main" component={MainDrawer} />
+          <Stack.Screen name="ManageAddress" component={ManageAddress} />
+<Stack.Screen name="MapAddressScreen" component={MapAddressScreen} />
+          <Stack.Screen name="LaundryService" component={LaundryService} />
+          <Stack.Screen name="LaundryCheckout" component={LaundryCheckoutScreen} />
+          <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} />
+          <Stack.Screen name="OrderDetails" component={OrderDetails} />
+          <Stack.Screen name="UserDetails" component={UserDetailsScreen} />
+          <Stack.Screen name="SetLocation" component={SetLocation} />
+          <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} />
+          <Stack.Screen name="Search" component={Search} />
+        </>
+      )}
+    </Stack.Navigator>
   );
 }

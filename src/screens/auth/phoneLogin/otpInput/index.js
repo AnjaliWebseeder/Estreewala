@@ -27,24 +27,27 @@ const OtpInput = ({ code = '', setCode = () => { }, maxLength = 4 }) => {
   };
 
   const renderBoxes = () =>
-    boxArray.map((_, index) => {
-      const digit = (code || '')[index] || '';
-      const isCurrent = index === (code?.length || 0);
-      const isFilled = index < (code?.length || 0);
+  boxArray.map((_, index) => {
+    const digit = code[index] || '';
+    const isFilled = index < code.length;
+    const isCurrent =
+      isFocused &&
+      (index === code.length || (code.length === maxLength && index === maxLength - 1));
 
-      return (
-        <View
-          key={index}
-          style={[
-            styles.box,
-            isFocused && isCurrent && styles.focusedBox,
-            isFilled && styles.filledBox,
-          ]}
-        >
-          <Text style={styles.boxText}>{digit}</Text>
-        </View>
-      );
-    });
+    return (
+      <View
+        key={index}
+        style={[
+          styles.box,
+          isCurrent && styles.focusedBox,
+          isFilled && styles.filledBox,
+        ]}
+      >
+        <Text style={styles.boxText}>{digit}</Text>
+      </View>
+    );
+  });
+
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>

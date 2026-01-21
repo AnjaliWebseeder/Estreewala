@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import Navigation from './src/navigation/index'
 import { NavigationContainer } from '@react-navigation/native';
-import { DrawerProvider } from './src/navigation/customDrawer/drawerContext';
 import { AuthProvider } from './src/utils/context/authContext';
 import { Provider } from 'react-redux'
 import { persistor, store } from "./src/redux/store"
@@ -34,14 +33,12 @@ export default function App() {
       <PersistGate loading={null} persistor={persistor}>
         <ToastProvider>
           <AuthProvider>
-            <DrawerProvider>
               <SocketProvider>
                 <UpdateModal />
                 <NavigationContainer >
                   <Navigation />
                 </NavigationContainer>
               </SocketProvider>
-            </DrawerProvider>
           </AuthProvider>
         </ToastProvider>
       </PersistGate>

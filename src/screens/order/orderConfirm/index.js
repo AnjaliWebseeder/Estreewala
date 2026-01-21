@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { View, Text, ScrollView,StatusBar } from 'react-native';
+import { View, Text, ScrollView, StatusBar } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { styles } from './styles';
 import appColors from '../../../theme/appColors';
@@ -32,7 +32,7 @@ const OrderConfirmation = ({ navigation, route }) => {
           name: `${item.item} (${item.category})`,
           quantity: item.quantity,
           service: item.service,
-          price: item.price,
+          unitPrice: item.unitPrice || 0,
         })) || [],
       subTotal: summary.totalAmount || 0,
       tax: 0,
@@ -41,18 +41,21 @@ const OrderConfirmation = ({ navigation, route }) => {
     };
   }, [orderData]);
 
- useEffect(() => {
-  const timer = setTimeout(() => {
-    navigation.replace('Main', {
-      screen: 'Orders',
-      params: {
-        defaultTab: 'scheduled', // 👈 IMPORTANT
-      },
-    });
-  }, 5500); // ✅ 5.5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigation.replace('Main', {
+        screen: 'Tabs', // the bottom tab navigator inside Drawer
+        params: {
+          screen: 'Orders', // the tab you want to open
+          params: {
+            defaultTab: 'scheduled', // optional extra param
+          },
+        },
+      });
+    }, 5500); // ✅ 5.5 seconds
 
-  return () => clearTimeout(timer);
-}, [navigation]);
+    return () => clearTimeout(timer);
+  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -113,7 +116,7 @@ const OrderConfirmation = ({ navigation, route }) => {
               <Text style={styles.itemService}>{item.service}</Text>
               <View style={{ flexDirection: 'row' }}>
                 <Text style={{ color: appColors.black, marginTop: 1 }}>₹</Text>
-                <Text>{item.price}</Text>
+                <Text style={{color:"#000"}}>{item.unitPrice}</Text>
               </View>
             </View>
           ))}
@@ -121,20 +124,20 @@ const OrderConfirmation = ({ navigation, route }) => {
 
         {/* Total */}
         <View style={styles.totalBox}>
-          <View style={styles.totalRow}>
+          {/* <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Sub Total</Text>
             <View style={{ flexDirection: 'row' }}>
               <Text style={{ color: appColors.black, marginTop: 1 }}>₹</Text>
               <Text style={styles.totalValue}>{orderDetails.subTotal}</Text>
             </View>
-          </View>
-          <View style={styles.totalRow}>
+          </View> */}
+          {/* <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Tax</Text>
             <View style={{ flexDirection: 'row' }}>
               <Text style={{ color: appColors.black, marginTop: 1 }}>₹</Text>
               <Text style={styles.totalValue}>{orderDetails.tax}</Text>
             </View>
-          </View>
+          </View> */}
           <View style={styles.totalRow}>
             <Text style={styles.paymentMethod}>
               Paid via {orderDetails.paymentMethod}

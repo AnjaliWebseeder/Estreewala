@@ -137,7 +137,10 @@ export default function ManageAddress({ navigation, route }) {
       showToast("Please enable location permission", "error");
       return;
     }
-    navigation.navigate("MapAddressScreen", { editingAddress: null });
+    navigation.navigate("MapAddressScreen", {
+      editingAddress: null,
+      from: route.params?.from,
+    });
   };
 
 
@@ -196,12 +199,38 @@ export default function ManageAddress({ navigation, route }) {
     if (!selectedObj) return;
 
     dispatch(setSelectedAddress(selectedObj));
-    navigation.goBack();
+
+    // ✅ CORRECT extraction
+    const coords =
+      selectedObj?.location?.coordinates?.coordinates;
+
+    if (Array.isArray(coords) && coords.length === 2) {
+      await saveLocation({
+        coordinates: coords, // 👈 [lng, lat]
+        city: selectedObj.city,
+        state: selectedObj.state,
+        pincode: selectedObj.pincode,
+      });
+
+    } else {
+      console.log("❌ Invalid coordinates in selected address", selectedObj);
+    }
+
+    if (route.params?.from === "checkout") {
+      navigation.navigate("LaundryCheckout");
+    } else {
+      navigation.goBack();
+    }
+
   };
 
 
+
   const openMap = (item = null) => {
-    navigation.navigate("MapAddressScreen", { editingAddress: item });
+    navigation.navigate("MapAddressScreen", {
+      editingAddress: item,
+      from: route.params?.from, // 👈 VERY IMPORTANT
+    });
   };
 
   const renderItem = ({ item }) => {
@@ -304,7 +333,7 @@ export default function ManageAddress({ navigation, route }) {
       />
 
       <TouchableOpacity style={styles.addNewButton} onPress={() => openMap()}>
-        <Icon name="add-circle-outline" size={20} color={appColors.primary} />
+        <Icon name="add-circle-outline" size={20} color={appColors.darkBlue} />
         <Text style={styles.addNewButtonText}>Add New Address</Text>
       </TouchableOpacity>
 

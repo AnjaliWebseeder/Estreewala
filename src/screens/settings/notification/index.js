@@ -98,7 +98,7 @@ const Notification = ({ navigation }) => {
 
         {/* ORDER ID */}
         {item?.data?.orderId && (
-          <Text style={styles.orderIdText}>
+          <Text style={{ color: appColors.black }}>
             Order ID: {item.data.orderId}
           </Text>
         )}
@@ -145,6 +145,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: appColors.background,
+    paddingHorizontal: 5,
   },
   listContainer: {
     paddingHorizontal: 16,

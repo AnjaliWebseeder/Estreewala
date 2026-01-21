@@ -1,167 +1,156 @@
 import { StyleSheet } from 'react-native';
 import appColors from '../../theme/appColors';
 import fonts from '../../theme/appFonts';
-import { windowHeight } from '../../theme/appConstant';
+import { fontSizes, windowHeight, windowWidth } from '../../theme/appConstant';
 
 export const styles = StyleSheet.create({
+  /* ---------- ROOT ---------- */
   container: {
     flex: 1,
-    backgroundColor:appColors.background,
-  
+    backgroundColor: appColors.background || '#000',
   },
-  contentContainerStyle:{
-    paddingBottom:20
+
+  contentContainerStyle: {
+    paddingVertical: windowHeight(20),
   },
-  main:{
-   padding:10,
-   paddingHorizontal:20
+
+  main: {
+    padding: windowWidth(10),
+    paddingHorizontal: windowWidth(20),
   },
+
   welcomeText: {
-    fontSize: 20,
-    fontFamily:fonts.InterMedium,
-    color: appColors.font,
-    marginTop: 10,
+    fontSize: fontSizes.FONT25,
+    fontFamily: fonts.InterMedium,
+    color: appColors.font || '#000',
+    marginTop: windowHeight(10),
   },
 
-
-  // Quick Actions
-
-  // Menu Section
-  menuSection: {
-    // marginBottom: 20,
-  },
-   avatar: {
-    height:windowHeight(50),
-    width:windowHeight(50),
-    borderRadius:30,
-    backgroundColor:appColors.font,
-    alignItems:"center",
-    justifyContent:"center",
-  },
-    welcomeSection: {
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    paddingVertical:10,
-    paddingBottom:10,
-    // backgroundColor:appColors.lightBlue,
-    paddingTop:'10%',
-    alignItems:"center"
-  },
-  headerTop: {
-   
+  /* ---------- HEADER ---------- */
+  avatar: {
+    height: windowHeight(50),
+    width: windowHeight(50),
+    borderRadius: windowHeight(25),
+    backgroundColor: appColors.font || '#000',
     alignItems: 'center',
-    marginBottom: 15,
+    justifyContent: 'center',
   },
+
+  welcomeSection: {
+    paddingHorizontal: windowWidth(20),
+    borderRadius: windowWidth(12),
+    paddingVertical: windowHeight(10),
+    paddingTop: windowHeight(40),
+    alignItems: 'center',
+  },
+
   headerTextContainer: {
-    marginLeft: 3,
+    marginLeft: windowWidth(3),
   },
+
   userNameText: {
-    fontSize: 16,
-    color: appColors.font,
-    fontFamily:fonts.InterRegular,
-    marginTop: 12,
+    fontSize: fontSizes.FONT20,
+    fontFamily: fonts.InterRegular,
+    color: appColors.font || '#000',
+    marginTop: windowHeight(12),
   },
-  userDetails: {
-    marginTop: 0,
-  },
+
   detailText: {
-    fontSize: 12,
-    color: appColors.subTitle, // light text for gradient background
-    marginTop: 0,
-    fontFamily:fonts.InterRegular,
-    marginBottom:3
+    fontSize: fontSizes.FONT12,
+    fontFamily: fonts.InterRegular,
+    color: appColors.subTitle || '#000',
+    marginBottom: windowHeight(3),
   },
-  phoneText: {
-    fontSize: 14,
-    color: '#E0F8FC',
-    fontFamily:fonts.InterRegular,
-    marginTop: 2,
-  },
+
+  /* ---------- MENU ---------- */
   menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: windowHeight(12),
     borderBottomWidth: 1,
-    borderBottomColor:"#ced5dfff",
+    borderBottomColor: '#ced5dfff',
   },
+
   menuText: {
-    fontSize: 14,
-    fontFamily:fonts.InterRegular,
-    color: appColors.font,
-    marginLeft: 15,
+    fontSize: fontSizes.FONT18,
+    fontFamily: fonts.InterRegular,
+    color: appColors.font || '#000',
+    marginLeft: windowWidth(15),
     flex: 1,
   },
+
   notificationBadge: {
     backgroundColor: '#E74C3C',
-    width: 16,
-    height: 16,
-    borderRadius: 10,
+    width: windowWidth(25),
+    height: windowWidth(25),
+    borderRadius: windowWidth(15),
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   badgeText: {
-    color: appColors.white,
-    fontSize: 9,
-    fontFamily:fonts.InterRegular,
-    paddingTop:1
+    fontSize: fontSizes.FONT13,
+    fontFamily: fonts.InterRegular,
+    color: appColors.white || '#000',
   },
 
-  // Support Section
+  /* ---------- SUPPORT ---------- */
   supportSection: {
-    marginBottom: 20,
-    
+    marginBottom: windowHeight(20),
   },
 
-  // Service Status
+  /* ---------- SERVICE STATUS ---------- */
   serviceStatus: {
-    backgroundColor: appColors.menuCard,
-    padding: 15,
-     borderRadius: 8,
-    marginBottom: 12,
+    backgroundColor: appColors.menuCard || '#000',
+    padding: windowHeight(15),
+    borderRadius: windowWidth(8),
+    marginBottom: windowHeight(12),
     alignItems: 'center',
-   
-   
   },
+
   statusIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: windowHeight(5),
   },
+
   statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 15,
-    marginRight: 8,
-    marginBottom:0,
-    marginHorizontal:6
+    width: windowWidth(8),
+    height: windowWidth(8),
+    borderRadius: windowWidth(4),
+    marginRight: windowWidth(8),
   },
+
   statusOnline: {
-    backgroundColor: appColors.blue,
+    backgroundColor: appColors.blue || '#000',
   },
+
   statusText: {
-    fontSize: 14,
-    fontWeight: '600',
-   fontFamily:fonts.InterRegular,
+    fontSize: fontSizes.FONT14,
+    fontFamily: fonts.InterRegular,
+    color: appColors.black || '#000',
   },
+
   statusSubText: {
-    fontSize: 12,
-    color: appColors.subTitle,
+    fontSize: fontSizes.FONT12,
+    fontFamily: fonts.InterRegular,
+    color: appColors.subTitle || '#000',
     textAlign: 'center',
-       fontFamily:fonts.InterRegular,
   },
-  // Sign Out
+
+  /* ---------- LOGOUT ---------- */
   signOut: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingBottom: '30%',
-   marginTop:-10
-   
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: windowHeight(30),
+    marginTop: -windowHeight(10),
   },
+
   signOutText: {
-    fontSize: 16,
-     fontFamily:fonts.InterRegular,
-    color: "#E74C3C",
-    marginLeft: 10,
-    marginTop:3
+    fontSize: fontSizes.FONT20,
+    fontFamily: fonts.InterRegular,
+    color: '#E74C3C',
+    marginLeft: windowWidth(10),
+    marginTop: windowHeight(3),
   },
 });

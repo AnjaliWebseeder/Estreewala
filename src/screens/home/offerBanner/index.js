@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+import { View, Text, Image, TouchableOpacity, FlatList } from "react-native";
 import { offer, offer1, offer2, deliveryman, delivery } from "../../../utils/images/images";
 import { styles } from './styles'
 import LinearGradient from 'react-native-linear-gradient';
@@ -64,7 +63,7 @@ const BannerOffer = () => {
   return (
     <View style={styles.wrapper}>
       <Text style={styles.title}>Latest Laundry Offers</Text>
-      <FlashList
+      <FlatList
         contentContainerStyle={styles.contentContainerStyle}
         data={laundryOffers}
         horizontal

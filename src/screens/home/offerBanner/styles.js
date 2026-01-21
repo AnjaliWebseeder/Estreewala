@@ -57,8 +57,8 @@ export const styles = StyleSheet.create({
 
   offerTitle: {
     fontSize: windowWidth(16),
-    fontFamily: fonts.InterMedium,
-    color: appColors.title,
+    fontFamily: fonts.InterExtraBold,
+    color: appColors.subTitle,
     marginBottom: windowHeight(2),
   },
 

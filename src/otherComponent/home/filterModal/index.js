@@ -94,9 +94,9 @@ export default function FilterModal({
                 <Icon
                   name={selectedServices.includes(service) ? "check-box" : "check-box-outline-blank"}
                   size={20}
-                  color={appColors.font}
+                  color={"#363f64"}
                 />
-                <Text style={{ marginLeft: 6 }}>{service}</Text>
+                <Text style={{ marginLeft: 6 , color:"#363f64" }}>{service}</Text>
               </TouchableOpacity>
             ))}
           </View>

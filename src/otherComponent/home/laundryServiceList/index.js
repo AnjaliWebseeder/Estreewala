@@ -18,11 +18,11 @@ import Header from '../../../components/header';
 import SearchBar from '../../../components/searchBar';
 import { styles } from './styles';
 import appColors from '../../../theme/appColors';
-import { service, service1, service2, service3, service4 } from '../../../utils/images/images';
+import { washingWash, ironinWash } from '../../../utils/images/images';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
-import { getNearbyVendors, updateNearbyVendors } from '../../../redux/slices/nearByVendor';
+import { clearVendors, getNearbyVendors, updateNearbyVendors } from '../../../redux/slices/nearByVendor';
 import { searchVendors, clearSearchResults } from '../../../redux/slices/searchSlice';
 import { useSocket } from '../../../utils/context/socketContext';
 import { useToast } from '../../../utils/context/toastContext';
@@ -31,7 +31,7 @@ import { GET_NEARBY_VENDORS_FILTER_API } from '../../../services/api';
 import { useAuth } from '../../../utils/context/authContext';
 import Geolocation from 'react-native-geolocation-service';
 
-const randomImages = [service, service1, service2, service3, service4];
+const randomImages = [washingWash, ironinWash];
 
 const LaundryCard = ({ vendor, navigation, index }) => {
   const randomImage = randomImages[index % randomImages.length];
@@ -116,23 +116,85 @@ const LaundryServiceList = ({ navigation, route }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [localSearchResults, setLocalSearchResults] = useState([]);
   const [showSearchLoader, setShowSearchLoader] = useState(false);
-  const [locationPermissionDenied, setLocationPermissionDenied] = useState(false);
+  const { selectedAddress, addresses } = useSelector(
+    state => state.address
+  );
+
+  const hasAddresses = Array.isArray(addresses) && addresses.length > 0;
+
+  const effectiveLocation =
+    selectedAddress ||
+    (hasAddresses && addresses.find(a => a.isDefault)) ||
+    (hasAddresses && addresses[0]) ||
+    (!hasAddresses ? userLocation : null);
+
+  const [locationPermissionDenied, setLocationPermissionDenied] =
+    useState(false);
+
+  const getCoordinates = () => {
+    // Saved address case
+    if (effectiveLocation?.location?.coordinates?.coordinates) {
+      return effectiveLocation.location.coordinates.coordinates; // [lng, lat]
+    }
+
+    // Current location case
+    if (effectiveLocation?.coordinates?.length === 2) {
+      return effectiveLocation.coordinates; // [lng, lat]
+    }
+
+    return null;
+  };
+
+  const coords = getCoordinates();
+
+  const hasValidLocation =
+    coords?.length === 2 && !locationPermissionDenied;
+
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const { serviceName } = route.params || {};
   const [selectedServices, setSelectedServices] = useState([]);
 
+  const getDisplayVendors = () => {
+    if (useFilteredList) return filteredVendors;
+    if (searchQuery.trim() === '') return vendors;
+    if (searchQuery.trim().length <= 2) return localSearchResults;
+    return searchResults;
+  };
+
+
+  const displayVendors = getDisplayVendors();
+  const sortedDisplayVendors = React.useMemo(() => {
+    return [...displayVendors].sort(
+      (a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity)
+    );
+  }, [displayVendors]);
+
+  const isInitialLoading = vendorsLoading && vendors.length === 0;
+  const isSearching = showSearchLoader && searchQuery.trim().length > 2;
+  const hasSearchError = searchError && searchQuery.trim() !== '';
+  const hasVendorsError = vendorsError && searchQuery.trim() === '';
+
+  const getLatLngObject = () => {
+    if (!coords || coords.length !== 2) return null;
+    return {
+      lat: coords[1],
+      lng: coords[0],
+    };
+  };
+
+
+  console.log("DISPLAY VENDORS", displayVendors)
+
   console.log("serviceName", serviceName);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", async state => {
-      if (state === "active") {
+    const subscription = AppState.addEventListener("change", async (state) => {
+      if (state === "active" && Platform.OS === "android") {
         const granted = await PermissionsAndroid.check(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
         );
-
         if (granted) {
           setLocationPermissionDenied(false);
-          handleAutoLocation();
         }
       }
     });
@@ -143,18 +205,24 @@ const LaundryServiceList = ({ navigation, route }) => {
 
   useEffect(() => {
     if (!serviceName) return;
+    if (!vendors || vendors.length === 0) return;
 
     const SERVICE_MAP = {
       'Dry Wash': 'Dry Wash',
       'Wash': 'Washing',
+      'Washing': 'Washing',
       'Ironing': 'Ironing',
       'Steam Ironing': 'Steam Ironing',
+      'Wash & Iron': 'Wash & Iron',
+      'Spin Washing': 'Spin Washing',
+      'Steam Washing': 'Steam Washing',
+      'Stain Removal': 'Stain Removal',
     };
 
     const matchedService = SERVICE_MAP[serviceName];
     if (!matchedService) return;
 
-    setSelectedServices([matchedService]); // ✅ STORE FOR MODAL
+    setSelectedServices([matchedService]);
 
     applyFilters({
       rating: 0,
@@ -163,18 +231,22 @@ const LaundryServiceList = ({ navigation, route }) => {
       reset: false,
     });
 
-  }, [serviceName, userLocation?.coordinates]);
+  }, [serviceName, vendors]); // 🔥 userLocation dependency hatao
 
+
+  // 📡 Fetch vendors when location available
   useEffect(() => {
-    if (!userLocation?.coordinates?.length) return;
-    if (locationPermissionDenied) return;
-    if (userLocation.coordinates.length === 2) {
-      dispatch(getNearbyVendors({
-        lat: userLocation.coordinates[1],
-        lng: userLocation.coordinates[0],
-      }));
-    }
-  }, [userLocation, locationPermissionDenied, dispatch]);
+    if (!hasValidLocation) return;
+
+    dispatch(clearVendors());
+
+    dispatch(
+      getNearbyVendors({
+        lng: coords[0],
+        lat: coords[1],
+      })
+    );
+  }, [hasValidLocation, coords?.[0], coords?.[1]]);
 
   // Reverse geocode
   const requestLocationPermission = async () => {
@@ -337,8 +409,9 @@ const LaundryServiceList = ({ navigation, route }) => {
 
   const performSearch = useCallback((query) => {
     const trimmedQuery = query.trim();
+    const location = getLatLngObject();
 
-    if (!userLocation?.coordinates || userLocation.coordinates.length !== 2) {
+    if (!location) {
       showToast('Please enable location to search', 'info');
       return;
     }
@@ -351,7 +424,6 @@ const LaundryServiceList = ({ navigation, route }) => {
     }
 
     if (trimmedQuery.length <= 2) {
-      setShowSearchLoader(false);
       const localResults = vendors.filter(vendor =>
         vendor.businessName?.toLowerCase().includes(trimmedQuery.toLowerCase()) ||
         vendor.address?.toLowerCase().includes(trimmedQuery.toLowerCase())
@@ -361,15 +433,9 @@ const LaundryServiceList = ({ navigation, route }) => {
     }
 
     setShowSearchLoader(true);
+    dispatch(searchVendors({ searchQuery: trimmedQuery, coordinates: location }));
 
-    // ✅ Convert array to { lat, lng }
-    const coords = {
-      lat: userLocation.coordinates[1], // latitude
-      lng: userLocation.coordinates[0], // longitude
-    };
-
-    dispatch(searchVendors({ searchQuery: trimmedQuery, coordinates: coords }));
-  }, [dispatch, vendors, userLocation]);
+  }, [vendors, coords, dispatch, showToast]);
 
 
   // Debounced search with smart timing
@@ -389,35 +455,16 @@ const LaundryServiceList = ({ navigation, route }) => {
     }
   }, [searchLoading, searchQuery]);
 
-  const getDisplayVendors = () => {
-    if (useFilteredList) return filteredVendors;
-    if (searchQuery.trim() === '') return vendors;
-    if (searchQuery.trim().length <= 2) return localSearchResults;
-    return searchResults;
-  };
-
-
-  const displayVendors = getDisplayVendors();
-  const isInitialLoading = vendorsLoading && vendors.length === 0;
-  const isSearching = showSearchLoader && searchQuery.trim().length > 2;
-  const hasSearchError = searchError && searchQuery.trim() !== '';
-  const hasVendorsError = vendorsError && searchQuery.trim() === '';
-
-  console.log("DISPLAY VENDORS", displayVendors)
-
   // Manual refresh function
   const handleManualRefresh = () => {
-    console.log('🔄 Manual refresh triggered');
-    if (userLocation?.coordinates?.length === 2) {
-      dispatch(getNearbyVendors({
-        lat: userLocation.coordinates[1],
-        lng: userLocation.coordinates[0],
-      }));
-    } else {
-      showToast('Location permission required to fetch nearby vendors', 'info');
+    const location = getLatLngObject();
+    if (!location) {
+      showToast('Location permission required', 'info');
+      return;
     }
 
-    // Request real-time update from backend via socket
+    dispatch(getNearbyVendors(location));
+
     if (socket && isConnected) {
       socket.emit('request-vendors-update', {
         timestamp: new Date().toISOString(),
@@ -434,10 +481,12 @@ const LaundryServiceList = ({ navigation, route }) => {
   };
 
   const applyFilters = async ({ rating, distance, services, reset }) => {
-    if (!userLocation?.coordinates || userLocation.coordinates.length !== 2) {
+    const location = getLatLngObject();
+    if (!location) {
       showToast('Please enable location to apply filters', 'info');
       return;
     }
+
 
     if (reset) {
       setUseFilteredList(false);
@@ -450,11 +499,9 @@ const LaundryServiceList = ({ navigation, route }) => {
     try {
       console.log('🌐 FILTER API MODE (AXIOS)');
 
-      const { coordinates } = userLocation;
-
       const params = {
-        lat: coordinates[1],
-        lng: coordinates[0],
+        lat: location.lat,
+        lng: location.lng,
       };
 
       if (services?.length > 0) params.services = services.join(',');
@@ -609,9 +656,9 @@ const LaundryServiceList = ({ navigation, route }) => {
               />
             }
           >
-            {displayVendors.length > 0 ? (
+            {sortedDisplayVendors.length > 0 ? (
               // Show actual results
-              displayVendors.map((vendor, index) => (
+              sortedDisplayVendors.map((vendor, index) => (
                 <LaundryCard
                   key={vendor.id || `${vendor.businessName}-${index}`}
                   vendor={vendor}
@@ -656,7 +703,7 @@ const LaundryServiceList = ({ navigation, route }) => {
             onClose={() => setShowFilters(false)}
             onApplyFilters={applyFilters}
             initialSelectedServices={selectedServices}
-            onResetFilters={handleResetFilters}   // 👈 NEW
+            onResetFilters={handleResetFilters}   
           />
         </View>
       )}

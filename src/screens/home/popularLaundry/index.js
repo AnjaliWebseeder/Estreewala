@@ -23,16 +23,44 @@ const randomImages = [washingWash, ironinWash];
 
 const PopularLaundry = (props) => {
   const dispatch = useDispatch();
+  const { selectedAddress, addresses } = useSelector(
+  state => state.address
+);
   const { userLocation, saveLocation } = useAuth();
   const { vendors, vendorsError } = useSelector(
     (state) => state.nearByVendor
   );
 
+  const hasAddresses = Array.isArray(addresses) && addresses.length > 0;
+
+const effectiveLocation =
+  selectedAddress ||
+  (hasAddresses && addresses.find(a => a.isDefault)) ||
+  (hasAddresses && addresses[0]) ||
+  (!hasAddresses ? userLocation : null);
+
   const [locationPermissionDenied, setLocationPermissionDenied] =
     useState(false);
 
-  const hasValidLocation =
-    userLocation?.coordinates?.length === 2 && !locationPermissionDenied;
+    const getCoordinates = () => {
+  // Saved address case
+  if (effectiveLocation?.location?.coordinates?.coordinates) {
+    return effectiveLocation.location.coordinates.coordinates; // [lng, lat]
+  }
+
+  // Current location case
+  if (effectiveLocation?.coordinates?.length === 2) {
+    return effectiveLocation.coordinates; // [lng, lat]
+  }
+
+  return null;
+};
+
+const coords = getCoordinates();
+
+const hasValidLocation =
+  coords?.length === 2 && !locationPermissionDenied;
+
 
   // 🔁 App foreground → permission recheck
   useEffect(() => {
@@ -52,17 +80,19 @@ const PopularLaundry = (props) => {
 
   // 📡 Fetch vendors when location available
   useEffect(() => {
-    if (!hasValidLocation) return;
+  if (!hasValidLocation) return;
 
-    dispatch(clearVendors());
-    dispatch(
-      getNearbyVendors({
-        lat: userLocation.coordinates[1],
-        lng: userLocation.coordinates[0],
-      })
-    );
-  }, [hasValidLocation, userLocation, dispatch]);
+  dispatch(clearVendors());
 
+  dispatch(
+    getNearbyVendors({
+      lng: coords[0],
+      lat: coords[1],
+    })
+  );
+}, [hasValidLocation, effectiveLocation, dispatch]);
+
+  
   // 🔐 Permission request
   const requestLocationPermission = async () => {
     if (Platform.OS !== "android") return true;
@@ -161,12 +191,15 @@ const PopularLaundry = (props) => {
   };
 
 
-  const popularVendors = vendors.slice(0, 3).map((vendor, index) => ({
+  const popularVendors = [...vendors]
+  .sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity))
+  .slice(0, 3)
+  .map((vendor, index) => ({
     id: vendor.id,
     name: vendor.businessName,
     location: vendor.address,
-    time: "9:00 AM - 11:00 PM",
     image: randomImages[index % randomImages.length],
+    distanceKm: vendor.distanceKm,
   }));
 
   return (
@@ -197,12 +230,13 @@ const PopularLaundry = (props) => {
           <View style={styles.header}>
             <Text style={styles.title}>Popular Laundry</Text>
             <TouchableOpacity
+              style={styles.viewAllButton}
               onPress={() =>
-                props.navigation.navigate("LaundryServiceList", {
-                  serviceName: "Popular Laundry",
+                props.navigation.navigate("Tabs", {
+                  screen: "Laundry",
+                  params: { serviceName: "Popular Laundry" },
                 })
               }
-              style={styles.viewAllButton}
             >
               <Text style={styles.viewAllText}>View All</Text>
             </TouchableOpacity>
@@ -244,14 +278,14 @@ const PopularLaundry = (props) => {
                     </Text>
                   </View>
 
-                  <View style={styles.timeContainer}>
+                  {/* <View style={styles.timeContainer}>
                     <Ionicons
                       name="time-outline"
                       size={14}
                       color="#07172cff"
                     />
                     <Text style={styles.time}>{item.time}</Text>
-                  </View>
+                  </View> */}
                 </View>
               </TouchableOpacity>
             )}

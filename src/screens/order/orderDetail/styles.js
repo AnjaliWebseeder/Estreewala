@@ -84,22 +84,37 @@ export const styles = StyleSheet.create({
   driverName: { fontFamily: fonts.InterMedium, fontSize: fontSizes.FONT16, color: appColors.font },
   driverCar: { fontSize: fontSizes.FONT14, color: appColors.subTitle, fontFamily: fonts.InterRegular, marginVertical: 2 },
   driverPhone: { fontSize: 13, color: appColors.blue, marginTop: 2, fontFamily: fonts.InterRegular },
+  phoneRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 6,
+  },
+
+  callCircle: {
+    width: 25,
+    height: 25,
+    borderRadius: 17,
+    backgroundColor: "green",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   addressBlock: { flexDirection: "row", alignItems: "center", marginTop: 5, marginBottom: 3 },
-  addressText: { marginLeft: 8, color: appColors.subTitle, fontFamily: fonts.InterRegular, fontSize: fontSizes.FONT16 },
+  addressText: { marginLeft: 15, color: appColors.subTitle, fontFamily: fonts.InterRegular, fontSize: fontSizes.FONT15 },
 
   // Items ,
   orderItemHeader: {
-  flexDirection: "row",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginBottom: 10,
-},
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
 
-lineTotal: {
-  fontSize: 16,
-  fontWeight: "700",
-  color: "#000",
-},
+  lineTotal: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#000",
+  },
   sectionTitle: { fontFamily: fonts.InterSemiBold, marginBottom: 5, fontSize: fontSizes.FONT19, color: appColors.font },
   itemRow: { flexDirection: "row", alignItems: "center", marginTop: 10 },
   itemImage: { width: 35, height: 35, marginRight: 10 },
@@ -107,10 +122,10 @@ lineTotal: {
   itemService: { fontSize: 11, color: appColors.subTitle, fontFamily: fonts.InterRegular },
   itemPrice: { fontFamily: fonts.InterSemiBold, fontSize: fontSizes.FONT18, color: appColors.font },
   itemPrice: {
-  fontSize: 12,
-  color: "#777",
-  marginTop: 2,
-},
+    fontSize: 12,
+    color: "#777",
+    marginTop: 2,
+  },
   instruction: { fontStyle: "italic", color: appColors.subTitle, fontFamily: fonts.InterRegular, marginTop: 2, fontSize: fontSizes.FONT14 },
 
   // Invoice
@@ -230,7 +245,7 @@ lineTotal: {
   itemName: {
     fontSize: 14,
     fontWeight: '500',
-    color: appColors.text,
+    color: appColors.black,
     marginBottom: 2,
   },
   serviceType: {

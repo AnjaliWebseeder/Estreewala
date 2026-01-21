@@ -756,7 +756,7 @@ const MapAddressScreen = ({ navigation, route }) => {
             {isFetchingLocation ? (
               <ActivityIndicator size="small" color={appColors.blue} />
             ) : (
-              <Icon name="my-location" size={20} color={appColors.blue} />
+              <Icon name="my-location" size={28} color={appColors.blue} />
             )}
           </TouchableOpacity>
 
@@ -886,7 +886,7 @@ const MapAddressScreen = ({ navigation, route }) => {
             disabled={!addressLine1 || !city || !stateName || !pincode || isSaving}
           >
             {isSaving ? (
-              <ActivityIndicator size="small" color="white" />
+              <ActivityIndicator size="small" color={appColors.darkBlue} />
             ) : (
               <Text style={styles.saveButtonText}>
                 {editingAddress ? 'Update Address' : 'Save Address'}

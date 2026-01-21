@@ -223,13 +223,13 @@ export const styles = StyleSheet.create({
     marginTop: windowHeight(8),
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: appColors.primary,
+    borderColor: appColors.darkBlue,
     borderStyle: 'dashed',
   },
   addNewButtonText: {
     marginLeft: windowWidth(8),
     fontSize: 16,
-    color: appColors.primary,
+    color: appColors.darkBlue,
     fontWeight: '500',
   },
   actionButtons: {

@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
   },
   // Increased map height to 60% of screen
   mapContainer: {
-    height:windowHeight(400), // Changed from 0.4 to 0.6 (60% of screen)
+    height: windowHeight(400), // Changed from 0.4 to 0.6 (60% of screen)
     position: 'relative',
   },
   map: {
@@ -51,42 +51,42 @@ export const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     padding: 16,
-    marginTop:-windowHeight(130),
+    marginTop: -windowHeight(130),
   },
   inputContainer: {
-  marginBottom: 14,
-},
+    marginBottom: 14,
+  },
 
-inputLabel: {
-  fontSize: 12,
-  color: "#6B7280", // muted gray
-  marginBottom: 6,
-  fontWeight: "500",
-},
+  inputLabel: {
+    fontSize: 12,
+    color: "#6B7280", // muted gray
+    marginBottom: 6,
+    fontWeight: "500",
+  },
 
-input: {
-  borderWidth: 1,
-  borderColor: "#E5E7EB",
-  borderRadius: 12,
-  paddingHorizontal: 14,
-  fontSize: 14,
-  color: "#111827",
-  backgroundColor: "#FFFFFF",
-  marginBottom:5
-},
+  input: {
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    fontSize: 14,
+    color: "#111827",
+    backgroundColor: "#FFFFFF",
+    marginBottom: 5
+  },
 
-inputFocused: {
-  borderColor: "#2563EB", // primary blue
-  shadowColor: "#2563EB",
-  shadowOpacity: 0.12,
-  shadowRadius: 6,
-  elevation: 2,
-},
+  inputFocused: {
+    borderColor: "#2563EB",
+    shadowColor: "#2563EB",
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 2,
+  },
 
-multilineInput: {
-  height: 70,
-  textAlignVertical: "top",
-},
+  multilineInput: {
+    height: 70,
+    textAlignVertical: "top",
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
@@ -102,7 +102,7 @@ multilineInput: {
   selectedAddressLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: appColors.darkGray,
+    color: "gray",
     marginBottom: 4,
   },
   selectedAddressText: {
@@ -121,7 +121,7 @@ multilineInput: {
   fieldLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: appColors.darkGray,
+    color: "gray",
     marginBottom: 8,
   },
   addressTypeContainer: {
@@ -141,7 +141,7 @@ multilineInput: {
   },
   addressTypeText: {
     fontSize: 14,
-    color: appColors.darkGray,
+    color: "gray",
     fontWeight: '500',
   },
   addressTypeTextSelected: {
@@ -167,7 +167,7 @@ multilineInput: {
   },
   checkboxText: {
     fontSize: 14,
-    color: appColors.darkGray,
+    color: "gray",
   },
   saveButton: {
     backgroundColor: appColors.blue,

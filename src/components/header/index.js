@@ -1,31 +1,44 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Pressable } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import fonts from "../../theme/appFonts";
 import appColors from "../../theme/appColors";
 import { windowHeight } from "../../theme/appConstant";
 
-const Header = ({ title, onBackPress, onRightPress, showNotificationIcon, containerStyle, titleStyle, iconColor }) => {
+const Header = ({
+  title,
+  onBackPress,
+  containerStyle,
+  titleStyle,
+  iconColor,
+}) => {
   return (
-    <View style={[styles.header, { ...containerStyle }]}>
-      {/* Back button */}
-      <TouchableOpacity style={styles.arrowView} onPress={onBackPress}>
-        <Icon name="chevron-back" size={16} color={iconColor ? iconColor : appColors.black} />
+    <View style={[styles.header, containerStyle]}>
+      <TouchableOpacity
+        onPress={onBackPress}
+        activeOpacity={0.6}
+        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+        style={styles.arrowView}
+      >
+        <Icon
+          name="chevron-back"
+          size={18}
+          color={iconColor || appColors.black}
+        />
       </TouchableOpacity>
 
-      {/* Centered title */}
-      <Text style={[styles.headerTitle, { ...titleStyle }]}>{title}</Text>
+      <Text
+        pointerEvents="none"
+        style={[styles.headerTitle, titleStyle]}
+      >
+        {title}
+      </Text>
 
-      {/* Right icon or empty space */}
-      {showNotificationIcon ? (
-        <TouchableOpacity style={styles.rightIcon} onPress={onRightPress}>
-          <Icon name="settings-outline" size={22} color="#333" />
-        </TouchableOpacity>
-      ) : (
-        <View style={styles.rightIcon} /> // empty space for alignment
-      )}
+      <View style={styles.rightIcon} />
     </View>
   );
 };
+
+export default Header;
 
 const styles = StyleSheet.create({
   header: {
@@ -38,6 +51,7 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   arrowView: {
+    zIndex: 2,
     borderRadius: 20,
     borderColor: appColors.border,
     borderWidth: 1,
@@ -56,13 +70,9 @@ const styles = StyleSheet.create({
     color: appColors.font,
     lineHeight: 23,
   },
-
   rightIcon: {
-    width: 35, // same width as back button for symmetry
+    width: 35,
     height: 35,
-    alignItems: "center",
-    justifyContent: "center",
   },
 });
 
-export default Header;

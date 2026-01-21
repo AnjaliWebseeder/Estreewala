@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { MenuIcon } from '../../../assets/Icons/svg/menu';
 import { BellIcon } from '../../../assets/Icons/svg/bell';
 import { styles } from './styles';
-import { useDrawer } from "../../../navigation/customDrawer/drawerContext";
 import appColors from "../../../theme/appColors";
 import { useSelector, useDispatch } from 'react-redux';
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -14,7 +13,6 @@ import { useAuth } from "../../../utils/context/authContext";
 const Header = ({ navigation }) => {
     const dispatch = useDispatch();
     const { userLocation } = useAuth();
-    const { openDrawer } = useDrawer();
 
     const unreadCount = useSelector(
         state => state.notification?.unreadCount ?? 0
@@ -48,9 +46,9 @@ const Header = ({ navigation }) => {
         dispatch(fetchNotifications());
     }, [dispatch]);
 
-    const handleMenuPress = () => {
-        openDrawer();
-    };
+   const handleMenuPress = () => {
+    navigation.openDrawer();
+};
 
     return (
         <>

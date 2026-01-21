@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, Linking, ScrollView, Alert } from "react-
 import Icon from "react-native-vector-icons/Ionicons";
 import { styles } from './styles';
 import appColors from "../../theme/appColors";
-import { useNavigation } from '@react-navigation/native';
 import { BellIcon } from '../../assets/Icons/svg/bell'
 import HelpSupportIcon from '../../assets/Icons/svg/helpSupport'
 import { useAuth } from "../../utils/context/authContext"
@@ -11,9 +10,9 @@ import { useSelector } from "react-redux";
 import { useToast } from "../../utils/context/toastContext";
 
 const CustomDrawerContent = (props) => {
+  const { navigation } = props;
   const { user, logout, userToken, token } = useAuth();
   const { customerData } = useSelector(state => state.customer);
-  const navigation = useNavigation();
   const { showToast } = useToast();
   const unreadCount = useSelector(
     state => state.notification?.unreadCount ?? 0
@@ -39,14 +38,9 @@ const CustomDrawerContent = (props) => {
   };
 
 
-  // Handle navigation with drawer close
- const handleNavigation = (screenName, params = {}) => {
-  props.navigation.closeDrawer();
-
-  setTimeout(() => {
-    navigation.navigate(screenName, params);
-  }, 300); // drawer animation duration
-};
+  const handleNavigation = (screenName, params = {}) => {
+    props.navigation.navigate(screenName, params);
+  };
 
   return (
     <View style={[styles.container, { elevation: 5 }]}>
@@ -80,7 +74,10 @@ const CustomDrawerContent = (props) => {
           <View style={styles.menuSection}>
             <TouchableOpacity
               style={styles.menuItem}
-              onPress={() => handleNavigation("Main")}
+              onPress={() => {
+                props.navigation.closeDrawer(); // use props.navigation
+                props.navigation.navigate("Tabs", { screen: "Home" });
+              }}
             >
               <Icon name="home-outline" size={20} color={appColors.font} />
               <Text style={styles.menuText}>Home</Text>
@@ -88,11 +85,15 @@ const CustomDrawerContent = (props) => {
 
             <TouchableOpacity
               style={styles.menuItem}
-              onPress={() => handleNavigation("Main", { screen: "Orders" })}
+              onPress={() => {
+                props.navigation.closeDrawer();
+                props.navigation.navigate("Tabs", { screen: "Orders" });
+              }}
             >
               <Icon name="document-text-outline" size={20} color={appColors.font} />
               <Text style={styles.menuText}>My Orders</Text>
             </TouchableOpacity>
+
 
             <TouchableOpacity
               style={styles.menuItem}
@@ -108,12 +109,6 @@ const CustomDrawerContent = (props) => {
             >
               <BellIcon color={appColors.font} />
               <Text style={styles.menuText}>Notification</Text>
-
-              {/* {unreadCount > 0 && (
-    <View style={styles.notificationBadge}>
-      <Text style={styles.badgeText}>{unreadCount}</Text>
-    </View>
-  )} */}
               <View style={styles.notificationBadge}>
                 <Text style={styles.badgeText}>{unreadCount}</Text>
               </View>
@@ -181,9 +176,6 @@ const CustomDrawerContent = (props) => {
               <Text style={styles.menuText}>Rate Our App</Text>
             </TouchableOpacity>
           </View>
-
-          {/* Logout Button - Only show if authenticated */}
-
           <TouchableOpacity onPress={handleLogout} style={styles.signOut}>
             <Icon name="log-out-outline" size={20} color="#E74C3C" />
             <Text style={styles.signOutText}>Sign Out</Text>
@@ -192,7 +184,6 @@ const CustomDrawerContent = (props) => {
         </View>
       </ScrollView>
 
-      {/* Service Status */}
       <View style={{ paddingHorizontal: 10 }}>
         <View style={styles.serviceStatus}>
           <View style={styles.statusIndicator}>

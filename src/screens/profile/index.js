@@ -33,6 +33,8 @@ import { ASYNC_FCM_TOKEN } from '../../utils/storageKeys';
 import messaging from '@react-native-firebase/messaging';
 import { updateFcmToken } from '../../redux/slices/notificationSlice';
 import { useToast } from "../../utils/context/toastContext";
+import { clearAddressState } from "../../redux/slices/addressSlice";
+import { clearCart } from "../../redux/slices/cartSlice";
 
 export const requestNotificationPermission = async () => {
   const authStatus = await messaging().requestPermission();
@@ -137,6 +139,7 @@ export default function Profile({ navigation }) {
       const result = await dispatch(deleteAccount()).unwrap();
       console.log("Account deletion result:", result);
       await logout();
+      dispatch(clearAddressState());
       await AsyncStorage.removeItem(ASYNC_FCM_TOKEN);
       await AsyncStorage.removeItem('userLocation');
       // await AsyncStorage.removeItem('userLocation');
@@ -198,17 +201,16 @@ export default function Profile({ navigation }) {
     }
   };
 
-
   const handleLogout = async () => {
     try {
       await logout();
 
+      dispatch(clearAddressState());
+    
       showToast('Logged out successfully', 'success');
-
-      console.log("HANDLE LOGOUT CALL");
-    } catch (error) {
-      console.log("Logout error:", error);
-      showToast('Logout failed. Please try again.', 'error');
+    } catch (e) {
+      console.log('Logout error:', e);
+      showToast('Logout failed', 'error');
     }
   };
 

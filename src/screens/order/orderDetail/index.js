@@ -129,13 +129,22 @@ const OrderDetails = ({ navigation, route }) => {
     }
   };
 
+  const getLast10Digits = (phone = '') => {
+    return phone.replace(/\D/g, '').slice(-10);
+  };
 
-  const customerPhone = currentOrder?.contactDetails?.mobile || "";
-  console.log("order?.contactDetails?.mobile", currentOrder?.contactDetails?.mobile);
+  const customerPhone = getLast10Digits(currentOrder?.contactDetails?.mobile);
+  const vendorPhone = getLast10Digits(currentOrder?.vendor?.phone);
 
   const handleCall = () => {
     if (customerPhone) {
       Linking.openURL(`tel:${customerPhone}`);
+    }
+  };
+
+  const handleVendorCall = () => {
+    if (vendorPhone) {
+      Linking.openURL(`tel:${vendorPhone}`);
     }
   };
 
@@ -233,49 +242,75 @@ const OrderDetails = ({ navigation, route }) => {
 
         {/* Customer Details */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Customer Details</Text>
-          <View style={styles.driverRow}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.driverName}>
-                {currentOrder?.contactDetails?.fullName || "Unknown"}
-              </Text>
-              <Text style={styles.driverCar}>
-                {currentOrder?.deliveryAddress
-                  ? (currentOrder.deliveryAddress.fullAddress &&
-                    currentOrder.deliveryAddress.fullAddress !== "N/A"
-                    ? currentOrder.deliveryAddress.fullAddress
-                    : currentOrder.deliveryAddress.addressLine1 ||
-                    "No address available")
-                  : "No address available"}
-              </Text>
-              <Text style={styles.driverPhone}>{customerPhone}</Text>
-            </View>
-            <TouchableOpacity onPress={handleCall}>
-              <Ionicons name="call" size={20} color={appColors.darkBlue} />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.horizontalLine} />
-          <View style={styles.addressBlock}>
-            <MaterialIcons
-              name="local-laundry-service"
-              size={20}
-              color={appColors.darkBlue}
-            />
-            <Text style={styles.addressText}>
-              {""} {currentOrder?.vendor?.name || "Unknown Laundry"}{" "}
-            </Text>
-          </View>
-          <View style={styles.addressBlock}>
-            <Ionicons
-              name="location-outline"
-              size={20}
-              color={appColors.darkBlue}
-            />
-            <Text style={styles.addressText}>
-              {currentOrder?.vendor?.address || ""}
-            </Text>
-          </View>
-        </View>
+  <Text style={styles.sectionTitle}>Customer Details</Text>
+
+  <View style={styles.driverRow}>
+    <View style={{ flex: 1 }}>
+      <Text style={styles.driverName}>
+        {currentOrder?.contactDetails?.fullName || "Unknown"}
+      </Text>
+
+      <View style={styles.addressBlock}>
+        <Ionicons name="location-outline" size={18} color={appColors.darkBlue} />
+        <Text style={styles.addressText}>
+          {currentOrder?.deliveryAddress?.fullAddress || "No address available"}
+        </Text>
+      </View>
+
+      {/* 📞 Phone Row */}
+      <View style={styles.phoneRow}>
+        <Text style={styles.driverPhone}>{customerPhone}</Text>
+
+        <TouchableOpacity
+          style={styles.callCircle}
+          onPress={handleCall}
+        >
+          <Ionicons name="call" size={16} color="#fff" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+
+  <View style={styles.horizontalLine} />
+
+  {/* Laundry Details */}
+  <Text style={styles.sectionTitle}>Laundry Details</Text>
+
+  <View style={styles.driverRow}>
+    <View style={{ flex: 1 }}>
+      <View style={styles.addressBlock}>
+        <MaterialIcons
+          name="local-laundry-service"
+          size={18}
+          color={appColors.darkBlue}
+        />
+        <Text style={styles.addressText}>
+          {currentOrder?.vendor?.name || "Unknown Laundry"}
+        </Text>
+      </View>
+
+      <View style={styles.addressBlock}>
+        <Ionicons name="location-outline" size={18} color={appColors.darkBlue} />
+        <Text style={styles.addressText}>
+          {currentOrder?.vendor?.address || ""}
+        </Text>
+      </View>
+
+      {/* 📞 Phone Row */}
+      <View style={styles.phoneRow}>
+        <Text style={styles.driverPhone}>{vendorPhone}</Text>
+
+        <TouchableOpacity
+          style={styles.callCircle}
+          onPress={handleVendorCall}
+        >
+          <Ionicons name="call" size={16} color="#fff" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</View>
+
 
         {/* Ordered Items */}
         <View style={styles.card}>
@@ -361,15 +396,6 @@ const OrderDetails = ({ navigation, route }) => {
               </Text>
             </View>
           )}
-
-
-          <View style={styles.summaryRow}>
-            <Text style={styles.text}>Address</Text>
-            <Text style={[styles.subTitle, { width: 230 }]}>
-              {currentOrder?.deliveryAddress?.fullAddress}
-            </Text>
-          </View>
-
           <View
             style={[
               styles.horizontalLine,
@@ -381,33 +407,10 @@ const OrderDetails = ({ navigation, route }) => {
             ]}
           />
           <View style={styles.summaryRow}>
-            <Text style={styles.text}>Sub Total</Text>
-            <Text style={styles.subTitle}>₹{currentOrder?.totalAmount}</Text>
-          </View>
-          {/* <View style={styles.summaryRow}>
-            <Text style={styles.text}>Delivery</Text>
-            <Text style={styles.subTitle}>₹0.00</Text>
-          </View> */}
-          <View style={styles.summaryRow}>
             <Text style={styles.totalText}>Total</Text>
             <Text style={styles.totalText}>₹{currentOrder?.totalAmount}</Text>
           </View>
         </View>
-
-        {/* {currentOrder?.timeline?.completedAt && (
-          <TouchableOpacity
-            onPress={handleDownloadInvoice}
-            style={styles.invoiceButton}
-          >
-            <Text style={styles.invoiceBtnText}>View Invoice</Text>
-            <MaterialIcons
-              name="description"
-              size={20}
-              color={appColors.darkBlue}
-              style={{ marginLeft: 8 }}
-            />
-          </TouchableOpacity>
-        )} */}
 
         {/* Cancel Button - Only show if order is NOT cancelled and NOT completed */}
         {currentOrder?.status === "pending" && (

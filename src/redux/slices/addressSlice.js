@@ -117,27 +117,30 @@ export const setDefaultAddress = createAsyncThunk(
   }
 );
 
+const initialState = {
+  addresses: [],
+  selectedAddress: null,
+
+  addressesLoading: false,
+  addLoading: false,
+  updateLoading: false,
+  deleteLoading: false,
+  setDefaultLoading: false,
+
+  addressesError: null,
+  addError: null,
+  updateError: null,
+  deleteError: null,
+  setDefaultError: null,
+
+  apiMessage: null,
+};
+
+
 /* ===================== SLICE ===================== */
 const addressSlice = createSlice({
   name: "address",
-  initialState: {
-    addresses: [],
-    selectedAddress: null, // ✅ ALWAYS OBJECT
-    addressesLoading: false,
-    addLoading: false,
-    updateLoading: false,
-    deleteLoading: false,
-    setDefaultLoading: false,
-
-    addressesError: null,
-    addError: null,
-    updateError: null,
-    deleteError: null,
-    setDefaultError: null,
-
-    apiMessage: null,
-  },
-
+  initialState,
   reducers: {
     resetAddressState: (state) => {
       state.addressesError = null;
@@ -148,8 +151,10 @@ const addressSlice = createSlice({
       state.apiMessage = null;
     },
 
+    clearAddressState: () => initialState, 
+
     setSelectedAddress: (state, action) => {
-      state.selectedAddress = action.payload; // ✅ FULL OBJECT
+      state.selectedAddress = action.payload;
     },
   },
 
@@ -244,7 +249,7 @@ const addressSlice = createSlice({
   },
 });
 
-export const { resetAddressState, setSelectedAddress } =
+export const { resetAddressState, setSelectedAddress ,clearAddressState  } =
   addressSlice.actions;
 
 export default addressSlice.reducer;

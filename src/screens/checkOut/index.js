@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { View, Text, ScrollView, TextInput, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, ScrollView, TextInput, StatusBar, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { TouchableOpacity } from 'react-native';
 import ArrowIcon from 'react-native-vector-icons/Feather';
@@ -26,11 +26,16 @@ import { getAddresses, setSelectedAddress } from '../../redux/slices/addressSlic
 import { placeOrder } from '../../redux/slices/orderSlice';
 import { getCustomerDetails } from '../../redux/slices/customerSlice';
 import { useToast } from '../../utils/context/toastContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { clearVendors, getNearbyVendors } from '../../redux/slices/nearByVendor';
+
+const TEMP_VENDOR_KEY = 'TEMP_CHECKOUT_VENDOR';
 
 const LaundryCheckoutScreen = ({ navigation, route }) => {
   const scrollRef = useRef(null);
   const contactRef = useRef(null);
   const { showToast } = useToast();
+  const [finalVendorId, setFinalVendorId] = useState(null);
   const { laundryName, vendorId } = route.params || {};
   const dispatch = useDispatch();
   const { addresses, selectedAddress } = useSelector(
@@ -44,7 +49,14 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
   const [focusedField, setFocusedField] = useState(null);
 
   const [fullName, setFullName] = useState(customerData?.name || '');
-  const [contactNumber, setContactNumber] = useState(customerData?.phone || '');
+  const [selectedDeliveryType, setSelectedDeliveryType] = useState(null);
+  const getLast10Digits = (phone) => {
+    if (!phone) return '';
+    return phone.replace(/\D/g, '').slice(-10);
+  };
+  const [contactNumber, setContactNumber] = useState(
+    getLast10Digits(customerData?.phone)
+  );
   const shouldShowContactDetails = useMemo(() => {
     return isContactActive || !!selectedPickupSlot;
   }, [isContactActive, selectedPickupSlot]);
@@ -60,7 +72,17 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
   const [showScheduleOptions, setShowScheduleOptions] = useState(false);
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
 
-  console.log("customerData in checkout screen", customerData);
+
+  const { vendors, vendorsLoading } = useSelector(
+    state => state.nearByVendor
+  );
+
+  const isVendorAvailable = useMemo(() => {
+    if (!finalVendorId) return false;
+    return vendors?.some(v => v.id === finalVendorId);
+  }, [vendors, finalVendorId]);
+
+  console.log("customerData in checkout screen", vendorId);
 
   const effectiveAddress = useMemo(() => {
     if (selectedAddress && typeof selectedAddress === 'object') {
@@ -153,18 +175,48 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
   // Update delivery date when pickup date changes
 
   useEffect(() => {
+    if (vendorId) {
+      setFinalVendorId(vendorId);
+      AsyncStorage.setItem(TEMP_VENDOR_KEY, vendorId);
+    }
+  }, [vendorId]);
+
+  useEffect(() => {
+    const loadVendorFromStorage = async () => {
+      if (!vendorId) {
+        const storedVendor = await AsyncStorage.getItem(TEMP_VENDOR_KEY);
+        if (storedVendor) {
+          setFinalVendorId(storedVendor);
+        }
+      }
+    };
+
+    loadVendorFromStorage();
+  }, []);
+
+  useEffect(() => {
     dispatch(getAddresses());
     dispatch(getCustomerDetails());
   }, []);
+
+  useEffect(() => {
+    if (!effectiveAddress?.location?.coordinates?.coordinates) return;
+
+    const [lng, lat] = effectiveAddress.location.coordinates.coordinates;
+
+    dispatch(clearVendors());
+    dispatch(getNearbyVendors({ lng, lat }));
+  }, [effectiveAddress]);
 
   useEffect(() => {
     if (customerData?.name && !fullName) {
       setFullName(customerData.name);
     }
 
-    if (customerData?.phone && !contactNumber) {
-      setContactNumber(customerData.phone);
+    if (customerData?.phone) {
+      setContactNumber(getLast10Digits(customerData.phone));
     }
+
   }, [customerData]);
 
   useEffect(() => {
@@ -322,19 +374,25 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
       setTooltipVisible(true);
       return;
     }
+
     if (!selectedAddress || !selectedAddress._id) {
       showToast('Please select a delivery address', 'error');
 
       setTimeout(() => {
-        navigation.navigate('ManageAddress', {
-          from: 'checkout', // optional flag
+        navigation.navigate('Main', {
+          screen: 'ManageAddress',
+          params: { from: 'checkout' },
         });
-      }, 800); // thoda delay taaki toast dikhe
+      }, 800);
 
       return;
     }
+
+    setSelectedDeliveryType('now'); // ⭐ highlight this option
+
     const now = new Date();
     setSelectedPickupDate(now);
+
     const currentHour = now.getHours();
     let closestSlot = timeSlots[0];
 
@@ -348,6 +406,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
 
     setSelectedPickupSlot(closestSlot);
   };
+
 
   const handleContactFocus = (field) => {
     setFocusedField(field);
@@ -390,8 +449,14 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
       return;
     }
 
+    if (!finalVendorId) {
+      showToast('Vendor not found. Please reselect laundry.', 'error');
+      navigation.navigate('Main');
+      return;
+    }
+
     const orderPayload = {
-      vendorId,
+      vendorId: finalVendorId,
       items: formatCartItemsForAPI,
       pickupDate: selectedPickupDate.toISOString().split('T')[0],
       pickupTime: selectedPickupSlot?.time || '',
@@ -412,6 +477,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
     try {
       const result = await dispatch(placeOrder(orderPayload)).unwrap();
       dispatch(clearCart());
+      await AsyncStorage.removeItem(TEMP_VENDOR_KEY);
       navigation.replace('OrderConfirmation', { orderData: result });
     } catch (error) {
       console.error('❌ Place order failed:', error);
@@ -522,29 +588,45 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                       </View>
                     )} */}
                     <TouchableOpacity
-                      style={styles.deliveryOption}
+                      style={[
+                        styles.deliveryOption,
+                        selectedDeliveryType === 'now' && styles.selectedOption
+                      ]}
                       onPress={handlePlaceOrderNow}
                     >
                       <Icon
                         name="shopping-cart-checkout"
                         size={20}
-                        color={"green"}
+                        color={selectedDeliveryType === 'now' ? 'green' : appColors.darkBlue}
                       />
 
                       <View style={styles.optionTextContainer}>
-                        <Text style={styles.optionTitle}>Place Order Now</Text>
-                        <Text style={styles.optionSubtitle}>
+                        <Text
+                          style={[
+                            styles.optionTitle,
+                            selectedDeliveryType === 'now' && styles.selectedText
+                          ]}
+                        >
+                          Place Order Now
+                        </Text>
+
+                        <Text
+                          style={[
+                            styles.optionSubtitle,
+                            selectedDeliveryType === 'now' && styles.selectedText
+                          ]}
+                        >
                           We'll pickup as soon as possible
                         </Text>
                       </View>
                     </TouchableOpacity>
+
                   </View>
                 </View>
 
                 <View style={styles.addressCard}>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.sectionTitle}>Delivery Address</Text>
-
                     {effectiveAddress ? (
                       <View style={styles.addressRow}>
                         <Ionicons
@@ -553,19 +635,40 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                           color={appColors.darkBlue}
                           style={{ marginTop: 5 }}
                         />
-                        <Text numberOfLines={2} style={styles.addressText}>
-                          {effectiveAddress.addressLine1}
-                        </Text>
+                        <View>
+                          <Text numberOfLines={2} style={styles.addressText}>
+                            {effectiveAddress.addressLine1}
+                          </Text>
+                          {vendorsLoading ? (
+                            <View style={{ marginTop: 6, flexDirection: 'row', alignItems: 'center' }}>
+                              <ActivityIndicator size="small" color={appColors.darkBlue} />
+                              <Text style={{ marginLeft: 8, fontSize: 13, color: appColors.darkBlue }}>
+                                Checking service availability...
+                              </Text>
+                            </View>
+                          ) : (
+                            effectiveAddress && !isVendorAvailable && (
+                              <Text style={{ color: 'red', marginTop: 6, fontSize: 13 }}>
+                                Service not available at this location
+                              </Text>
+                            )
+                          )}
+
+                        </View>
+
                       </View>
                     ) : (
                       <TouchableOpacity
                         style={styles.addAddressBtn}
-                        onPress={() =>
-                          navigation.navigate('ManageAddress', { from: 'checkout' })
-                        }
                         activeOpacity={0.8}
+                        onPress={() =>
+                          navigation.navigate('Main', {
+                            screen: 'ManageAddress',
+                            params: { from: 'checkout' },
+                          })
+                        }
                       >
-                        <Ionicons name="add-circle-outline" size={18} color={appColors.primary} />
+                        <Ionicons name="add-circle-outline" size={18} color={appColors.darkBlue} />
                         <Text style={styles.addAddressText}>Add Delivery Address</Text>
                       </TouchableOpacity>
                     )}
@@ -575,7 +678,10 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                     <TouchableOpacity
                       style={styles.changeBtn}
                       onPress={() =>
-                        navigation.navigate('ManageAddress', { from: 'checkout' })
+                        navigation.navigate('Main', {
+                          screen: 'ManageAddress',
+                          params: { from: 'checkout' },
+                        })
                       }
                       activeOpacity={0.7}
                     >
@@ -583,6 +689,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                     </TouchableOpacity>
                   )}
                 </View>
+
                 <View style={[styles.section, { paddingVertical: 4 }]}>
                   <View
                     style={{
@@ -655,7 +762,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                           value={contactNumber}
                           onChangeText={setContactNumber}
                           keyboardType="phone-pad"
-                          maxLength={12}
+                          maxLength={10}
                           onFocus={() => handleContactFocus('phone')}
                           onBlur={handleContactBlur}
                           placeholderTextColor="#999"
@@ -695,7 +802,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                           multiline
                           onFocus={() => handleContactFocus('note')}
                           onBlur={handleContactBlur}
-                          textAlignVertical="top"
+                          // textAlignVertical="top"
                           placeholderTextColor="#888"
                         />
                       </View>
@@ -720,11 +827,18 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                 {!isCartEmpty && (
                   <View style={styles.footer}>
                     <TouchableOpacity
-                      style={styles.payButton}
+                      style={[
+                        styles.payButton,
+                        (!isVendorAvailable || isCartEmpty || vendorsLoading) && { opacity: 0.5 }
+                      ]}
+                      disabled={!isVendorAvailable || isCartEmpty || vendorsLoading}
                       onPress={handleContinuePress}
                     >
-                      <Text style={styles.payButtonText}>Continue</Text>
+                      <Text style={styles.payButtonText}>
+                        {vendorsLoading ? 'Please wait...' : 'Continue'}
+                      </Text>
                     </TouchableOpacity>
+
                   </View>
                 )}
               </View>

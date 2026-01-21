@@ -169,16 +169,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    try {
-      await AsyncStorage.multiRemove(['userToken', 'userDetails', 'userLocation']);
-      setUserToken(null);
-      setUserDetails(null);
-      setUserLocation(null);
-      setGlobalAuth(null, null); // clear axios token
-    } catch (error) {
-      console.log("❌ Logout error:", error);
-    }
-  };
+  try {
+    await AsyncStorage.multiRemove(['userToken', 'userDetails', 'userLocation']);
+    setUserToken(null);
+    setUserDetails(null);
+    setUserLocation(null);
+    setGlobalAuth(null, null);
+  } catch (error) {
+    console.log("❌ Logout error:", error);
+    throw error; // 🔥 IMPORTANT
+  }
+};
+
 
 
   return (

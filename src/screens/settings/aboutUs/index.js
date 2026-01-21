@@ -176,7 +176,6 @@ const AboutUsScreen = ({ navigation }) => {
           title="About Us"
           onBackPress={() => navigation.goBack()}
         />
-
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.contentContainer}

@@ -10,7 +10,7 @@ const appColors = {
   lightBorder:'#f0f0f0',
   card:"#f0f6ff",
   error:"#EF4444",
-  lightFont:"#9AA0A6",
+  lightFont:"#lightPrimary",
   bgColor:"#f5efe6",
   inputField:"rgba(251, 250, 248, 1)",
   inActive:'#e2ddd5',

@@ -282,7 +282,7 @@ export const styles = StyleSheet.create({
 
   addAddressText: {
     fontSize: 13,
-    color: appColors.primary,
+    color: appColors.darkBlue,
     fontFamily: fonts.InterMedium,
   },
 
@@ -302,7 +302,18 @@ export const styles = StyleSheet.create({
   addressRow: {
     flexDirection: 'row',
     gap: 8,
-    paddingRight: 10,
+    paddingRight: 15,
+  },
+
+ selectedOption: {
+  backgroundColor: '#E8F5E9', 
+  borderColor: '#4CAF50',
+},
+  optionTextContainer: {
+    marginLeft: 12,
+  },
+  selectedText: {
+    color: '#4CAF50',
   },
 
 });

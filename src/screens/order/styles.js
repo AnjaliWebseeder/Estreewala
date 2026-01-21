@@ -154,7 +154,7 @@ export const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: appColors.gray,
+    color:"gray",
     fontFamily: fonts.InterMedium,
     marginTop: 16,
   },

@@ -14,6 +14,8 @@ import { useSocket } from "../../utils/context/socketContext";
 import { useToast } from "../../utils/context/toastContext";
 import moment from "moment-timezone";
 import { showOrderNotification } from "../../utils/notification/notificationService";
+import { tabRef } from "../../navigation";
+import { CommonActions } from "@react-navigation/native";
 
 // Default images for vendors
 const defaultServiceImages = [service1, service2, service3, service4];
@@ -141,9 +143,16 @@ const OrdersScreen = ({ navigation, route }) => {
     });
   };
 
+  const handleBackPress = () => {
+    console.log("back pressed")
+    navigation.navigate('Home');
+  };
+
   const handleTabPress = (tabId) => {
     console.log(`🔄 Switching to tab: ${tabId}`);
     setActiveTab(tabId);
+
+    // Only fetch if this tab hasn't been loaded yet
     if (!hasLoadedTabs[tabId]) {
       console.log(`📥 First time loading tab: ${tabId}`);
       fetchOrdersForTab(tabId);
@@ -218,7 +227,7 @@ const OrdersScreen = ({ navigation, route }) => {
 
     return {
       id: order.id || order._id,
-      title: order.vendor?.businessName || "Unknown Vendor",
+      title: order.vendor?.businessName || "Deleted Vendor",
       orderId: order.orderId || 'N/A',
       items: `${totalItems} item${totalItems > 1 ? "s" : ""}`,
       price: order.totalAmount,
@@ -274,15 +283,6 @@ const OrdersScreen = ({ navigation, route }) => {
         return false;
     }
   };
-
-  const handleBackPress = () => {
-  if (activeTab !== 'active') {
-    setActiveTab('active');
-    return;
-  }
-
-  navigation.goBack();
-};
 
   const renderItem = ({ item }) => {
     console.log("item.orderId", item.orderId);
@@ -361,7 +361,6 @@ const OrdersScreen = ({ navigation, route }) => {
         </View>
       );
     }
-
     return (
       <View style={styles.emptyContainer}>
         <MaterialIcons name="inbox" size={60} color="#ddd" />
@@ -380,13 +379,12 @@ const OrdersScreen = ({ navigation, route }) => {
       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <View style={styles.container}>
         <View style={styles.main}>
-        <Header
-  iconColor={appColors.white}
-  titleStyle={{ color: appColors.white }}
-  title={"My Orders"}
-  onBackPress={handleBackPress}
-/>
-
+          <Header
+            title="My Orders"
+            iconColor={appColors.white}
+            titleStyle={{ color: appColors.white }}
+            onBackPress={handleBackPress}
+          />
           <View style={styles.tabContainer}>
             {tabs.map((tab) => (
               <TouchableOpacity

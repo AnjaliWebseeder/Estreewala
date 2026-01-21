@@ -35,15 +35,15 @@ export default function LaundryScreen({ navigation, route }) {
   const { title, vendorId, address } = route.params || {};
   const dispatch = useDispatch();
 
-  console.log("🎯 VENDOR ID RECEIVED:", vendorId, address);
+  // console.log("🎯 VENDOR ID RECEIVED:", vendorId, address);
 
   const cart = useSelector(state => state.cart.items);
   const { vendorCatalog, vendorCatalogLoading, vendorCatalogError } =
     useSelector(state => state.nearByVendor);
 
 
-  const parts = address?.split(',').map(s => s.trim());
-  const area = parts?.length > 1 ? parts[1] : parts[0];
+  // const parts = address?.split(',').map(s => s.trim());
+  // const area = parts?.length > 1 ? parts[1] : parts[0];
 
   console.log("📦 vendor catalog raw data:", vendorCatalog);
 
@@ -83,7 +83,7 @@ export default function LaundryScreen({ navigation, route }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({
     top: 0,
-    right: 0,
+    left: 0,
   });
   const filterIconRef = useRef(null);
   const insets = useSafeAreaInsets();
@@ -139,48 +139,43 @@ export default function LaundryScreen({ navigation, route }) {
 
   console.log("🏷️ Dynamic categories:", dynamicCategories);
 
-  // ✅ FIXED: Improved product selection logic with category verification
   const selectedProducts = React.useMemo(() => {
-    // Don't proceed if no service category is selected
-    if (!selectedServiceCategory || availableCategoryKeys.length === 0) {
-      console.log("⏳ Waiting for service category or category keys...");
-      return [];
-    }
+    if (!catalog || Object.keys(catalog).length === 0) return [];
 
-    let products = [];
+    const productMap = {}; // key = item + category
 
-    if (category === 'all') {
-      // Get products from ALL categories in the selected service
-      products = availableCategoryKeys.flatMap(key => {
-        const categoryProducts = selectedCategoryData[key] || [];
-        console.log(`📦 Category "${key}" has ${categoryProducts.length} products`);
+    Object.keys(catalog).forEach(serviceName => {
+      const serviceData = catalog[serviceName] || {};
 
-        return categoryProducts.map(product => ({
-          ...product,
-          category: key, // ✅ Ensure category is set correctly
-          serviceCategory: selectedServiceCategory
-        }));
+      Object.keys(serviceData).forEach(catKey => {
+        // 🔴 FILTER APPLY HERE
+        if (category !== 'all' && category !== catKey) {
+          return;
+        }
+
+        const items = serviceData[catKey] || [];
+
+        items.forEach(item => {
+          const key = `${item.item}_${catKey}`;
+
+          if (!productMap[key]) {
+            productMap[key] = {
+              ...item,
+              category: catKey,
+              services: {},
+            };
+          }
+
+          // Store price per service
+          productMap[key].services[serviceName] = item.price;
+        });
       });
-    } else {
-      // Get products from specific category
-      const categoryProducts = selectedCategoryData[category] || [];
-      console.log(`📦 Specific category "${category}" has ${categoryProducts.length} products`);
-
-      products = categoryProducts.map(product => ({
-        ...product,
-        category: category, // ✅ Explicitly set category
-        serviceCategory: selectedServiceCategory
-      }));
-    }
-
-    // ✅ DEBUG: Log each product with its category
-    products.forEach(p => {
-      console.log(`📋 Product: ${p.item} | Category: ${p.category} | Price: ${p.price || 'N/A'}`);
     });
 
-    return products;
-  }, [category, selectedServiceCategory, selectedCategoryData, availableCategoryKeys]);
-  console.log("🎯 FINAL selectedProducts count:", selectedProducts.length);
+    const result = Object.values(productMap);
+    console.log("✅ FILTERED PRODUCTS:", result);
+    return result;
+  }, [catalog, category]); // 👈 category dependency MUST
 
   const dynamicServices = serviceCategories?.map(s => ({
     label: s,
@@ -189,7 +184,6 @@ export default function LaundryScreen({ navigation, route }) {
 
   console.log("🔄 Dynamic services:", dynamicServices);
 
-  // ✅ FIX: Debug catalog structure when it loads
   useEffect(() => {
     if (Object.keys(catalog).length > 0) {
       console.log("=== CATALOG STRUCTURE DEBUG ===");
@@ -405,6 +399,11 @@ export default function LaundryScreen({ navigation, route }) {
 
     const cartItemsForThisItem = getCartItemsForItem(item.item, item.category);
 
+    const availableServicesForItem = dynamicServices.filter(
+      s => item.services?.[s.value] > 0
+    );
+
+
     return (
       <ProductItem
         product={{
@@ -416,7 +415,7 @@ export default function LaundryScreen({ navigation, route }) {
         // Removed totalQty prop since we don't need it anymore
         selectedServices={itemServices}
         cartItems={cartItemsForThisItem}
-        services={dynamicServices}
+        services={availableServicesForItem}
         onAdd={(service) => handleAdd(item, service)}
         onIncrement={(service) => handleIncrement(item.item, service, item.category)}
         onDecrement={(service) => handleDecrement(item.item, service, item.category)}
@@ -434,6 +433,7 @@ export default function LaundryScreen({ navigation, route }) {
     handleDecrement,
     handleChangeService
   ]);
+
   // ✅ FIX: Improved loading and empty states (NO CHANGES NEEDED)
   const renderContent = () => {
     if (vendorCatalogLoading) {
@@ -533,7 +533,7 @@ export default function LaundryScreen({ navigation, route }) {
               </Text>
               <View style={{ flexDirection: 'row', alignItems: "flex-end" }}>
                 <Ionicons name="location-outline" size={16} color="#555" style={{ marginRight: 6 }} />
-                <Text style={styles.sub}>{area}</Text>
+                <Text style={styles.sub}>{address}</Text>
               </View>
             </View>
           </View>
@@ -548,10 +548,10 @@ export default function LaundryScreen({ navigation, route }) {
           </TouchableOpacity>
         </View>
         <View style={styles.dashedLine} />
-        <View style={styles.metaRow}>
+        {/* <View style={styles.metaRow}>
           <Text style={styles.meta}>⭐ 4.0</Text>
           <Text style={styles.meta}>🕒 9 AM - 11 PM</Text>
-        </View>
+        </View> */}
       </View>
 
       <Modal
@@ -613,17 +613,18 @@ export default function LaundryScreen({ navigation, route }) {
           </View>
 
           <TouchableOpacity
+            style={styles.cartBtn}
+            activeOpacity={0.85}
             onPress={() =>
-              navigation.navigate('LaundryCheckoutScreen', {
-                laundryName: vendorCatalog?.vendor?.businessName || title || 'Laundry',
+              navigation.navigate("LaundryCheckout", {
+                laundryName: vendorCatalog?.vendor?.businessName || title || "Laundry",
                 vendorId: vendorId
               })
             }
-            style={styles.cartBtn}
-            activeOpacity={0.85}
           >
             <Text style={styles.cartBtnText}>View Cart</Text>
           </TouchableOpacity>
+
         </View>
       )}
     </SafeAreaView>

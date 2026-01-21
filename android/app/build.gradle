@@ -20,13 +20,13 @@ android {
         applicationId "com.estreewala"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "1.2"
+        versionCode 4
+        versionName "1.3"
     }
     
     splits {
         abi {
-            enable true              
+            enable false              
             reset()
             include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
             universalApk false       
@@ -75,6 +75,14 @@ dependencies {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
+    }
+}
+
+allprojects {
+    repositories {
+        maven {
+            url("$rootDir/../node_modules/react-native-reanimated/maven")
+        }
     }
 }
 
