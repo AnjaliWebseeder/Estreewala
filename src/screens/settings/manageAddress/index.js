@@ -8,7 +8,8 @@ import {
   StatusBar,
   Modal,
   PermissionsAndroid,
-  BackHandler
+  BackHandler,
+  TouchableWithoutFeedback
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from '@react-navigation/native';
@@ -49,25 +50,20 @@ export default function ManageAddress({ navigation, route }) {
   const [refreshing, setRefreshing] = useState(false);
 
   useFocusEffect(
-  useCallback(() => {
-    const onBackPress = () => {
-      if (route.params?.from === 'checkout') {
-        navigation.goBack(); // ✅ POP, not PUSH
+    useCallback(() => {
+      const onBackPress = () => {
+        navigation.goBack();
         return true;
-      }
-      return false;
-    };
+      };
 
-    const sub = BackHandler.addEventListener(
-      'hardwareBackPress',
-      onBackPress
-    );
+      const sub = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress
+      );
 
-    return () => sub.remove();
-  }, [route?.params?.from, navigation])
-);
-
-
+      return () => sub.remove();
+    }, [navigation])
+  );
 
 
   const onRefresh = async () => {
@@ -219,34 +215,25 @@ export default function ManageAddress({ navigation, route }) {
 
 
   const applySelectedAddress = async () => {
-    const selectedObj = addresses.find(a => a._id === localSelectedAddress);
-    if (!selectedObj) return;
+  const selectedObj = addresses.find(a => a._id === localSelectedAddress);
+  if (!selectedObj) return;
 
-    dispatch(setSelectedAddress(selectedObj));
+  dispatch(setSelectedAddress(selectedObj));
 
-    // ✅ CORRECT extraction
-    const coords =
-      selectedObj?.location?.coordinates?.coordinates;
+  const coords =
+    selectedObj?.location?.coordinates?.coordinates;
 
-    if (Array.isArray(coords) && coords.length === 2) {
-      await saveLocation({
-        coordinates: coords, // 👈 [lng, lat]
-        city: selectedObj.city,
-        state: selectedObj.state,
-        pincode: selectedObj.pincode,
-      });
+  if (Array.isArray(coords) && coords.length === 2) {
+    await saveLocation({
+      coordinates: coords,
+      city: selectedObj.city,
+      state: selectedObj.state,
+      pincode: selectedObj.pincode,
+    });
+  }
 
-    } else {
-      console.log("❌ Invalid coordinates in selected address", selectedObj);
-    }
-
-    if (route.params?.from === "checkout") {
-      navigation.navigate("LaundryCheckout");
-    } else {
-      navigation.goBack();
-    }
-
-  };
+  navigation.goBack();
+};
 
 
 
@@ -329,11 +316,11 @@ export default function ManageAddress({ navigation, route }) {
     <SafeAreaView style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" />
       <Header
-  title="Manage Address"
-  onBackPress={() => {
-    navigation.goBack(); 
-  }}
-/>
+        title="Manage Address"
+        onBackPress={() => {
+          navigation.goBack();
+        }}
+      />
 
       {!hasAddresses && (
         <TouchableOpacity
@@ -380,28 +367,36 @@ export default function ManageAddress({ navigation, route }) {
       <DeleteConfirmation visible={deleteModalVisible} onClose={() => setDeleteModalVisible(false)} onConfirm={handleDelete} />
       <Modal
         visible={addressModalVisible}
-        animationType="slide"
+        animationType="fade"
         transparent
         onRequestClose={closeAddressModal}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>
-              {selectedAddressData?.type} Address
-            </Text>
+        {/* 🔴 OUTER OVERLAY — tap here closes modal */}
+        <TouchableWithoutFeedback onPress={closeAddressModal}>
+          <View style={styles.modalOverlay}>
 
-            <Text style={styles.modalAddress}>
-              {selectedAddressData?.location?.fullAddress}
-            </Text>
+            {/* 🟢 INNER MODAL — prevent close on tap */}
+            <TouchableWithoutFeedback>
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalTitle}>
+                  {selectedAddressData?.type} Address
+                </Text>
 
-            <TouchableOpacity
-              style={styles.modalCloseBtn}
-              onPress={closeAddressModal}
-            >
-              <Text style={styles.modalCloseText}>Close</Text>
-            </TouchableOpacity>
+                <Text style={styles.modalAddress}>
+                  {selectedAddressData?.location?.fullAddress}
+                </Text>
+
+                <TouchableOpacity
+                  style={styles.modalCloseBtn}
+                  onPress={closeAddressModal}
+                >
+                  <Text style={styles.modalCloseText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
 
     </SafeAreaView>

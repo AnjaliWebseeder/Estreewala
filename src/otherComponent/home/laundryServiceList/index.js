@@ -30,6 +30,7 @@ import axiosInstance from '../../../services/axiosConfig';
 import { GET_NEARBY_VENDORS_FILTER_API } from '../../../services/api';
 import { useAuth } from '../../../utils/context/authContext';
 import Geolocation from 'react-native-geolocation-service';
+import { useFocusEffect } from '@react-navigation/native';
 
 const randomImages = [washingWash, ironinWash];
 
@@ -130,6 +131,18 @@ const LaundryServiceList = ({ navigation, route }) => {
 
   const [locationPermissionDenied, setLocationPermissionDenied] =
     useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        navigation.setParams({ serviceName: undefined });
+        setSelectedServices([]);
+        setUseFilteredList(false);
+        setFilteredVendors([]);
+        setEmptyMessage('');
+      };
+    }, [navigation])
+  );
 
   const getCoordinates = () => {
     // Saved address case
