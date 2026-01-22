@@ -10,12 +10,14 @@ import {
   ScrollView,
   PermissionsAndroid,
   Platform,
+  BackHandler
 } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Geolocation from 'react-native-geolocation-service';
+import OTPTextInput from 'react-native-otp-textinput';
 
 import {
   sendOtp,
@@ -25,9 +27,7 @@ import {
 } from '../../../redux/slices/authSlice';
 import messaging from '@react-native-firebase/messaging';
 import { updateFcmToken } from '../../../redux/slices/notificationSlice';
-
 import AuthHeader from '../../../components/auth/authHeader';
-import OtpInput from './otpInput';
 import { styles } from './styles';
 import { countries } from '../../../utils/data';
 import appColors from '../../../theme/appColors';
@@ -47,6 +47,7 @@ const PhoneLoginScreen = ({ navigation }) => {
   const [selectedCountry] = useState(countries[0]);
 
   const phoneInputRef = useRef();
+  const otpRef = useRef(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const { showToast } = useToast();
@@ -59,12 +60,32 @@ const PhoneLoginScreen = ({ navigation }) => {
     };
   }, [dispatch]);
 
+  useEffect(() => {
+    const backAction = () => {
+      if (isOtpSent) {
+        setIsOtpSent(false);
+        setOtp('');
+        setResendTimer(30);
+        return true; // prevent default back action
+      }
+      return false; // allow default back action
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [isOtpSent]);
+
   /* ================= OTP SENT ================= */
   useEffect(() => {
     if (!otpSent) return;
 
     setIsOtpSent(true);
     setResendTimer(30);
+    dispatch(resetOtpState());
 
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -231,6 +252,21 @@ const PhoneLoginScreen = ({ navigation }) => {
         style={styles.container}
       >
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+          {isOtpSent && (
+  <TouchableOpacity
+    style={styles.backButton}
+    onPress={() => {
+      setIsOtpSent(false);
+      setOtp('');
+      setResendTimer(30);
+      dispatch(resetOtpState()); // reset Redux OTP state
+    }}
+  >
+    <View style={styles.backButtonCircle}>
+      <Ionicons name="arrow-back" size={20} color={appColors.white} />
+    </View>
+  </TouchableOpacity>
+)}
           <View style={styles.centerView}>
             <AuthHeader
               title="Sign in with Phone"
@@ -329,8 +365,16 @@ const PhoneLoginScreen = ({ navigation }) => {
                 </>
               ) : (
                 <Animated.View style={{ opacity: fadeAnim }}>
-                  <OtpInput code={otp} setCode={setOtp} maxLength={4} />
-
+                  <OTPTextInput
+                    ref={otpRef}
+                    inputCount={4}
+                    tintColor={appColors.darkBlue}
+                    offTintColor="#e6e6e6"
+                    textInputStyle={styles.otpBoxText}
+                    handleTextChange={setOtp}
+                    keyboardType="number-pad"
+                    containerStyle={styles.otpBoxesContainer}
+                  />
                   <TouchableOpacity
                     style={[
                       styles.submitButton,

@@ -1,42 +1,41 @@
 import { StyleSheet } from "react-native";
-import { windowHeight } from "../../theme/appConstant";
+import { windowHeight, windowWidth } from "../../theme/appConstant";
 import appColors from "../../theme/appColors";
 import fonts from "../../theme/appFonts";
 
 export const styles = StyleSheet.create({
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal:windowHeight(13),
-    
-  },
-  searchInputContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: appColors.menuCard,
-    borderRadius: 10,
-    paddingHorizontal: 13,
-    height: 47,
-    borderWidth: 1,
-    borderColor: appColors.border,
-    height:windowHeight(34)
-
-  },
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 8,                     
+  paddingHorizontal: windowWidth(13),  
+},
+ searchInputContainer: {
+  flex: 1,
+  flexDirection: 'row',
+  alignItems: 'center',
+  backgroundColor: appColors.menuCard,
+  borderRadius: 10,
+  paddingHorizontal: 10,
+  height: windowHeight(30),             // ✅ FIXED HEIGHT
+  borderWidth: 1,
+  borderColor: appColors.border,
+},
   searchIcon: {
     marginRight: 5,
     
   },
-  searchInput: {
-    flex: 1,
-    fontSize: 14,
-    color: appColors.font,
-     fontFamily:fonts.InterRegular
-  },
+ searchInput: {
+  flex: 1,
+  fontSize: 14,
+  color: appColors.font,
+  fontFamily: fonts.InterRegular,
+  paddingVertical: 0,         // ✅ VERY IMPORTANT
+  height: '100%',             // ✅ match parent
+},
   filterButton: {
-    width: windowHeight(32),
-    height: windowHeight(32),
+    width: windowHeight(30),
+    height: windowHeight(30),
     borderRadius: windowHeight(6),
     backgroundColor: appColors.white,
     justifyContent: 'center',

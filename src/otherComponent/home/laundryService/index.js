@@ -88,6 +88,14 @@ export default function LaundryScreen({ navigation, route }) {
   const filterIconRef = useRef(null);
   const insets = useSafeAreaInsets();
 
+
+  // ✅ UPDATED: Calculate totals with new cart structure
+  const cartItems = Object.values(cart); // Use Object.values instead of Object.keys
+  const totalItems = cartItems.reduce((sum, it) => sum + it.qty, 0);
+  const totalPrice = cartItems.reduce((sum, item) => {
+    return sum + (item.price * item.qty);
+  }, 0);
+
   // ✅ FIX: Get ALL service categories with better error handling
   const serviceCategories = Object.keys(catalog);
   console.log("🔧 Available service categories:", serviceCategories);
@@ -113,13 +121,19 @@ export default function LaundryScreen({ navigation, route }) {
     return `${cleanItemName}_${category}`;
   };
 
-  // ✅ FIX: Get category data with fallback
-  const selectedCategoryData = selectedServiceCategory ? (catalog[selectedServiceCategory] || {}) : {};
-  console.log("📊 Selected category data:", selectedCategoryData);
-  console.log("📊 Selected category data keys:", Object.keys(selectedCategoryData));
-
   // ✅ FIX: Build dynamic CATEGORIES with better empty state handling
-  const availableCategoryKeys = Object.keys(selectedCategoryData);
+  const availableCategoryKeys = React.useMemo(() => {
+    const categorySet = new Set();
+
+    Object.values(catalog).forEach(serviceData => {
+      Object.keys(serviceData || {}).forEach(catKey => {
+        categorySet.add(catKey);
+      });
+    });
+
+    return Array.from(categorySet);
+  }, [catalog]);
+
   console.log("👕 Available category keys:", availableCategoryKeys);
 
   const dynamicCategories = [
@@ -343,13 +357,6 @@ export default function LaundryScreen({ navigation, route }) {
     setShowDropdown(false);
   };
 
-  // ✅ UPDATED: Calculate totals with new cart structure
-  const cartItems = Object.values(cart); // Use Object.values instead of Object.keys
-  const totalItems = cartItems.reduce((sum, it) => sum + it.qty, 0);
-  const totalPrice = cartItems.reduce((sum, item) => {
-    return sum + (item.price * item.qty);
-  }, 0);
-
 
   useEffect(() => {
     // Create a new selectedServices map based on cart items
@@ -392,6 +399,7 @@ export default function LaundryScreen({ navigation, route }) {
   }, [cartItems]);
 
 
+
   // Update the renderProductItem function:
   const renderProductItem = useCallback(({ item }) => {
     const itemCategoryKey = getItemCategoryKey(item.item, item.category);
@@ -403,7 +411,6 @@ export default function LaundryScreen({ navigation, route }) {
       s => item.services?.[s.value] > 0
     );
 
-
     return (
       <ProductItem
         product={{
@@ -412,13 +419,16 @@ export default function LaundryScreen({ navigation, route }) {
           image: item.image,
           category: item.category
         }}
-        // Removed totalQty prop since we don't need it anymore
         selectedServices={itemServices}
         cartItems={cartItemsForThisItem}
         services={availableServicesForItem}
         onAdd={(service) => handleAdd(item, service)}
-        onIncrement={(service) => handleIncrement(item.item, service, item.category)}
-        onDecrement={(service) => handleDecrement(item.item, service, item.category)}
+        onIncrement={(service) =>
+          handleIncrement(item.item, service, item.category)
+        }
+        onDecrement={(service) =>
+          handleDecrement(item.item, service, item.category)
+        }
         onChangeService={(itemId, serviceValue) => {
           handleChangeService(itemId, serviceValue, item.category);
         }}
@@ -433,6 +443,7 @@ export default function LaundryScreen({ navigation, route }) {
     handleDecrement,
     handleChangeService
   ]);
+
 
   // ✅ FIX: Improved loading and empty states (NO CHANGES NEEDED)
   const renderContent = () => {
@@ -492,11 +503,10 @@ export default function LaundryScreen({ navigation, route }) {
       );
     }
 
-    // Show products when available
     return (
       <FlatList
         data={selectedProducts}
-        keyExtractor={(item, index) => `${item.item}_${index}`}
+        keyExtractor={(item) => `${item.item}_${item.category}`}
         renderItem={renderProductItem}
         contentContainerStyle={{ paddingBottom: windowHeight(80) }}
       />
@@ -515,6 +525,7 @@ export default function LaundryScreen({ navigation, route }) {
       >
         <Header
           iconColor={appColors.white}
+          title={vendorCatalog?.vendor?.businessName || title || 'Laundry'}
           titleStyle={{ color: appColors.white }}
           containerStyle={{ paddingVertical: 10 }}
           onBackPress={() => navigation.goBack()}
@@ -524,15 +535,16 @@ export default function LaundryScreen({ navigation, route }) {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
+            paddingBottom: 5
           }}
         >
           <View style={{ paddingRight: 50 }}>
             <View style={styles.header}>
-              <Text style={styles.title}>
+              {/* <Text style={styles.title}>
                 {vendorCatalog?.vendor?.businessName || title || 'Laundry'}
-              </Text>
-              <View style={{ flexDirection: 'row', alignItems: "flex-end" }}>
-                <Ionicons name="location-outline" size={16} color="#555" style={{ marginRight: 6 }} />
+              </Text> */}
+              <View style={{ flexDirection: 'row', alignItems: "flex-end", alignItems: "center" }}>
+                <Ionicons name="location-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
                 <Text style={styles.sub}>{address}</Text>
               </View>
             </View>

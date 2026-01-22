@@ -14,7 +14,7 @@ import { windowWidth } from '../theme/appConstant';
 import Splash from '../screens/splash';
 import OnBoarding from '../screens/onBoarding';
 import PhoneLogin from '../screens/auth/phoneLogin';
-import OtpInput from '../screens/auth/phoneLogin/otpInput';
+import OtpInput from '../screens/auth/phoneLogin/OtpInputRN';
 import SignIn from '../screens/auth/signIn';
 import SignUp from '../screens/auth/signUp';
 import ForgotPassword from '../screens/auth/forgotPassword';
@@ -137,7 +137,7 @@ function MainDrawer() {
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
       <Drawer.Screen name="Tabs" component={BottomTabs} />
-      <Drawer.Screen name="ManageAddress" component={ManageAddress} />
+      {/* <Drawer.Screen name="ManageAddress" component={ManageAddress} /> */}
       <Drawer.Screen name="Notification" component={Notification} />
       <Drawer.Screen name="LoginSecurity" component={LoginSecurity} />
       <Drawer.Screen name="AboutUs" component={AboutUs} />
@@ -154,7 +154,7 @@ function MainDrawer() {
 /* ---------------- APP NAVIGATION ---------------- */
 export default function AppNavigation() {
   const { userToken, isLoading } = useAuth();
-  if (isLoading) return null; 
+  if (isLoading) return null;
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -172,7 +172,7 @@ export default function AppNavigation() {
         <>
           <Stack.Screen name="Main" component={MainDrawer} />
           <Stack.Screen name="ManageAddress" component={ManageAddress} />
-<Stack.Screen name="MapAddressScreen" component={MapAddressScreen} />
+          <Stack.Screen name="MapAddressScreen" component={MapAddressScreen} />
           <Stack.Screen name="LaundryService" component={LaundryService} />
           <Stack.Screen name="LaundryCheckout" component={LaundryCheckoutScreen} />
           <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} />

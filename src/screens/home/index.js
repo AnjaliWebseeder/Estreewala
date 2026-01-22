@@ -27,11 +27,6 @@ export const Home = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor="#07172cff"
-      />
-
       <ScrollView
         contentContainerStyle={styles.contentContainerStyle}
         style={styles.container}

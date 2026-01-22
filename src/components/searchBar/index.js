@@ -5,8 +5,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {styles} from './styles'
-import FilterIcon from '../../assets/Icons/svg/filter' 
+import { styles } from './styles'
+import FilterIcon from '../../assets/Icons/svg/filter'
 import appColors from '../../theme/appColors';
 
 const SearchBar = ({
@@ -24,7 +24,7 @@ const SearchBar = ({
 }) => {
   return (
     <View style={[styles.searchContainer, containerStyle]}>
-      <View style={[styles.searchInputContainer,{...searchInputContainerStyle}]}>
+      <View style={[styles.searchInputContainer, { ...searchInputContainerStyle }]}>
         <Icon name="search" size={24} color="#07172cff" style={styles.searchIcon} />
         <TextInput
           style={[styles.searchInput, inputStyle]}
@@ -35,15 +35,15 @@ const SearchBar = ({
           {...props}
         />
       </View>
-   {showFilter && (
-        <TouchableOpacity 
+      {showFilter && (
+        <TouchableOpacity
           style={[styles.filterButton, filterButtonStyle]}
           onPress={onFilterPress}
         >
-     <FilterIcon size={20} color={appColors.darkBlue} />
-        
+          <FilterIcon size={20} color={appColors.darkBlue} />
+
         </TouchableOpacity>
-      )} 
+      )}
     </View>
   );
 };

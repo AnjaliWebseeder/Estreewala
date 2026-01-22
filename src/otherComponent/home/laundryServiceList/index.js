@@ -77,14 +77,14 @@ const LaundryCard = ({ vendor, navigation, index }) => {
           </View>
         )}
 
-        <View style={styles.deliveryInfo}>
+        {/* <View style={styles.deliveryInfo}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Icon name="access-time" size={12} color={appColors.darkBlue} />
             <Text style={styles.deliveryText}>
               {'9AM - 11 PM'}{' '}
             </Text>
           </View>
-        </View>
+        </View> */}
 
         <View style={styles.dashedLine} />
       </View>
@@ -615,9 +615,8 @@ const LaundryServiceList = ({ navigation, route }) => {
         </>
       ) : (
         <View style={styles.container}>
-          <View style={{ backgroundColor: '#07172cff', paddingBottom: 20 }}>
+          <View style={{ backgroundColor: '#07172cff', paddingBottom: 10 }}>
             <Header
-              containerStyle={{ marginBottom: 5 }}
               iconColor={appColors.white}
               title={serviceName ? serviceName : 'Nearby Laundry'}
               onBackPress={() => navigation.goBack()}
@@ -632,9 +631,11 @@ const LaundryServiceList = ({ navigation, route }) => {
               showFilter={true}
               searchInputContainerStyle={{
                 backgroundColor: appColors.white,
-                borderWidth: 0,
               }}
-              inputStyle={{ color: appColors.black, fontSize: 12, }}
+              inputStyle={{
+                fontSize: 12,
+                paddingVertical: 0,
+              }}
               placeholderTextColor={appColors.black}
               onClear={handleClearSearch}
             />
@@ -703,7 +704,7 @@ const LaundryServiceList = ({ navigation, route }) => {
             onClose={() => setShowFilters(false)}
             onApplyFilters={applyFilters}
             initialSelectedServices={selectedServices}
-            onResetFilters={handleResetFilters}   
+            onResetFilters={handleResetFilters}
           />
         </View>
       )}

@@ -488,7 +488,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
 
   const handleContinuePress = () => {
     if (!selectedPickupSlot) {
-      setTooltipText('Please click "Place Order Now" to schedule pickup');
+      setTooltipText("Please schedule a delivery or click on order now to proceed.");
       setTooltipVisible(true);
       return;
     }
@@ -637,7 +637,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                         />
                         <View>
                           <Text numberOfLines={2} style={styles.addressText}>
-                            {effectiveAddress.addressLine1}
+                            {effectiveAddress.addressLine1} {effectiveAddress.city} {effectiveAddress.state} {effectiveAddress.pincode}
                           </Text>
                           {vendorsLoading ? (
                             <View style={{ marginTop: 6, flexDirection: 'row', alignItems: 'center' }}>
@@ -649,7 +649,7 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                           ) : (
                             effectiveAddress && !isVendorAvailable && (
                               <Text style={{ color: 'red', marginTop: 6, fontSize: 13 }}>
-                                Service not available at this location
+                                This laundry is unavailable for the selected address.
                               </Text>
                             )
                           )}
@@ -662,9 +662,8 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                         style={styles.addAddressBtn}
                         activeOpacity={0.8}
                         onPress={() =>
-                          navigation.navigate('Main', {
-                            screen: 'ManageAddress',
-                            params: { from: 'checkout' },
+                          navigation.navigate('ManageAddress', {
+                            from: 'checkout',
                           })
                         }
                       >
@@ -678,9 +677,8 @@ const LaundryCheckoutScreen = ({ navigation, route }) => {
                     <TouchableOpacity
                       style={styles.changeBtn}
                       onPress={() =>
-                        navigation.navigate('Main', {
-                          screen: 'ManageAddress',
-                          params: { from: 'checkout' },
+                        navigation.navigate('ManageAddress', {
+                          from: 'checkout',
                         })
                       }
                       activeOpacity={0.7}

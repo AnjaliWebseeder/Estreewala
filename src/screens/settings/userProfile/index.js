@@ -16,6 +16,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import appColors from "../../../theme/appColors";
 import { getCustomerDetails, updateCustomerName, clearUpdateNameSuccess, updateCustomerNameLocally } from "../../../redux/slices/customerSlice";
+import fonts from "../../../theme/appFonts";
 
 const LoginSecurityScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -176,7 +177,19 @@ const LoginSecurityScreen = ({ navigation }) => {
                         )}
                       </>
                     ) : (
-                      <Text style={styles.fieldValue}>{item.value}</Text>
+                      <Text
+                        style={[
+                          styles.fieldValue,
+                          !item.value && {
+                            fontSize: 14,
+                            color: 'gray',
+                            fontFamily: fonts.InterRegular,
+                          }
+                        ]}
+                      >
+                        {item.value || "Enter your name"}
+                      </Text>
+
                     )}
                   </View>
 

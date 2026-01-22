@@ -156,12 +156,12 @@ const styles = StyleSheet.create({
     backgroundColor: appColors.menuCard,
     padding: 14,
     borderRadius: 12,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-    marginHorizontal: 15
+    marginBottom:10,
+    // shadowColor: "#000",
+    // shadowOpacity: 0.05,
+    // shadowRadius: 4,
+    // elevation: 1,
+    marginHorizontal:5,
   },
   iconWrapper: {
     width: 40,

@@ -18,14 +18,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../../../utils/context/authContext";
 import Geolocation from "react-native-geolocation-service";
 import { PermissionsAndroid } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import appColors from "../../../theme/appColors";
 
 const randomImages = [washingWash, ironinWash];
 
 const PopularLaundry = (props) => {
   const dispatch = useDispatch();
   const { selectedAddress, addresses } = useSelector(
-  state => state.address
-);
+    state => state.address
+  );
   const { userLocation, saveLocation } = useAuth();
   const { vendors, vendorsError } = useSelector(
     (state) => state.nearByVendor
@@ -33,33 +35,33 @@ const PopularLaundry = (props) => {
 
   const hasAddresses = Array.isArray(addresses) && addresses.length > 0;
 
-const effectiveLocation =
-  selectedAddress ||
-  (hasAddresses && addresses.find(a => a.isDefault)) ||
-  (hasAddresses && addresses[0]) ||
-  (!hasAddresses ? userLocation : null);
+  const effectiveLocation =
+    selectedAddress ||
+    (hasAddresses && addresses.find(a => a.isDefault)) ||
+    (hasAddresses && addresses[0]) ||
+    (!hasAddresses ? userLocation : null);
 
   const [locationPermissionDenied, setLocationPermissionDenied] =
     useState(false);
 
-    const getCoordinates = () => {
-  // Saved address case
-  if (effectiveLocation?.location?.coordinates?.coordinates) {
-    return effectiveLocation.location.coordinates.coordinates; // [lng, lat]
-  }
+  const getCoordinates = () => {
+    // Saved address case
+    if (effectiveLocation?.location?.coordinates?.coordinates) {
+      return effectiveLocation.location.coordinates.coordinates; // [lng, lat]
+    }
 
-  // Current location case
-  if (effectiveLocation?.coordinates?.length === 2) {
-    return effectiveLocation.coordinates; // [lng, lat]
-  }
+    // Current location case
+    if (effectiveLocation?.coordinates?.length === 2) {
+      return effectiveLocation.coordinates; // [lng, lat]
+    }
 
-  return null;
-};
+    return null;
+  };
 
-const coords = getCoordinates();
+  const coords = getCoordinates();
 
-const hasValidLocation =
-  coords?.length === 2 && !locationPermissionDenied;
+  const hasValidLocation =
+    coords?.length === 2 && !locationPermissionDenied;
 
 
   // 🔁 App foreground → permission recheck
@@ -80,19 +82,19 @@ const hasValidLocation =
 
   // 📡 Fetch vendors when location available
   useEffect(() => {
-  if (!hasValidLocation) return;
+    if (!hasValidLocation) return;
 
-  dispatch(clearVendors());
+    dispatch(clearVendors());
 
-  dispatch(
-    getNearbyVendors({
-      lng: coords[0],
-      lat: coords[1],
-    })
-  );
-}, [hasValidLocation, effectiveLocation, dispatch]);
+    dispatch(
+      getNearbyVendors({
+        lng: coords[0],
+        lat: coords[1],
+      })
+    );
+  }, [hasValidLocation, effectiveLocation, dispatch]);
 
-  
+
   // 🔐 Permission request
   const requestLocationPermission = async () => {
     if (Platform.OS !== "android") return true;
@@ -192,15 +194,15 @@ const hasValidLocation =
 
 
   const popularVendors = [...vendors]
-  .sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity))
-  .slice(0, 3)
-  .map((vendor, index) => ({
-    id: vendor.id,
-    name: vendor.businessName,
-    location: vendor.address,
-    image: randomImages[index % randomImages.length],
-    distanceKm: vendor.distanceKm,
-  }));
+    .sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity))
+    .slice(0, 3)
+    .map((vendor, index) => ({
+      id: vendor.id,
+      name: vendor.businessName,
+      location: vendor.address,
+      image: randomImages[index % randomImages.length],
+      distanceKm: vendor.distanceKm,
+    }));
 
   return (
     <View style={styles.container}>
@@ -273,19 +275,21 @@ const hasValidLocation =
                       size={14}
                       color="#07172cff"
                     />
-                    <Text style={styles.location} numberOfLines={1}>
-                      {item.location?.split(",")[0]}
+                    <Text
+                      style={styles.location}
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                    >
+                      {item.location}
                     </Text>
                   </View>
 
-                  {/* <View style={styles.timeContainer}>
-                    <Ionicons
-                      name="time-outline"
-                      size={14}
-                      color="#07172cff"
-                    />
-                    <Text style={styles.time}>{item.time}</Text>
-                  </View> */}
+                  <View style={styles.locationContainer}>
+                    <Icon name="location-on" size={12} color={appColors.darkBlue} />
+                    <Text style={styles.location}>
+                      {item.distanceKm.toFixed(1)} km away
+                    </Text>
+                  </View>
                 </View>
               </TouchableOpacity>
             )}

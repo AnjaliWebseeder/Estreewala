@@ -10,6 +10,7 @@ import { SocketProvider } from "./src/utils/context/socketContext"
 import { requestUserPermission, getFcmToken, notificationListener } from "./src/utils/notification/notificationService"
 import notifee, { AndroidImportance } from '@notifee/react-native';
 import UpdateModal from "./src/otherComponent/updateModal"
+import { StatusBar } from 'react-native';
 
 export default function App() {
 
@@ -20,25 +21,30 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    notifee.createChannel({
-      id: 'default',
-      name: 'Default Channel',
-      importance: AndroidImportance.HIGH,
-    });
-  }, []);
+  notifee.createChannel({
+    id: 'default',
+    name: 'Default Notifications',
+    importance: AndroidImportance.HIGH,
+  });
+}, []);
 
 
   return (
     <Provider store={store}>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="#07172cff"
+      />
+
       <PersistGate loading={null} persistor={persistor}>
         <ToastProvider>
           <AuthProvider>
-              <SocketProvider>
-                <UpdateModal />
-                <NavigationContainer >
-                  <Navigation />
-                </NavigationContainer>
-              </SocketProvider>
+            <SocketProvider>
+              <UpdateModal />
+              <NavigationContainer >
+                <Navigation />
+              </NavigationContainer>
+            </SocketProvider>
           </AuthProvider>
         </ToastProvider>
       </PersistGate>

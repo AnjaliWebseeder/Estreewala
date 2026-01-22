@@ -13,14 +13,14 @@ import appColors from "../../../theme/appColors";
 import fonts from "../../../theme/appFonts";
 
 const services = [
-  { id: 1, name: "Ironing", icon: ironing },
-  { id: 2, name: "Washing", icon: wash },
-  { id: 3, name: "Dry Wash", icon: dryWash },
+  { id: 1, name: "Steam Ironing", icon: SteamIroning },
+  { id: 2, name: "Spin Washing", icon: SpinWashing },
+  { id: 3, name: "Stain Removal", icon: StainRemoval },
   { id: 4, name: "Wash & Iron", icon: tShirtWashIron },
-  { id: 5, name: "Steam Ironing", icon: SteamIroning },
-  { id: 6, name: "Spin Washing", icon: SpinWashing },
-  { id: 7, name: "Steam Washing", icon: SteamWashing },
-  { id: 8, name: "Stain Removal", icon: StainRemoval },
+  { id: 5, name: "Steam Washing", icon: SteamWashing },
+  { id: 6, name: "Ironing", icon: ironing },
+  { id: 7, name: "Washing", icon: wash },
+  { id: 8, name: "Dry Wash", icon: dryWash },
 ];
 
 const ServiceList = ({ navigation }) => {
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   },
   scroll: { marginVertical: 10 },
   contentContainerStyle: {
-    paddingBottom: 14,
+    paddingBottom: windowHeight(7),
     paddingHorizontal: 1,
     paddingRight: windowHeight(10)
   },

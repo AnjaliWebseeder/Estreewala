@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,9 +7,11 @@ import {
   ActivityIndicator,
   StatusBar,
   Modal,
-  PermissionsAndroid
+  PermissionsAndroid,
+  BackHandler
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { useFocusEffect } from '@react-navigation/native';
 
 import {
   getAddresses,
@@ -45,6 +47,28 @@ export default function ManageAddress({ navigation, route }) {
   const [selectedAddressData, setSelectedAddressData] = useState(null);
 
   const [refreshing, setRefreshing] = useState(false);
+
+  useFocusEffect(
+  useCallback(() => {
+    const onBackPress = () => {
+      if (route.params?.from === 'checkout') {
+        navigation.goBack(); // ✅ POP, not PUSH
+        return true;
+      }
+      return false;
+    };
+
+    const sub = BackHandler.addEventListener(
+      'hardwareBackPress',
+      onBackPress
+    );
+
+    return () => sub.remove();
+  }, [route?.params?.from, navigation])
+);
+
+
+
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -304,7 +328,12 @@ export default function ManageAddress({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" />
-      <Header title="Manage Address" onBackPress={() => navigation.goBack()} />
+      <Header
+  title="Manage Address"
+  onBackPress={() => {
+    navigation.goBack(); 
+  }}
+/>
 
       {!hasAddresses && (
         <TouchableOpacity

@@ -78,6 +78,7 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: appColors.black,
     marginLeft: 6,
+    paddingHorizontal:8,
     fontFamily: fonts.InterRegular,
     opacity: 0.7
   },

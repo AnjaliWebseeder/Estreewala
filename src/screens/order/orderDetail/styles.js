@@ -95,7 +95,7 @@ export const styles = StyleSheet.create({
     width: 25,
     height: 25,
     borderRadius: 17,
-    backgroundColor: "green",
+    backgroundColor: appColors.darkBlue,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -107,7 +107,6 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
   },
 
   lineTotal: {

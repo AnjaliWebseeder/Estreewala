@@ -90,7 +90,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
-    marginTop: 10
+    marginTop: 20
 
   },
   activeButton: {
@@ -165,4 +165,56 @@ export const styles = StyleSheet.create({
   disabledResend: {
     opacity: 0.5,
   },
+  box: {
+    width: 50,
+    height: 50,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#e6e6e6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8f8f8',
+  },
+
+  focusedBox: {
+    borderColor: appColors.darkBlue,
+    backgroundColor: '#fff',
+  },
+
+  otpBoxesContainer: {
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  otpBoxText: {
+    fontSize: 20,
+    color: '#333',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#e6e6e6',
+    backgroundColor: '#f8f8f8',
+    padding: 10,
+    textAlign: 'center',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 25,
+    left: 15,
+    zIndex: 10,
+  },
+
+  backButtonCircle: {
+    width: 40,              // circle width
+    height: 40,             // circle height
+    borderRadius: 20,       // make it a perfect circle
+    backgroundColor: appColors.darkBlue, // circle color
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',    // optional shadow for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,           // shadow for Android
+  },
+
+
 });

@@ -45,6 +45,10 @@ const OrderDetails = ({ navigation, route }) => {
   const [downloadingInvoice, setDownloadingInvoice] = useState(false);
   const { showToast } = useToast();
   const { cancellingOrder } = useSelector(state => state.order);
+  const orderedItemCount = currentOrder?.items?.reduce(
+    (sum, item) => sum + (item.quantity || 0),
+    0
+  );
   // Update currentOrder when route params change
 
   useEffect(() => {
@@ -242,82 +246,81 @@ const OrderDetails = ({ navigation, route }) => {
 
         {/* Customer Details */}
         <View style={styles.card}>
-  <Text style={styles.sectionTitle}>Customer Details</Text>
+          <Text style={styles.sectionTitle}>Customer Details</Text>
 
-  <View style={styles.driverRow}>
-    <View style={{ flex: 1 }}>
-      <Text style={styles.driverName}>
-        {currentOrder?.contactDetails?.fullName || "Unknown"}
-      </Text>
+          <View style={styles.driverRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.driverName}>
+                {currentOrder?.contactDetails?.fullName || "Unknown"}
+              </Text>
 
-      <View style={styles.addressBlock}>
-        <Ionicons name="location-outline" size={18} color={appColors.darkBlue} />
-        <Text style={styles.addressText}>
-          {currentOrder?.deliveryAddress?.fullAddress || "No address available"}
-        </Text>
-      </View>
+              <View style={styles.addressBlock}>
+                <Ionicons name="location-outline" size={18} color={appColors.darkBlue} />
+                <Text style={styles.addressText}>
+                  {currentOrder?.deliveryAddress?.fullAddress || "No address available"}
+                </Text>
+              </View>
 
-      {/* 📞 Phone Row */}
-      <View style={styles.phoneRow}>
-        <Text style={styles.driverPhone}>{customerPhone}</Text>
+              {/* 📞 Phone Row */}
+              <View style={styles.phoneRow}>
+                <Text style={styles.driverPhone}>{customerPhone}</Text>
 
-        <TouchableOpacity
-          style={styles.callCircle}
-          onPress={handleCall}
-        >
-          <Ionicons name="call" size={16} color="#fff" />
-        </TouchableOpacity>
-      </View>
-    </View>
-  </View>
+                <TouchableOpacity
+                  style={styles.callCircle}
+                  onPress={handleCall}
+                >
+                  <Ionicons name="call" size={16} color="#fff" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
 
-  <View style={styles.horizontalLine} />
+          <View style={styles.horizontalLine} />
 
-  {/* Laundry Details */}
-  <Text style={styles.sectionTitle}>Laundry Details</Text>
+          {/* Laundry Details */}
+          <Text style={styles.sectionTitle}>Laundry Details</Text>
 
-  <View style={styles.driverRow}>
-    <View style={{ flex: 1 }}>
-      <View style={styles.addressBlock}>
-        <MaterialIcons
-          name="local-laundry-service"
-          size={18}
-          color={appColors.darkBlue}
-        />
-        <Text style={styles.addressText}>
-          {currentOrder?.vendor?.name || "Unknown Laundry"}
-        </Text>
-      </View>
+          <View style={styles.driverRow}>
+            <View style={{ flex: 1 }}>
+              <View style={styles.addressBlock}>
+                <MaterialIcons
+                  name="local-laundry-service"
+                  size={18}
+                  color={appColors.darkBlue}
+                />
+                <Text style={styles.addressText}>
+                  {currentOrder?.vendor?.name || "Unknown Laundry"}
+                </Text>
+              </View>
 
-      <View style={styles.addressBlock}>
-        <Ionicons name="location-outline" size={18} color={appColors.darkBlue} />
-        <Text style={styles.addressText}>
-          {currentOrder?.vendor?.address || ""}
-        </Text>
-      </View>
+              <View style={styles.addressBlock}>
+                <Ionicons name="location-outline" size={18} color={appColors.darkBlue} />
+                <Text style={styles.addressText}>
+                  {currentOrder?.vendor?.address || ""}
+                </Text>
+              </View>
 
-      {/* 📞 Phone Row */}
-      <View style={styles.phoneRow}>
-        <Text style={styles.driverPhone}>{vendorPhone}</Text>
+              {/* 📞 Phone Row */}
+              <View style={styles.phoneRow}>
+                <Text style={styles.driverPhone}>{vendorPhone}</Text>
 
-        <TouchableOpacity
-          style={styles.callCircle}
-          onPress={handleVendorCall}
-        >
-          <Ionicons name="call" size={16} color="#fff" />
-        </TouchableOpacity>
-      </View>
-    </View>
-  </View>
-</View>
+                <TouchableOpacity
+                  style={styles.callCircle}
+                  onPress={handleVendorCall}
+                >
+                  <Ionicons name="call" size={16} color="#fff" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
 
 
-        {/* Ordered Items */}
+
         <View style={styles.card}>
           <View style={styles.orderItemHeader}>
-            <Text style={styles.sectionTitle}>Order item(s)</Text>
-            <Text style={styles.lineTotal}>
-              ₹{currentOrder?.calculatedTotal || currentOrder?.totalAmount}
+            <Text style={styles.sectionTitle}>
+              Ordered Items ({orderedItemCount})
             </Text>
           </View>
 
@@ -335,17 +338,21 @@ const OrderDetails = ({ navigation, route }) => {
                     {item?.service} · x{item?.quantity}
                   </Text>
                 </View>
+
                 <Text style={styles.itemPrice}>
                   ₹{item?.unitPrice} / item
                 </Text>
               </View>
             );
           })}
-          {currentOrder?.instructions ? (
-            <Text style={styles.instruction}>{currentOrder.instructions}</Text>
-          ) : null}
 
+          {currentOrder?.instructions ? (
+            <Text style={styles.instruction}>
+              {currentOrder.instructions}
+            </Text>
+          ) : null}
         </View>
+
 
         {/* Invoice Section */}
         <View style={[styles.card, styles.summeryStyle]}>

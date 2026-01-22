@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 import appColors from '../../../theme/appColors';
 import fonts from '../../../theme/appFonts';
-import { windowHeight , windowWidth} from '../../../theme/appConstant';
+import { windowHeight, windowWidth } from '../../../theme/appConstant';
 
 export const styles = StyleSheet.create({
   container: {
@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 15,
     paddingBottom: 20,
-    paddingVertical:2
+    paddingVertical: 2
   },
   section: {
     marginBottom: 20,
@@ -35,16 +35,16 @@ export const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 1.8,
     paddingBottom: windowHeight(19),
-    borderColor:appColors.darkBlue,
-    borderWidth:1
+    borderColor: appColors.darkBlue,
+    borderWidth: 1
   },
   fieldContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 14,
-    borderBottomColor:appColors.darkBlue,
-    borderBottomWidth:1
+    borderBottomColor: appColors.darkBlue,
+    borderBottomWidth: 1
   },
   fieldLabel: {
     fontSize: 14,
@@ -55,15 +55,16 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
     fontFamily: 'Inter-SemiBold',
+    marginTop: 4,
   },
   input: {
     fontSize: 14,
     color: '#333',
-   fontFamily:fonts.InterRegular,
+    fontFamily: fonts.InterRegular,
     paddingVertical: 4,
     width: windowWidth(200),
     borderBottomWidth: 1,
-    borderBottomColor:appColors.darkBlue,
+    borderBottomColor: appColors.darkBlue,
     backgroundColor: appColors.menuCard, // fixes underline issue on Android
   },
   inputFocused: {
@@ -74,10 +75,10 @@ export const styles = StyleSheet.create({
   },
   editText: {
     color: appColors.font,
-    fontFamily:fonts.InterMedium
+    fontFamily: fonts.InterMedium
   },
   saveButton: {
-    backgroundColor:appColors.font,
+    backgroundColor: appColors.font,
     padding: 12,
     borderRadius: 6,
     alignItems: 'center',
@@ -85,7 +86,7 @@ export const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: appColors.white,
-   fontFamily:fonts.InterMedium,
+    fontFamily: fonts.InterMedium,
     fontSize: 16,
   },
   errorText: {
